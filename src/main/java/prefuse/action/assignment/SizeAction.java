@@ -90,7 +90,7 @@ public class SizeAction extends EncoderAction {
 	 * @param size the size value
 	 */
 	public void add(Predicate p, double size) {
-		super.add(p, new Double(size));
+		super.add(p, size);
 	}
 
 	/**

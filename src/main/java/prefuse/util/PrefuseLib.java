@@ -297,7 +297,7 @@ public class PrefuseLib {
 	 * @return true if the group is a nested, or child, group
 	 */
 	public static boolean isChildGroup(String group) {
-		return group.indexOf(GROUP_DELIMITER) != -1;
+		return group.contains(GROUP_DELIMITER);
 	}
 
 	/**
@@ -391,21 +391,21 @@ public class PrefuseLib {
 		s.addColumn(VisualItem.BOUNDS, Rectangle2D.class, new Rectangle2D.Double());
 
 		// color
-		Integer defStroke = new Integer(ColorLib.rgba(0, 0, 0, 0));
+		Integer defStroke = ColorLib.rgba(0, 0, 0, 0);
 		s.addInterpolatedColumn(VisualItem.STROKECOLOR, int.class, defStroke);
 
-		Integer defFill = new Integer(ColorLib.rgba(0, 0, 0, 0));
+		Integer defFill = ColorLib.rgba(0, 0, 0, 0);
 		s.addInterpolatedColumn(VisualItem.FILLCOLOR, int.class, defFill);
 
-		Integer defTextColor = new Integer(ColorLib.rgba(0, 0, 0, 0));
+		Integer defTextColor = ColorLib.rgba(0, 0, 0, 0);
 		s.addInterpolatedColumn(VisualItem.TEXTCOLOR, int.class, defTextColor);
 
 		// size
-		s.addInterpolatedColumn(VisualItem.SIZE, double.class, new Double(1));
+		s.addInterpolatedColumn(VisualItem.SIZE, double.class, 1d);
 
 		// shape
 		s.addColumn(VisualItem.SHAPE, int.class,
-				new Integer(Constants.SHAPE_RECTANGLE));
+				Constants.SHAPE_RECTANGLE);
 
 		// stroke
 		s.addColumn(VisualItem.STROKE, Stroke.class, new BasicStroke());
@@ -415,7 +415,7 @@ public class PrefuseLib {
 		s.addInterpolatedColumn(VisualItem.FONT, Font.class, defFont);
 
 		// degree-of-interest
-		s.addColumn(VisualItem.DOI, double.class, new Double(Double.MIN_VALUE));
+		s.addColumn(VisualItem.DOI, double.class, Double.MIN_VALUE);
 
 		return s;
 	}
@@ -456,13 +456,13 @@ public class PrefuseLib {
 
 		s.setDefault(VisualItem.STARTVISIBLE, Boolean.FALSE);
 
-		Integer defColor = new Integer(ColorLib.gray(230));
+		Integer defColor = ColorLib.gray(230);
 		s.setInterpolatedDefault(VisualItem.STROKECOLOR, defColor);
 
-		defColor = new Integer(ColorLib.gray(150));
+		defColor = ColorLib.gray(150);
 		s.setInterpolatedDefault(VisualItem.TEXTCOLOR, defColor);
 
-		Double nan = new Double(Double.NaN);
+		Double nan = Double.NaN;
 		s.addInterpolatedColumn(VisualItem.X2, double.class);
 		s.addInterpolatedColumn(VisualItem.Y2, double.class);
 
