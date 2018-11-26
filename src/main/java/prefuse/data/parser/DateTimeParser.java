@@ -14,21 +14,22 @@ import java.text.DateFormat;
  * @author <a href="http://jheer.org">jeffrey heer</a>
  */
 public class DateTimeParser extends DateParser {
-    
-    /**
-     * Create a new DateTimeParser.
-     */
-    public DateTimeParser() {
-        this(DateFormat.getDateTimeInstance(
-                DateFormat.SHORT, DateFormat.SHORT));
-    }
-    
-    /**
-     * Create a new DateTimeParser.
-     * @param dateFormat the DateFormat instance to use for parsing
-     */
-    public DateTimeParser(DateFormat dateFormat) {
-        super(dateFormat);
-    }
+
+	/**
+	 * Create a new DateTimeParser.
+	 */
+	public DateTimeParser() {
+		this(DateFormat.getDateTimeInstance(
+				DateFormat.SHORT, DateFormat.SHORT));
+	}
+
+	/**
+	 * Create a new DateTimeParser.
+	 *
+	 * @param dateFormat the DateFormat instance to use for parsing
+	 */
+	public DateTimeParser(DateFormat dateFormat) {
+		super(dateFormat);
+	}
 
 } // end of class DateTimeParser

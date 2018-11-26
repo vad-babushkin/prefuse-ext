@@ -9,9 +9,9 @@ package prefuse.data.expression;
  * write a parseable textual expression. The documentation for the
  * {@link prefuse.data.expression.parser.ExpressionParser} class includes
  * a full reference for prefuse's textual expression language.
- * 
+ *
  * @author <a href="http://jheer.org">jeffrey heer</a>
  */
 public interface Predicate extends Expression {
-    
+
 } // end of interface Predicate

@@ -4,6 +4,7 @@ import java.util.Comparator;
 
 /**
  * A do-nothing comparator that simply treats all objects as equal.
+ *
  * @author <a href="http://jheer.org">jeffrey heer</a>
  */
 public class NullComparator implements Comparator {
