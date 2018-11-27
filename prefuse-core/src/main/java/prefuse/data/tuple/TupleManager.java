@@ -152,7 +152,7 @@ public class TupleManager {
 	/**
 	 * Iterator instance for iterating over tuples managed in a TupleManager.
 	 */
-	public class TupleManagerIterator implements Iterator {
+	public static class TupleManagerIterator implements Iterator {
 
 		private TupleManager m_tuples;
 		private IntIterator m_rows;

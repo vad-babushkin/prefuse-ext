@@ -11,7 +11,7 @@ import prefuse.data.expression.ObjectLiteral;
 /**
  * Abstract base class for Expression instances dealing with data groups
  * within a Visualization. Maintains an Expression that serves as the
- * paremter to this Function; this Expression should return a valid
+ * parameter to this Function; this Expression should return a valid
  * group name when evaluated on a given Tuple.
  *
  * @author <a href="http://jheer.org">jeffrey heer</a>

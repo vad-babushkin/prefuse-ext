@@ -266,9 +266,11 @@ public class Schema implements Cloneable {
 
 	/**
 	 * The column index for the column with the given name.
+	 * Note, that using column names involves one-time performance costs to
+	 * build an index.
 	 *
 	 * @param field the column name
-	 * @return the column index
+	 * @return the column index (or -1 if the column name does not exist)
 	 */
 	public int getColumnIndex(String field) {
 		if (m_lookup == null)

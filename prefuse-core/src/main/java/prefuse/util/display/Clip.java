@@ -119,7 +119,7 @@ public class Clip {
 
 	/**
 	 * Indicates if this Clip intersects the given rectangle expanded
-	 * by the additional margin pace.
+	 * by the additional margin space.
 	 *
 	 * @param r      the rectangle to test for intersect
 	 * @param margin additional margin "bleed" to include in the intersection

@@ -89,7 +89,7 @@ public abstract class CompositePredicate extends AbstractPredicate {
 	}
 
 	/**
-	 * Set the given predicate to be the only clause of thie composite.
+	 * Set the given predicate to be the only clause of this composite.
 	 *
 	 * @param p the new sole sub-predicate clause
 	 */
@@ -102,7 +102,7 @@ public abstract class CompositePredicate extends AbstractPredicate {
 	}
 
 	/**
-	 * Set the given predicates to be the clauses of thie composite.
+	 * Set the given predicates to be the clauses of this composite.
 	 *
 	 * @param p the new sub-predicate clauses
 	 */

@@ -28,23 +28,23 @@ import prefuse.visual.VisualItem;
  */
 public class AxisLayout extends Layout {
 
-	private String m_field;
-	private int m_scale = Constants.LINEAR_SCALE;
-	private int m_axis = Constants.X_AXIS;
+	protected String m_field;
+	protected int m_scale = Constants.LINEAR_SCALE;
+	protected int m_axis = Constants.X_AXIS;
 	private int m_type = Constants.UNKNOWN;
 
 	// visible region of the layout (in item coordinates)
 	// if false, the table will be consulted
-	private boolean m_modelSet = false;
-	private ValuedRangeModel m_model = null;
-	private Predicate m_filter = null;
+	protected boolean m_modelSet = false;
+	protected ValuedRangeModel m_model = null;
+	protected Predicate m_filter = null;
 
 	// screen coordinate range
-	private double m_min;
-	private double m_range;
+	protected double m_min;
+	protected double m_range;
 
 	// value range / distribution
-	private double[] m_dist = new double[2];
+	protected double[] m_dist = new double[2];
 
 	/**
 	 * Create a new AxisLayout. Defaults to using the x-axis.
@@ -111,6 +111,21 @@ public class AxisLayout extends Layout {
 	 */
 	public String getDataField() {
 		return m_field;
+	}
+
+	protected boolean isModelSet() {
+		return this.m_modelSet;
+	}
+
+	/**
+	 * Set the range model determining the span of the axis without treating
+	 * this model as user-defined. This method can be used by subclass because
+	 * it does not affect {@link AxisLayout#m_modelSet}.
+	 *
+	 * @param model the range model for the axis.
+	 */
+	protected void setInternalRangeModel(ValuedRangeModel model) {
+		m_model = model;
 	}
 
 	/**
@@ -292,7 +307,7 @@ public class AxisLayout extends Layout {
 	/**
 	 * Set the minimum and maximum pixel values.
 	 */
-	private void setMinMax() {
+	protected void setMinMax() {
 		Rectangle2D b = getLayoutBounds();
 		if (m_axis == Constants.X_AXIS) {
 			m_min = b.getMinX();

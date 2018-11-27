@@ -852,6 +852,7 @@ public class VisualTable extends CascadedTable implements VisualTupleSet {
 	 * Get the current size value of the row. Size values are typically used
 	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
 	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * If the item has two size values, this is along the x-axis.
 	 *
 	 * @param row the table row
 	 * @return the current size value
@@ -861,9 +862,22 @@ public class VisualTable extends CascadedTable implements VisualTupleSet {
 	}
 
 	/**
+	 * Get the current y size value of the row. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 *
+	 * @param row the table row
+	 * @return the current size value
+	 */
+	public double getSizeY(int row) {
+		return getDouble(row, VisualItem.SIZEY);
+	}
+
+	/**
 	 * Set the current size value of the row. Size values are typically used
 	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
 	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * If the item has two size values, this is along the x-axis.
 	 *
 	 * @param row  the table row to set
 	 * @param size the current size value
@@ -873,9 +887,22 @@ public class VisualTable extends CascadedTable implements VisualTupleSet {
 	}
 
 	/**
+	 * Set the current y size value of the row. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 *
+	 * @param row  the table row to set
+	 * @param size the current size value
+	 */
+	public void setSizeY(int row, double size) {
+		setDouble(row, VisualItem.SIZEY, size);
+	}
+
+	/**
 	 * Get the starting size value of the row. Size values are typically used
 	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
 	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * If the item has two size values, this is along the x-axis.
 	 *
 	 * @param row the table row
 	 * @return the starting size value
@@ -885,9 +912,22 @@ public class VisualTable extends CascadedTable implements VisualTupleSet {
 	}
 
 	/**
+	 * Get the starting y size value of the row. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 *
+	 * @param row the table row
+	 * @return the starting size value
+	 */
+	public double getStartSizeY(int row) {
+		return getDouble(row, VisualItem.STARTSIZEY);
+	}
+
+	/**
 	 * Set the starting size value of the row. Size values are typically used
 	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
 	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * If the item has two size values, this is along the x-axis.
 	 *
 	 * @param row  the table row to set
 	 * @param size the starting size value
@@ -897,9 +937,22 @@ public class VisualTable extends CascadedTable implements VisualTupleSet {
 	}
 
 	/**
+	 * Set the starting y size value of the row. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 *
+	 * @param row  the table row to set
+	 * @param size the starting size value
+	 */
+	public void setStartSizeY(int row, double size) {
+		setDouble(row, VisualItem.STARTSIZEY, size);
+	}
+
+	/**
 	 * Get the ending size value of the row. Size values are typically used
 	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
 	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * If the item has two size values, this is along the x-axis.
 	 *
 	 * @param row the table row
 	 * @return the ending size value
@@ -909,15 +962,40 @@ public class VisualTable extends CascadedTable implements VisualTupleSet {
 	}
 
 	/**
+	 * Get the ending y size value of the row. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 *
+	 * @param row the table row
+	 * @return the ending size value
+	 */
+	public double getEndSizeY(int row) {
+		return getDouble(row, VisualItem.ENDSIZEY);
+	}
+
+	/**
 	 * Set the ending size value of the row. Size values are typically used
 	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
 	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * If the item has two size values, this is along the x-axis.
 	 *
 	 * @param row  the table row to set
 	 * @param size the ending size value
 	 */
 	public void setEndSize(int row, double size) {
 		setDouble(row, VisualItem.ENDSIZE, size);
+	}
+
+	/**
+	 * Set the ending y size value of the row. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 *
+	 * @param row  the table row to set
+	 * @param size the ending size value
+	 */
+	public void setEndSizeY(int row, double size) {
+		setDouble(row, VisualItem.ENDSIZEY, size);
 	}
 
 	// ------------------------------------------------------------------------

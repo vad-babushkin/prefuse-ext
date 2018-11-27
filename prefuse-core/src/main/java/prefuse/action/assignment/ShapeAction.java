@@ -102,7 +102,7 @@ public class ShapeAction extends EncoderAction {
 	 * @param shape the shape value
 	 */
 	public void add(Predicate p, int shape) {
-		super.add(p, shape);
+		super.add(p, new Integer(shape));
 	}
 
 	/**

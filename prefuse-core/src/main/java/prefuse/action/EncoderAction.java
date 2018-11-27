@@ -84,7 +84,7 @@ public abstract class EncoderAction extends ItemAction {
 
 	/**
 	 * Add a mapping rule to this EncoderAction. This method is protected,
-	 * subclasses should crate public add methods of their own to enforce
+	 * subclasses should create public add methods of their own to enforce
 	 * their own type constraints.
 	 *
 	 * @param p     the rule Predicate

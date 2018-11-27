@@ -286,6 +286,48 @@ public class PrefuseLib {
 		item.setY(y);
 	}
 
+	/**
+	 * Update the x-size of an item. The current x-size value will become the
+	 * new starting x-size value, while the given value will become the new current
+	 * x-size and ending x-size values. This method also supports an optional referrer
+	 * item, whose x-size coordinate will become the new starting x-size coordinate
+	 * of item if item's current x-size value is NaN.
+	 *
+	 * @param item     the VisualItem to update
+	 * @param referrer an optional referrer VisualItem
+	 * @param xSize    the x-size value to set
+	 */
+	public static void setSizeX(VisualItem item, VisualItem referrer, double xSize) {
+		double sx = item.getSizeX();
+		if (Double.isNaN(sx))
+			sx = (referrer != null ? referrer.getSizeX() : xSize);
+
+		item.setStartSizeX(sx);
+		item.setEndSizeX(xSize);
+		item.setSizeX(xSize);
+	}
+
+	/**
+	 * Update the y-size of an item. The current y-size value will become the
+	 * new starting y-size value, while the given value will become the new current
+	 * y-size and ending y-size values. This method also supports an optional referrer
+	 * item, whose y-size coordinate will become the new starting y-size coordinate
+	 * of item if item's current y-size value is NaN.
+	 *
+	 * @param item     the VisualItem to update
+	 * @param referrer an optional referrer VisualItem
+	 * @param ySize    the y-size value to set
+	 */
+	public static void setSizeY(VisualItem item, VisualItem referrer, double ySize) {
+		double sy = item.getSizeY();
+		if (Double.isNaN(sy))
+			sy = (referrer != null ? referrer.getSizeY() : ySize);
+
+		item.setStartSizeY(sy);
+		item.setEndSizeY(ySize);
+		item.setSizeY(ySize);
+	}
+
 	// ------------------------------------------------------------------------
 	// Group Name Methods
 
@@ -297,7 +339,7 @@ public class PrefuseLib {
 	 * @return true if the group is a nested, or child, group
 	 */
 	public static boolean isChildGroup(String group) {
-		return group.contains(GROUP_DELIMITER);
+		return group.indexOf(GROUP_DELIMITER) != -1;
 	}
 
 	/**
@@ -391,21 +433,22 @@ public class PrefuseLib {
 		s.addColumn(VisualItem.BOUNDS, Rectangle2D.class, new Rectangle2D.Double());
 
 		// color
-		Integer defStroke = ColorLib.rgba(0, 0, 0, 0);
+		Integer defStroke = new Integer(ColorLib.rgba(0, 0, 0, 0));
 		s.addInterpolatedColumn(VisualItem.STROKECOLOR, int.class, defStroke);
 
-		Integer defFill = ColorLib.rgba(0, 0, 0, 0);
+		Integer defFill = new Integer(ColorLib.rgba(0, 0, 0, 0));
 		s.addInterpolatedColumn(VisualItem.FILLCOLOR, int.class, defFill);
 
-		Integer defTextColor = ColorLib.rgba(0, 0, 0, 0);
+		Integer defTextColor = new Integer(ColorLib.rgba(0, 0, 0, 0));
 		s.addInterpolatedColumn(VisualItem.TEXTCOLOR, int.class, defTextColor);
 
 		// size
-		s.addInterpolatedColumn(VisualItem.SIZE, double.class, 1d);
+		s.addInterpolatedColumn(VisualItem.SIZE, double.class, new Double(1));
+		s.addInterpolatedColumn(VisualItem.SIZEY, double.class, new Double(Double.NaN));
 
 		// shape
 		s.addColumn(VisualItem.SHAPE, int.class,
-				Constants.SHAPE_RECTANGLE);
+				new Integer(Constants.SHAPE_RECTANGLE));
 
 		// stroke
 		s.addColumn(VisualItem.STROKE, Stroke.class, new BasicStroke());
@@ -415,7 +458,7 @@ public class PrefuseLib {
 		s.addInterpolatedColumn(VisualItem.FONT, Font.class, defFont);
 
 		// degree-of-interest
-		s.addColumn(VisualItem.DOI, double.class, Double.MIN_VALUE);
+		s.addColumn(VisualItem.DOI, double.class, new Double(Double.MIN_VALUE));
 
 		return s;
 	}
@@ -456,13 +499,13 @@ public class PrefuseLib {
 
 		s.setDefault(VisualItem.STARTVISIBLE, Boolean.FALSE);
 
-		Integer defColor = ColorLib.gray(230);
+		Integer defColor = new Integer(ColorLib.gray(230));
 		s.setInterpolatedDefault(VisualItem.STROKECOLOR, defColor);
 
-		defColor = ColorLib.gray(150);
+		defColor = new Integer(ColorLib.gray(150));
 		s.setInterpolatedDefault(VisualItem.TEXTCOLOR, defColor);
 
-		Double nan = Double.NaN;
+		Double nan = new Double(Double.NaN);
 		s.addInterpolatedColumn(VisualItem.X2, double.class);
 		s.addInterpolatedColumn(VisualItem.Y2, double.class);
 

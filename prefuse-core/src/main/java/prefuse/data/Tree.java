@@ -29,7 +29,7 @@ import prefuse.util.collections.IntIterator;
  * <p>
  * <p>By default, the {@link #getSpanningTree()} method simply returns a
  * reference to this Tree instance. However, if a spanning tree is created at a
- * new root u sing the {@link #getSpanningTree(Node)} method, a new
+ * new root using the {@link #getSpanningTree(Node)} method, a new
  * {@link SpanningTree} instance is generated.</p>
  *
  * @author <a href="http://jheer.org">jeffrey heer</a>

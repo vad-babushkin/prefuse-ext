@@ -21,7 +21,7 @@ import prefuse.util.collections.IntIterator;
 /**
  * Factory class that creates optimized filter iterators. When possible,
  * this factory will attempt to create an optimized query plan by using
- * available indexes, in many incrasing performance by only visiting
+ * available indexes, in many cases increasing performance by only visiting
  * the tuples which will pass the filter condition.
  *
  * @author <a href="http://jheer.org">jeffrey heer</a>
@@ -213,7 +213,7 @@ public class FilterIteratorFactory {
 		if (index == null || !cmp.equals(index.getComparator()))
 			return null;
 
-		Class ltype = lit.getClass();
+		Class ltype = t.getColumnType(col.getColumnName());
 		if (ltype == int.class) {
 			int val = lit.getInt(null); // literal value, so null is safe
 			switch (operation) {

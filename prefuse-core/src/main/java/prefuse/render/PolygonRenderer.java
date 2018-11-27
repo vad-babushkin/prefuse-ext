@@ -12,7 +12,7 @@ import prefuse.visual.VisualItem;
 /**
  * <p>Renderer for drawing a polygon, either as a closed shape, or as a
  * series of potentially unclosed curves. VisualItems must have a data field
- * containing an array of floats that tores the polyon. A {@link Float#NaN}
+ * containing an array of floats that stores the polygon. A {@link Float#NaN}
  * value can be used to mark the end point of the polygon for float arrays
  * larger than their contained points. By default, this renderer will
  * create closed paths, joining the first and last points in the point

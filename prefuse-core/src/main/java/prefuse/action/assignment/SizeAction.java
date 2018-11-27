@@ -2,6 +2,7 @@ package prefuse.action.assignment;
 
 import java.util.logging.Logger;
 
+import prefuse.Constants;
 import prefuse.action.EncoderAction;
 import prefuse.data.expression.Predicate;
 import prefuse.data.expression.parser.ExpressionParser;
@@ -35,6 +36,8 @@ public class SizeAction extends EncoderAction {
 
 	protected double m_defaultSize = 1.0;
 
+	private int m_axis = Constants.X_AXIS;
+
 	/**
 	 * Constructor. A default size value of 1.0 will be used.
 	 */
@@ -63,6 +66,20 @@ public class SizeAction extends EncoderAction {
 	}
 
 	/**
+	 * Constructor which specified a default size value and an axis.
+	 *
+	 * @param group the data group processed by this Action.
+	 * @param size  the default size to use
+	 * @param axis  the axis type, either {@link prefuse.Constants#X_AXIS} or
+	 *              {@link prefuse.Constants#Y_AXIS}.
+	 */
+	public SizeAction(String group, double size, int axis) {
+		super(group);
+		m_defaultSize = size;
+		m_axis = axis;
+	}
+
+	/**
 	 * Returns the default size value assigned to items.
 	 *
 	 * @return the default size value
@@ -82,6 +99,30 @@ public class SizeAction extends EncoderAction {
 	}
 
 	/**
+	 * Return the axis type of this action, either
+	 * {@link prefuse.Constants#X_AXIS} or {@link prefuse.Constants#Y_AXIS}.
+	 *
+	 * @return the axis type of this action.
+	 */
+	public int getAxis() {
+		return m_axis;
+	}
+
+	/**
+	 * Set the axis type of this action.
+	 *
+	 * @param axis the axis type to use for this action, either
+	 *             {@link prefuse.Constants#X_AXIS} or
+	 *             {@link prefuse.Constants#Y_AXIS}.
+	 */
+	public void setAxis(int axis) {
+		if (axis < 0 || axis >= Constants.AXIS_COUNT)
+			throw new IllegalArgumentException("Unrecognized axis value: "
+					+ axis);
+		m_axis = axis;
+	}
+
+	/**
 	 * Add a size mapping rule to this SizeAction. VisualItems that match
 	 * the provided predicate will be assigned the given size value (assuming
 	 * they do not match an earlier rule).
@@ -90,7 +131,7 @@ public class SizeAction extends EncoderAction {
 	 * @param size the size value
 	 */
 	public void add(Predicate p, double size) {
-		super.add(p, size);
+		super.add(p, new Double(size));
 	}
 
 	/**
@@ -144,10 +185,18 @@ public class SizeAction extends EncoderAction {
 	 */
 	public void process(VisualItem item, double frac) {
 		double size = getSize(item);
-		double old = item.getSize();
-		item.setStartSize(old);
-		item.setEndSize(size);
-		item.setSize(size);
+
+		if (m_axis == Constants.X_AXIS) {
+			double old = item.getSize();
+			item.setStartSize(old);
+			item.setEndSize(size);
+			item.setSize(size);
+		} else {
+			double old = item.getSizeY();
+			item.setStartSizeY(old);
+			item.setEndSizeY(size);
+			item.setSizeY(size);
+		}
 	}
 
 	/**

@@ -395,7 +395,7 @@ public class DataLib {
 				t = ArrayLib.resize(t, 3 * t.length / 2);
 			t[i] = (Tuple) tuples.next();
 		}
-		t = ArrayLib.trim(t, i);
+		ArrayLib.trim(t, i);
 
 		Object[] v = new Object[t.length];
 		int[] idx = new int[t.length];

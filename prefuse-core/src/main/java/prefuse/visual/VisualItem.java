@@ -643,6 +643,8 @@ public interface VisualItem extends Tuple {
 	 * Get the current size value of the item. Size values are typically used
 	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
 	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the original size value which is equivalent to the size on the
+	 * x-axis of newer code.
 	 *
 	 * @return the current size value
 	 * @see #SIZE
@@ -650,9 +652,34 @@ public interface VisualItem extends Tuple {
 	public double getSize();
 
 	/**
+	 * Get the current size value of the item. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the new size value part along the x-axis, equivalent to the
+	 * classic size value.
+	 *
+	 * @return the current sizeX value
+	 * @see #SIZE
+	 */
+	public double getSizeX();
+
+	/**
+	 * Get the current size value of the item. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the new size value part along the y-axis.
+	 *
+	 * @return the current sizeY value
+	 * @see #SIZEY
+	 */
+	public double getSizeY();
+
+	/**
 	 * Set the current size value of the item. Size values are typically used
 	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
 	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the original size value which is equivalent to the size on the
+	 * x-axis of newer code.
 	 *
 	 * @param size the current size value
 	 * @see #SIZE
@@ -660,9 +687,34 @@ public interface VisualItem extends Tuple {
 	public void setSize(double size);
 
 	/**
+	 * Set the current size value of the item. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the new size value part along the x-axis, equivalent to the
+	 * classic size value.
+	 *
+	 * @param size the current sizeX value
+	 * @see #SIZE
+	 */
+	public void setSizeX(double size);
+
+	/**
+	 * Set the current size value of the item. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the new size value part along the y-axis.
+	 *
+	 * @param size the current sizeY value
+	 * @see #SIZEY
+	 */
+	public void setSizeY(double size);
+
+	/**
 	 * Get the starting size value of the item. Size values are typically used
 	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
 	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the original size value which is equivalent to the size on the
+	 * x-axis of newer code.
 	 *
 	 * @return the starting size value
 	 * @see #STARTSIZE
@@ -670,19 +722,69 @@ public interface VisualItem extends Tuple {
 	public double getStartSize();
 
 	/**
+	 * Get the starting size value of the item. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the new size value part along the x-axis, equivalent to the
+	 * classic size value.
+	 *
+	 * @return the starting sizeX value
+	 * @see #STARTSIZE
+	 */
+	public double getStartSizeX();
+
+	/**
+	 * Get the starting size value of the item. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the new size value part along the y-axis.
+	 *
+	 * @return the starting sizeY value
+	 * @see #STARTSIZE
+	 */
+	public double getStartSizeY();
+
+	/**
 	 * Set the starting size value of the item. Size values are typically used
 	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
 	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the original size value which is equivalent to the size on the
+	 * x-axis of newer code.
 	 *
 	 * @param size the starting size value
-	 * @see #STARTSIZE
+	 * @see #STARTSIZEY
 	 */
 	public void setStartSize(double size);
+
+	/**
+	 * Set the starting size value of the item. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the new size value part along the x-axis, equivalent to the
+	 * classic size value.
+	 *
+	 * @param size the starting sizeX value
+	 * @see #STARTSIZE
+	 */
+	public void setStartSizeX(double size);
+
+	/**
+	 * Set the starting size value of the item. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the new size value part along the y-axis.
+	 *
+	 * @param size the starting sizeY value
+	 * @see #STARTSIZEY
+	 */
+	public void setStartSizeY(double size);
 
 	/**
 	 * Get the ending size value of the item. Size values are typically used
 	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
 	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the original size value which is equivalent to the size on the
+	 * x-axis of newer code.
 	 *
 	 * @return the ending size value
 	 * @see #ENDSIZE
@@ -690,14 +792,62 @@ public interface VisualItem extends Tuple {
 	public double getEndSize();
 
 	/**
+	 * Get the ending size value of the item. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the new size value part along the x-axis, equivalent to the
+	 * classic size value.
+	 *
+	 * @return the ending sizeX value
+	 * @see #ENDSIZE
+	 */
+	public double getEndSizeX();
+
+	/**
+	 * Get the ending size value of the item. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the new size value part along the y-axis.
+	 *
+	 * @return the ending sizeY value
+	 * @see #ENDSIZEY
+	 */
+	public double getEndSizeY();
+
+	/**
 	 * Set the ending size value of the item. Size values are typically used
 	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
 	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the original size value which is equivalent to the size on the
+	 * x-axis of newer code.
 	 *
 	 * @param size the ending size value
 	 * @see #ENDSIZE
 	 */
 	public void setEndSize(double size);
+
+	/**
+	 * Set the ending size value of the item. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the new size value part along the x-axis, equivalent to the
+	 * classic size value.
+	 *
+	 * @param size the ending sizeX value
+	 * @see #ENDSIZE
+	 */
+	public void setEndSizeX(double size);
+
+	/**
+	 * Set the ending size value of the item. Size values are typically used
+	 * to scale an item, either in one-dimension (e.g., a bar chart length) or
+	 * two-dimensions (e.g., using pixel area to encode a quantitative value).
+	 * This is the new size value part along the y-axis.
+	 *
+	 * @param size the ending sizeY value
+	 * @see #ENDSIZEY
+	 */
+	public void setEndSizeY(double size);
 
 	// ------------------------------------------------------------------------
 
@@ -955,15 +1105,30 @@ public interface VisualItem extends Tuple {
 	public static final String SIZE
 			= PrefuseLib.FIELD_PREFIX + "size";
 	/**
+	 * The sizeY data field
+	 */
+	public static final String SIZEY
+			= PrefuseLib.FIELD_PREFIX + "sizeY";
+	/**
 	 * The start size data field
 	 */
 	public static final String STARTSIZE
 			= PrefuseLib.getStartField(SIZE);
 	/**
+	 * The start size data field
+	 */
+	public static final String STARTSIZEY
+			= PrefuseLib.getStartField(SIZEY);
+	/**
 	 * The end size data field
 	 */
 	public static final String ENDSIZE
 			= PrefuseLib.getEndField(SIZE);
+	/**
+	 * The end size data field
+	 */
+	public static final String ENDSIZEY
+			= PrefuseLib.getEndField(SIZEY);
 	/**
 	 * The shape data field
 	 */

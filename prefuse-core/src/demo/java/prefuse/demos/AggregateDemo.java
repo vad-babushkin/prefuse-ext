@@ -146,7 +146,8 @@ public class AggregateDemo extends Display {
 		// add visual data groups
 		VisualGraph vg = m_vis.addGraph(GRAPH, g);
 		m_vis.setInteractive(EDGES, null, false);
-		m_vis.setValue(NODES, null, VisualItem.SHAPE, Constants.SHAPE_ELLIPSE);
+		m_vis.setValue(NODES, null, VisualItem.SHAPE,
+				new Integer(Constants.SHAPE_ELLIPSE));
 
 		AggregateTable at = m_vis.addAggregates(AGGR);
 		at.addColumn(VisualItem.POLYGON, float[].class);

@@ -197,7 +197,11 @@ public class DefaultSQLDataHandler implements SQLDataHandler {
 
 			case Types.DECIMAL:
 			case Types.NUMERIC:
-				return BigDecimal.class;
+				/*
+				 * ikeCodeChanged - TTuric
+				 * prefuse.data.DataTypeException: Type double not supported.
+				 */
+				// return BigDecimal.class;
 
 			case Types.DOUBLE:
 			case Types.FLOAT:
