@@ -213,7 +213,7 @@ public class FilterIteratorFactory {
 		if (index == null || !cmp.equals(index.getComparator()))
 			return null;
 
-		Class ltype = lit.getClass();
+		Class ltype = t.getColumnType(col.getColumnName());
 		if (ltype == int.class) {
 			int val = lit.getInt(null); // literal value, so null is safe
 			switch (operation) {

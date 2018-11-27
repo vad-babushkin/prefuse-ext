@@ -16,11 +16,11 @@ import prefuse.data.tuple.TableNode;
  * methods to access these nodes (e.g., {@link ParentChildNode#getLastChild()}) and
  * throws exceptions in methods that do not make sense here (e.g.,
  * {@link #getNextSibling()}).
- * 
+ * <p>
  * <p>
  * Note that edges are directed from child to parent, which is opposite from
  * {@link Tree} nodes.
- * 
+ *
  * @author Rind
  */
 public class ParentChildNode extends TableNode {
@@ -32,56 +32,55 @@ public class ParentChildNode extends TableNode {
 	// Consumers for this data which have to be considered are:
 	// CyclePlotlineAction
 	// OverlayDataColorAction
-    public static final String DEPTH = "depth";	// AR/TL TODO think about mainlining ASAP 
-	
-    @Override
-    public ParentChildGraph getGraph() {
-        return (ParentChildGraph) super.getGraph();
-    }
+	public static final String DEPTH = "depth";    // AR/TL TODO think about mainlining ASAP
 
-    // ----- child methods -----
+	@Override
+	public ParentChildGraph getGraph() {
+		return (ParentChildGraph) super.getGraph();
+	}
 
-    @Override
-    public int getChildCount() {
-        return super.m_graph.getInDegree(this);
-    }
+	// ----- child methods -----
 
-    @Override
-    public ParentChildNode getChild(int idx) {
-        int c = getGraph().getChildRow(m_row, idx);
-        return (ParentChildNode) (c < 0 ? null : m_graph.getNode(c));
-    }
+	@Override
+	public int getChildCount() {
+		return super.m_graph.getInDegree(this);
+	}
 
-    @Override
-    public ParentChildNode getFirstChild() {
-        return getChild(0);
-    }
+	@Override
+	public ParentChildNode getChild(int idx) {
+		int c = getGraph().getChildRow(m_row, idx);
+		return (ParentChildNode) (c < 0 ? null : m_graph.getNode(c));
+	}
 
-    @Override
-    public ParentChildNode getLastChild() {
-        return getChild(getChildCount() - 1);
-    }
+	@Override
+	public ParentChildNode getFirstChild() {
+		return getChild(0);
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Iterator<? extends ParentChildNode> children() {
-        return super.inNeighbors();
-    }
+	@Override
+	public ParentChildNode getLastChild() {
+		return getChild(getChildCount() - 1);
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Iterator<? extends Edge> childEdges() {
-        return super.inEdges();
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public Iterator<? extends ParentChildNode> children() {
+		return super.inNeighbors();
+	}
 
-    /**
-     * Links a node as child to this node.
-     * 
-     * @param child
-     *            The node that will be added as child.
-     * @return the edge that was added between the two nodes
-     */
-    public Edge linkWithChild(ParentChildNode child) {
+	@SuppressWarnings("unchecked")
+	@Override
+	public Iterator<? extends Edge> childEdges() {
+		return super.inEdges();
+	}
+
+	/**
+	 * Links a node as child to this node.
+	 *
+	 * @param child The node that will be added as child.
+	 * @return the edge that was added between the two nodes
+	 */
+	public Edge linkWithChild(ParentChildNode child) {
 //        if (Logger.getLogger(this.getClass()).isTraceEnabled()) {
 //            Logger.getLogger(this.getClass()).trace(
 //                    "link with child: " + this.getRow() + " <- "
@@ -91,51 +90,50 @@ public class ParentChildNode extends TableNode {
 //                            + super.m_graph.getNodeCount());
 //        }
 
-        return super.m_graph.addEdge(child, this);
-    }
+		return super.m_graph.addEdge(child, this);
+	}
 
-    // ----- parent methods -----
+	// ----- parent methods -----
 
-    /**
-     * Gets the number of parent nodes
-     * 
-     * @return the number of parent nodes
-     */
-    public int getParentCount() {
-        return super.m_graph.getOutDegree(this);
-    }
+	/**
+	 * Gets the number of parent nodes
+	 *
+	 * @return the number of parent nodes
+	 */
+	public int getParentCount() {
+		return super.m_graph.getOutDegree(this);
+	}
 
-    public ParentChildNode getParent(int idx) {
-        int c = getGraph().getParentRow(m_row, idx);
-        return (ParentChildNode) (c < 0 ? null : m_graph.getNode(c));
-    }
+	public ParentChildNode getParent(int idx) {
+		int c = getGraph().getParentRow(m_row, idx);
+		return (ParentChildNode) (c < 0 ? null : m_graph.getNode(c));
+	}
 
-    public ParentChildNode getFirstParent() {
-        return getParent(0);
-    }
+	public ParentChildNode getFirstParent() {
+		return getParent(0);
+	}
 
-    public ParentChildNode getLastParent() {
-        return getParent(getParentCount() - 1);
-    }
+	public ParentChildNode getLastParent() {
+		return getParent(getParentCount() - 1);
+	}
 
-    @SuppressWarnings("unchecked")
-    public Iterator<? extends ParentChildNode> parents() {
-        return super.outNeighbors();
-    }
+	@SuppressWarnings("unchecked")
+	public Iterator<? extends ParentChildNode> parents() {
+		return super.outNeighbors();
+	}
 
-    @SuppressWarnings("unchecked")
-    public Iterator<? extends Edge> parentEdges() {
-        return super.outEdges();
-    }
+	@SuppressWarnings("unchecked")
+	public Iterator<? extends Edge> parentEdges() {
+		return super.outEdges();
+	}
 
-    /**
-     * Links a node as parent to this node.
-     * 
-     * @param parent
-     *            The node that will be added as parent.
-     * @return the edge that was added between the two nodes
-     */
-    public Edge linkWithParent(ParentChildNode parent) {
+	/**
+	 * Links a node as parent to this node.
+	 *
+	 * @param parent The node that will be added as parent.
+	 * @return the edge that was added between the two nodes
+	 */
+	public Edge linkWithParent(ParentChildNode parent) {
 //        if (Logger.getLogger(this.getClass()).isTraceEnabled()) {
 //            Logger.getLogger(this.getClass()).trace(
 //                    "link with parent: " + this.getRow() + " -> "
@@ -145,38 +143,38 @@ public class ParentChildNode extends TableNode {
 //                            + super.m_graph.getNodeCount());
 //        }
 
-        return super.m_graph.addEdge(this, parent);
-    }
+		return super.m_graph.addEdge(this, parent);
+	}
 
-    // ----- methods that do not make sense -----
+	// ----- methods that do not make sense -----
 
-    @Override
-    public Node getParent() {
-        throw new UnsupportedOperationException();
-        // return super.getParent();
-    }
+	@Override
+	public Node getParent() {
+		throw new UnsupportedOperationException();
+		// return super.getParent();
+	}
 
-    @Override
-    public Edge getParentEdge() {
-        throw new UnsupportedOperationException();
-        // return super.getParentEdge();
-    }
+	@Override
+	public Edge getParentEdge() {
+		throw new UnsupportedOperationException();
+		// return super.getParentEdge();
+	}
 
-    @Override
-    public int getChildIndex(Node child) {
-        throw new UnsupportedOperationException();
-        // return super.getChildIndex(child);
-    }
+	@Override
+	public int getChildIndex(Node child) {
+		throw new UnsupportedOperationException();
+		// return super.getChildIndex(child);
+	}
 
-    @Override
-    public Node getPreviousSibling() {
-        throw new UnsupportedOperationException();
-        // return super.getPreviousSibling();
-    }
+	@Override
+	public Node getPreviousSibling() {
+		throw new UnsupportedOperationException();
+		// return super.getPreviousSibling();
+	}
 
-    @Override
-    public Node getNextSibling() {
-        throw new UnsupportedOperationException();
-        // return super.getNextSibling();
-    }
+	@Override
+	public Node getNextSibling() {
+		throw new UnsupportedOperationException();
+		// return super.getNextSibling();
+	}
 }

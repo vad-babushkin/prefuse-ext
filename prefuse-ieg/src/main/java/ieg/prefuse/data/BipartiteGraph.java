@@ -18,84 +18,117 @@ import prefuse.util.collections.IntIterator;
 
 /**
  * A bipartite-graph implemented in analogy to {@link Graph}.
- * 
+ * <p>
  * <p> Storage
- * It maintain two node tables stored as tuple sets under the names 
+ * It maintain two node tables stored as tuple sets under the names
  * {@link BipartiteGraph#NODES_1} and {@link BipartiteGraph#NODES_2},
  * as well as an edges-table which stores edges from the first to the second table.
  * Additionally, for performance reasons, it stores the outgoing links from the first set
- * in adjacency lists (which store the row index of the target nodes), and the incoming 
+ * in adjacency lists (which store the row index of the target nodes), and the incoming
  * links in the same way (where the adjacency lists store the source nodes).
- * 
+ * <p>
  * <p> Graph specification
  * While the graph is implemented as directed (edge source always from the first tuple set
  * and edge target always to the second tuple set), but conceptually it is treated as undirected.
  * Multiple edges are supported.
- * 
+ *
  * @author bilal
  */
 public class BipartiteGraph extends CompositeTupleSet {
 
 	public static interface BipartiteGraphListener {
-	    /**
-	     * Notification that a graph has changed.
-	     * @param g the graph that has changed
-	     * @param table the particular table within the graph that has changed
-	     * @param start the starting row index of the changed table region
-	     * @param end the ending row index of the changed table region
-	     * @param col the column that has changed, or
-	     * {@link EventConstants#ALL_COLUMNS} if the operation affects all
-	     * columns
-	     * @param type the type of modification, one of
-	     * {@link EventConstants#INSERT}, {@link EventConstants#DELETE}, or
-	     * {@link EventConstants#UPDATE}.
-	     */
-	    public void graphChanged(BipartiteGraph g, String table, 
-	            int start, int end, int col, int type);
-	    
+		/**
+		 * Notification that a graph has changed.
+		 *
+		 * @param g     the graph that has changed
+		 * @param table the particular table within the graph that has changed
+		 * @param start the starting row index of the changed table region
+		 * @param end   the ending row index of the changed table region
+		 * @param col   the column that has changed, or
+		 *              {@link EventConstants#ALL_COLUMNS} if the operation affects all
+		 *              columns
+		 * @param type  the type of modification, one of
+		 *              {@link EventConstants#INSERT}, {@link EventConstants#DELETE}, or
+		 *              {@link EventConstants#UPDATE}.
+		 */
+		public void graphChanged(BipartiteGraph g, String table,
+		                         int start, int end, int col, int type);
+
 
 	}
-	
-	/** Default data field used to uniquely identify a node */
+
+	/**
+	 * Default data field used to uniquely identify a node
+	 */
 	public static final String DEFAULT_NODE_KEY = PrefuseConfig
 			.get("data.graph.nodeKey");
-	/** Default data field used to denote the source node in an edge table */
+	/**
+	 * Default data field used to denote the source node in an edge table
+	 */
 	public static final String DEFAULT_SOURCE_KEY = PrefuseConfig
 			.get("data.graph.sourceKey");
-	/** Default data field used to denote the target node in an edge table */
+	/**
+	 * Default data field used to denote the target node in an edge table
+	 */
 	public static final String DEFAULT_TARGET_KEY = PrefuseConfig
 			.get("data.graph.targetKey");
-	/** Data group name to identify the nodes of this graph */
+	/**
+	 * Data group name to identify the nodes of this graph
+	 */
 	public static final String NODES_1 = "data.graph.nodeGroup1";
 	public static final String NODES_2 = "data.graph.nodeGroup2";
-	/** Data group name to identify the edges of this graph */
+	/**
+	 * Data group name to identify the edges of this graph
+	 */
 	public static final String EDGES = PrefuseConfig
 			.get("data.graph.edgeGroup");
 
 	// -- auxiliary data structures -----
 
-	/** Table containing the adjacency lists for the graph */
+	/**
+	 * Table containing the adjacency lists for the graph
+	 */
 	protected Table m_links1;
 	protected Table m_links2;
-	/** The node key field (for the first Node table) */
+	/**
+	 * The node key field (for the first Node table)
+	 */
 	protected String m_n1key;
-	/** The node key field (for the second Node table) */
+	/**
+	 * The node key field (for the second Node table)
+	 */
 	protected String m_n2key;
-	/** The source node key field (for the Edge table) */
+	/**
+	 * The source node key field (for the Edge table)
+	 */
 	protected String m_skey;
-	/** The target node key field (for the Edge table) */
+	/**
+	 * The target node key field (for the Edge table)
+	 */
 	protected String m_tkey;
-	/** Reference to an index over the node key field in first Node table */
+	/**
+	 * Reference to an index over the node key field in first Node table
+	 */
 	protected Index m_n1idx;
-	/** Reference to an index over the node key field  in second Node table */
+	/**
+	 * Reference to an index over the node key field  in second Node table
+	 */
 	protected Index m_n2idx;
-	/** Indicates if the key values are of type long */
+	/**
+	 * Indicates if the key values are of type long
+	 */
 	protected boolean m_longKey1 = false;
-	/** Indicates if the key values are of type long */
+	/**
+	 * Indicates if the key values are of type long
+	 */
 	protected boolean m_longKey2 = false;
-	/** Update listener */
+	/**
+	 * Update listener
+	 */
 	private Listener m_listener;
-	/** Listener list */
+	/**
+	 * Listener list
+	 */
 	private CopyOnWriteArrayList m_listeners = new CopyOnWriteArrayList();
 
 	// ------------------------------------------------------------------------
@@ -111,12 +144,10 @@ public class BipartiteGraph extends CompositeTupleSet {
 	/**
 	 * Create a new Graph using the provided table of node data and an empty set
 	 * of edges.
-	 * 
-	 * @param nodes
-	 *            the backing table to use for node data. Node instances of this
-	 *            graph will get their data from this table.
-	 * @param directed
-	 *            true for directed edges, false for undirected
+	 *
+	 * @param nodes    the backing table to use for node data. Node instances of this
+	 *                 graph will get their data from this table.
+	 * @param directed true for directed edges, false for undirected
 	 */
 	public BipartiteGraph(Table nodes1, Table nodes2) {
 		this(nodes1, nodes2, DEFAULT_NODE_KEY, DEFAULT_NODE_KEY,
@@ -126,22 +157,17 @@ public class BipartiteGraph extends CompositeTupleSet {
 	/**
 	 * Create a new Graph using the provided table of node data and an empty set
 	 * of edges.
-	 * 
-	 * @param nodes
-	 *            the backing table to use for node data. Node instances of this
-	 *            graph will get their data from this table.
-	 * @param directed
-	 *            true for directed edges, false for undirected
-	 * @param nodeKey
-	 *            data field used to uniquely identify a node. If this field is
-	 *            null, the node table row numbers will be used
-	 * @param sourceKey
-	 *            data field used to denote the source node in an edge table
-	 * @param targetKey
-	 *            data field used to denote the target node in an edge table
+	 *
+	 * @param nodes     the backing table to use for node data. Node instances of this
+	 *                  graph will get their data from this table.
+	 * @param directed  true for directed edges, false for undirected
+	 * @param nodeKey   data field used to uniquely identify a node. If this field is
+	 *                  null, the node table row numbers will be used
+	 * @param sourceKey data field used to denote the source node in an edge table
+	 * @param targetKey data field used to denote the target node in an edge table
 	 */
 	public BipartiteGraph(Table nodes1, Table nodes2, String node1Key,
-			String node2Key, String sourceKey, String targetKey) {
+	                      String node2Key, String sourceKey, String targetKey) {
 		Table edges = new Table();
 		edges.addColumn(sourceKey, int.class, new Integer(-1));
 		edges.addColumn(targetKey, int.class, new Integer(-1));
@@ -151,15 +177,12 @@ public class BipartiteGraph extends CompositeTupleSet {
 	/**
 	 * Create a new Graph, using node table row numbers to uniquely identify
 	 * nodes in the edge table's source and target fields.
-	 * 
-	 * @param nodes
-	 *            the backing table to use for node data. Node instances of this
-	 *            graph will get their data from this table.
-	 * @param edges
-	 *            the backing table to use for edge data. Edge instances of this
-	 *            graph will get their data from this table.
-	 * @param directed
-	 *            true for directed edges, false for undirected
+	 *
+	 * @param nodes    the backing table to use for node data. Node instances of this
+	 *                 graph will get their data from this table.
+	 * @param edges    the backing table to use for edge data. Edge instances of this
+	 *                 graph will get their data from this table.
+	 * @param directed true for directed edges, false for undirected
 	 */
 	public BipartiteGraph(Table nodes1, Table nodes2, Table edges) {
 		this(nodes1, nodes2, edges, DEFAULT_NODE_KEY, DEFAULT_NODE_KEY,
@@ -169,47 +192,36 @@ public class BipartiteGraph extends CompositeTupleSet {
 	/**
 	 * Create a new Graph, using node table row numbers to uniquely identify
 	 * nodes in the edge table's source and target fields.
-	 * 
-	 * @param nodes
-	 *            the backing table to use for node data. Node instances of this
-	 *            graph will get their data from this table.
-	 * @param edges
-	 *            the backing table to use for edge data. Edge instances of this
-	 *            graph will get their data from this table.
-	 * @param directed
-	 *            true for directed edges, false for undirected
-	 * @param sourceKey
-	 *            data field used to denote the source node in an edge table
-	 * @param targetKey
-	 *            data field used to denote the target node in an edge table
+	 *
+	 * @param nodes     the backing table to use for node data. Node instances of this
+	 *                  graph will get their data from this table.
+	 * @param edges     the backing table to use for edge data. Edge instances of this
+	 *                  graph will get their data from this table.
+	 * @param directed  true for directed edges, false for undirected
+	 * @param sourceKey data field used to denote the source node in an edge table
+	 * @param targetKey data field used to denote the target node in an edge table
 	 */
 	public BipartiteGraph(Table nodes1, Table nodes2, Table edges,
-			String sourceKey, String targetKey) {
+	                      String sourceKey, String targetKey) {
 		init(nodes1, nodes2, edges, DEFAULT_NODE_KEY, DEFAULT_NODE_KEY,
 				sourceKey, targetKey);
 	}
 
 	/**
 	 * Create a new Graph.
-	 * 
-	 * @param nodes
-	 *            the backing table to use for node data. Node instances of this
-	 *            graph will get their data from this table.
-	 * @param edges
-	 *            the backing table to use for edge data. Edge instances of this
-	 *            graph will get their data from this table.
-	 * @param directed
-	 *            true for directed edges, false for undirected
-	 * @param nodeKey
-	 *            data field used to uniquely identify a node. If this field is
-	 *            null, the node table row numbers will be used
-	 * @param sourceKey
-	 *            data field used to denote the source node in an edge table
-	 * @param targetKey
-	 *            data field used to denote the target node in an edge table
+	 *
+	 * @param nodes     the backing table to use for node data. Node instances of this
+	 *                  graph will get their data from this table.
+	 * @param edges     the backing table to use for edge data. Edge instances of this
+	 *                  graph will get their data from this table.
+	 * @param directed  true for directed edges, false for undirected
+	 * @param nodeKey   data field used to uniquely identify a node. If this field is
+	 *                  null, the node table row numbers will be used
+	 * @param sourceKey data field used to denote the source node in an edge table
+	 * @param targetKey data field used to denote the target node in an edge table
 	 */
 	public BipartiteGraph(Table nodes1, Table nodes2, Table edges,
-			String node1Key, String node2Key, String sourceKey, String targetKey) {
+	                      String node1Key, String node2Key, String sourceKey, String targetKey) {
 		init(nodes1, nodes2, edges, node1Key, node2Key, sourceKey, targetKey);
 	}
 
@@ -218,27 +230,21 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Initialize this Graph instance.
-	 * 
-	 * @param nodes
-	 *            the node table
-	 * @param edges
-	 *            the edge table
-	 * @param directed
-	 *            the edge directionality
-	 * @param nodeKey
-	 *            data field used to uniquely identify a node
-	 * @param sourceKey
-	 *            data field used to denote the source node in an edge table
-	 * @param targetKey
-	 *            data field used to denote the target node in an edge table
+	 *
+	 * @param nodes     the node table
+	 * @param edges     the edge table
+	 * @param directed  the edge directionality
+	 * @param nodeKey   data field used to uniquely identify a node
+	 * @param sourceKey data field used to denote the source node in an edge table
+	 * @param targetKey data field used to denote the target node in an edge table
 	 */
 	protected void init(Table nodes1, Table nodes2, Table edges,
-			String node1Key, String node2Key, String sourceKey, String targetKey) {
+	                    String node1Key, String node2Key, String sourceKey, String targetKey) {
 		// sanity check
 		if ((node1Key != null && !TypeLib.isIntegerType(nodes1
 				.getColumnType(node1Key)))
 				|| (node2Key != null && !TypeLib.isIntegerType(nodes2
-						.getColumnType(node2Key)))
+				.getColumnType(node2Key)))
 				|| !TypeLib.isIntegerType(edges.getColumnType(sourceKey))
 				|| !TypeLib.isIntegerType(edges.getColumnType(targetKey))) {
 			throw new IllegalArgumentException(
@@ -256,12 +262,12 @@ public class BipartiteGraph extends CompositeTupleSet {
 		m_n2key = node2Key;
 		m_skey = sourceKey;
 		m_tkey = targetKey;
-		
-        // set a tuple manager for the edge table 
+
+		// set a tuple manager for the edge table
 		// so that its tuples are instances of BipartiteEdge
-        this.getEdgeTable().setTupleManager(
-                new BipartiteEdgeManager(this.getEdgeTable(), this,
-                        BipartiteEdge.class));
+		this.getEdgeTable().setTupleManager(
+				new BipartiteEdgeManager(this.getEdgeTable(), this,
+						BipartiteEdge.class));
 
 		// set up indices
 		if (node1Key != null) {
@@ -305,13 +311,12 @@ public class BipartiteGraph extends CompositeTupleSet {
 	/**
 	 * Updates this graph to use a different edge structure for the same nodes.
 	 * All other settings will remain the same (e.g., directionality, keys)
-	 * 
-	 * @param edges
-	 *            the new edge table.
+	 *
+	 * @param edges the new edge table.
 	 */
 	public void setEdgeTable(Table edges) {
 		Table oldEdges = getEdgeTable();
-        oldEdges.removeTableListener(m_listener);
+		oldEdges.removeTableListener(m_listener);
 		m_links1.clear();
 		m_links2.clear();
 
@@ -338,7 +343,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Instantiate and return the link table.
-	 * 
+	 *
 	 * @return the created link table
 	 */
 	protected Table createLinkTable(int size) {
@@ -347,12 +352,10 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Internal method for updating the linkage of this graph.
-	 * 
-	 * @param e
-	 *            the edge id for the updated link
-	 * @param incr
-	 *            the increment value, 1 for an added link, -1 for a removed
-	 *            link
+	 *
+	 * @param e    the edge id for the updated link
+	 * @param incr the increment value, 1 for an added link, -1 for a removed
+	 *             link
 	 */
 	protected void updateDegrees(int e, int incr) {
 		if (!getEdgeTable().isValidRow(e))
@@ -366,16 +369,12 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Internal method for updating the linkage of this graph.
-	 * 
-	 * @param e
-	 *            the edge id for the updated link
-	 * @param s
-	 *            the source node id for the updated link
-	 * @param t
-	 *            the target node id for the updated link
-	 * @param incr
-	 *            the increment value, 1 for an added link, -1 for a removed
-	 *            link
+	 *
+	 * @param e    the edge id for the updated link
+	 * @param s    the source node id for the updated link
+	 * @param t    the target node id for the updated link
+	 * @param incr the increment value, 1 for an added link, -1 for a removed
+	 *             link
 	 */
 	protected void updateDegrees(int e, int s, int t, int incr) {
 		int d1 = m_links1.getInt(s, DEGREE);
@@ -397,20 +396,16 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Internal method for adding a link to an adjacency list
-	 * 
-	 * @param field
-	 *            which adjacency list (inlinks or outlinks) to use
-	 * @param len
-	 *            the length of the adjacency list
-	 * @param n
-	 *            the node id of the adjacency list to use
-	 * @param e
-	 *            the edge to add to the list
+	 *
+	 * @param field which adjacency list (inlinks or outlinks) to use
+	 * @param len   the length of the adjacency list
+	 * @param n     the node id of the adjacency list to use
+	 * @param e     the edge to add to the list
 	 */
 	protected void addLink(Table links, int len, int n, int e) {
 		int[] array = (int[]) links.get(n, LINKS);
 		if (array == null) {
-			array = new int[] { e };
+			array = new int[]{e};
 			links.set(n, LINKS, array);
 			return;
 		} else if (len == array.length) {
@@ -424,15 +419,11 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Internal method for removing a link from an adjacency list
-	 * 
-	 * @param field
-	 *            which adjacency list (inlinks or outlinks) to use
-	 * @param len
-	 *            the length of the adjacency list
-	 * @param n
-	 *            the node id of the adjacency list to use
-	 * @param e
-	 *            the edge to remove from the list
+	 *
+	 * @param field which adjacency list (inlinks or outlinks) to use
+	 * @param len   the length of the adjacency list
+	 * @param n     the node id of the adjacency list to use
+	 * @param e     the edge to remove from the list
 	 * @return true if the link was removed successfully, false otherwise
 	 */
 	protected boolean remLink(Table links, int len, int n, int e) {
@@ -448,11 +439,9 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Update the link table to accomodate an inserted or deleted node
-	 * 
-	 * @param r
-	 *            the node id, also the row number into the link table
-	 * @param added
-	 *            indicates if a node was added or removed
+	 *
+	 * @param r     the node id, also the row number into the link table
+	 * @param added indicates if a node was added or removed
 	 */
 	protected void updateNodeData(Table links, int r, boolean added) {
 		if (added) {
@@ -467,7 +456,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Get the data field used to uniquely identify a node
-	 * 
+	 *
 	 * @return the data field used to uniquely identify a node
 	 */
 	public String getNode1KeyField() {
@@ -476,7 +465,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Get the data field used to uniquely identify a node
-	 * 
+	 *
 	 * @return the data field used to uniquely identify a node
 	 */
 	public String getNode2KeyField() {
@@ -485,7 +474,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Get the data field used to denote the source node in an edge table.
-	 * 
+	 *
 	 * @return the data field used to denote the source node in an edge table.
 	 */
 	public String getEdgeSourceField() {
@@ -494,7 +483,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Get the data field used to denote the target node in an edge table.
-	 * 
+	 *
 	 * @return the data field used to denote the target node in an edge table.
 	 */
 	public String getEdgeTargetField() {
@@ -504,9 +493,8 @@ public class BipartiteGraph extends CompositeTupleSet {
 	/**
 	 * Given a node id (a row number in the node table), get the value of the
 	 * node key field.
-	 * 
-	 * @param node
-	 *            the node id
+	 *
+	 * @param node the node id
 	 * @return the value of the node key field for the given node
 	 */
 	public long get1Key(int node) {
@@ -516,9 +504,8 @@ public class BipartiteGraph extends CompositeTupleSet {
 	/**
 	 * Given a node id (a row number in the node table), get the value of the
 	 * node key field.
-	 * 
-	 * @param node
-	 *            the node id
+	 *
+	 * @param node the node id
 	 * @return the value of the node key field for the given node
 	 */
 	public long get2Key(int node) {
@@ -528,9 +515,8 @@ public class BipartiteGraph extends CompositeTupleSet {
 	/**
 	 * Given a value of the node key field, get the node id (the row number in
 	 * the node table).
-	 * 
-	 * @param key
-	 *            a node key field value
+	 *
+	 * @param key a node key field value
 	 * @return the node id (the row number in the node table)
 	 */
 	public int getNode1Index(long key) {
@@ -545,9 +531,8 @@ public class BipartiteGraph extends CompositeTupleSet {
 	/**
 	 * Given a value of the node key field, get the node id (the row number in
 	 * the node table).
-	 * 
-	 * @param key
-	 *            a node key field value
+	 *
+	 * @param key a node key field value
 	 * @return the node id (the row number in the node table)
 	 */
 	public int getNode2Index(long key) {
@@ -564,7 +549,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Add row to the node table, thereby adding a node to the graph.
-	 * 
+	 *
 	 * @return the node id (node table row number) of the added node
 	 */
 	public int addNode1Row() {
@@ -573,7 +558,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Add row to the node table, thereby adding a node to the graph.
-	 * 
+	 *
 	 * @return the node id (node table row number) of the added node
 	 */
 	public int addNode2Row() {
@@ -583,11 +568,9 @@ public class BipartiteGraph extends CompositeTupleSet {
 	/**
 	 * Add an edge to the graph. Both multiple edges between two nodes and edges
 	 * from a node to itself are allowed.
-	 * 
-	 * @param s
-	 *            the source node id
-	 * @param t
-	 *            the target node id
+	 *
+	 * @param s the source node id
+	 * @param t the target node id
 	 * @return the edge id (edge table row number) of the added edge
 	 */
 	public int addEdge(int s, int t) {
@@ -636,13 +619,13 @@ public class BipartiteGraph extends CompositeTupleSet {
 	// return nodeTable.removeRow(node);
 	// }
 	//
+
 	/**
 	 * Remove an edge from the graph.
-	 * 
-	 * @param edge
-	 *            the edge id (edge table row number) of the edge to remove
+	 *
+	 * @param edge the edge id (edge table row number) of the edge to remove
 	 * @return true if the edge was successfully removed, false if the edge was
-	 *         not found or was not valid
+	 * not found or was not valid
 	 */
 	public boolean removeEdge(int edge) {
 		return getEdgeTable().removeRow(edge);
@@ -662,7 +645,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 	 * Get the collection of nodes as a TupleSet. Returns the same result as
 	 * {@link CompositeTupleSet#getSet(String)} using {@link #NODES} as the
 	 * parameter.
-	 * 
+	 *
 	 * @return the nodes of this graph as a TupleSet instance
 	 */
 	public TupleSet getNodes1() {
@@ -673,7 +656,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 	 * Get the collection of nodes as a TupleSet. Returns the same result as
 	 * {@link CompositeTupleSet#getSet(String)} using {@link #NODES} as the
 	 * parameter.
-	 * 
+	 *
 	 * @return the nodes of this graph as a TupleSet instance
 	 */
 	public TupleSet getNodes2() {
@@ -682,7 +665,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Get the backing node table.
-	 * 
+	 *
 	 * @return the table of node values
 	 */
 	public Table getNode1Table() {
@@ -691,7 +674,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Get the backing node table.
-	 * 
+	 *
 	 * @return the table of node values
 	 */
 	public Table getNode2Table() {
@@ -700,7 +683,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Get the number of nodes in this graph.
-	 * 
+	 *
 	 * @return the number of nodes
 	 */
 	public int getNode1Count() {
@@ -709,7 +692,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Get the number of nodes in this graph.
-	 * 
+	 *
 	 * @return the number of nodes
 	 */
 	public int getNode2Count() {
@@ -719,9 +702,8 @@ public class BipartiteGraph extends CompositeTupleSet {
 	/**
 	 * Get the degree of a node, the number of edges for which a node is either
 	 * the source or the target.
-	 * 
-	 * @param node
-	 *            the node id (node table row number)
+	 *
+	 * @param node the node id (node table row number)
 	 * @return the total degree of the node
 	 */
 	public int getDegree1(int node) {
@@ -731,9 +713,8 @@ public class BipartiteGraph extends CompositeTupleSet {
 	/**
 	 * Get the degree of a node, the number of edges for which a node is either
 	 * the source or the target.
-	 * 
-	 * @param node
-	 *            the node id (node table row number)
+	 *
+	 * @param node the node id (node table row number)
 	 * @return the total degree of the node
 	 */
 	public int getDegree2(int node) {
@@ -747,7 +728,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 	 * Get the collection of edges as a TupleSet. Returns the same result as
 	 * {@link CompositeTupleSet#getSet(String)} using {@link #EDGES} as the
 	 * parameter.
-	 * 
+	 *
 	 * @return the edges of this graph as a TupleSet instance
 	 */
 	public TupleSet getEdges() {
@@ -756,7 +737,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Get the backing edge table.
-	 * 
+	 *
 	 * @return the table of edge values
 	 */
 	public Table getEdgeTable() {
@@ -765,7 +746,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Get the number of edges in this graph.
-	 * 
+	 *
 	 * @return the number of edges
 	 */
 	public int getEdgeCount() {
@@ -792,9 +773,8 @@ public class BipartiteGraph extends CompositeTupleSet {
 	/**
 	 * Get the source node id (node table row number) for the given edge id
 	 * (edge table row number).
-	 * 
-	 * @param edge
-	 *            an edge id (edge table row number)
+	 *
+	 * @param edge an edge id (edge table row number)
 	 * @return the source node id (node table row number)
 	 */
 	public int getSourceNode(int edge) {
@@ -804,9 +784,8 @@ public class BipartiteGraph extends CompositeTupleSet {
 	/**
 	 * Get the target node id (node table row number) for the given edge id
 	 * (edge table row number).
-	 * 
-	 * @param edge
-	 *            an edge id (edge table row number)
+	 *
+	 * @param edge an edge id (edge table row number)
 	 * @return the target node id (node table row number)
 	 */
 	public int getTargetNode(int edge) {
@@ -820,7 +799,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Get an iterator over all node ids (node table row numbers).
-	 * 
+	 *
 	 * @return an iterator over all node ids (node table row numbers)
 	 */
 	public IntIterator nodeRows1() {
@@ -829,7 +808,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Get an iterator over all node ids (node table row numbers).
-	 * 
+	 *
 	 * @return an iterator over all node ids (node table row numbers)
 	 */
 	public IntIterator nodeRows2() {
@@ -838,7 +817,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Get an iterator over all edge ids (edge table row numbers).
-	 * 
+	 *
 	 * @return an iterator over all edge ids (edge table row numbers)
 	 */
 	public IntIterator edgeRows() {
@@ -847,11 +826,10 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Get an iterator edge ids for edges incident on the given node.
-	 * 
-	 * @param node
-	 *            a node id (node table row number)
+	 *
+	 * @param node a node id (node table row number)
 	 * @return an iterator over all edge ids for edges incident on the given
-	 *         node
+	 * node
 	 */
 	public IntIterator edgeRows1(int node) {
 		int[] edges = (int[]) m_links1.get(node, LINKS);
@@ -860,11 +838,10 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Get an iterator edge ids for edges incident on the given node.
-	 * 
-	 * @param node
-	 *            a node id (node table row number)
+	 *
+	 * @param node a node id (node table row number)
 	 * @return an iterator over all edge ids for edges incident on the given
-	 *         node
+	 * node
 	 */
 	public IntIterator edgeRows2(int node) {
 		int[] edges = (int[]) m_links2.get(node, LINKS);
@@ -876,7 +853,7 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Clear this graph, removing all nodes and edges.
-	 * 
+	 *
 	 * @see prefuse.data.tuple.TupleSet#clear()
 	 */
 	public void clear() {
@@ -890,9 +867,8 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Add a listener to be notified of changes to the graph.
-	 * 
-	 * @param listnr
-	 *            the listener to add
+	 *
+	 * @param listnr the listener to add
 	 */
 	public void addGraphModelListener(GraphListener listnr) {
 		if (!m_listeners.contains(listnr))
@@ -901,9 +877,8 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Remove a listener from this graph.
-	 * 
-	 * @param listnr
-	 *            the listener to remove
+	 *
+	 * @param listnr the listener to remove
 	 */
 	public void removeGraphModelListener(GraphListener listnr) {
 		m_listeners.remove(listnr);
@@ -918,26 +893,21 @@ public class BipartiteGraph extends CompositeTupleSet {
 
 	/**
 	 * Fire a graph change event
-	 * 
-	 * @param t
-	 *            the backing table where the change occurred (either a node
-	 *            table or an edge table)
-	 * @param first
-	 *            the first modified table row
-	 * @param last
-	 *            the last (inclusive) modified table row
-	 * @param col
-	 *            the number of the column modified, or
-	 *            {@link prefuse.data.event.EventConstants#ALL_COLUMNS} for
-	 *            operations affecting all columns
-	 * @param type
-	 *            the type of modification, one of
-	 *            {@link prefuse.data.event.EventConstants#INSERT},
-	 *            {@link prefuse.data.event.EventConstants#DELETE}, or
-	 *            {@link prefuse.data.event.EventConstants#UPDATE}.
+	 *
+	 * @param t     the backing table where the change occurred (either a node
+	 *              table or an edge table)
+	 * @param first the first modified table row
+	 * @param last  the last (inclusive) modified table row
+	 * @param col   the number of the column modified, or
+	 *              {@link prefuse.data.event.EventConstants#ALL_COLUMNS} for
+	 *              operations affecting all columns
+	 * @param type  the type of modification, one of
+	 *              {@link prefuse.data.event.EventConstants#INSERT},
+	 *              {@link prefuse.data.event.EventConstants#DELETE}, or
+	 *              {@link prefuse.data.event.EventConstants#UPDATE}.
 	 */
 	protected void fireGraphEvent(Table t, int first, int last, int col,
-			int type) {
+	                              int type) {
 		String table = (t == getNode1Table() ? NODES_1
 				: t == getNode1Table() ? NODES_2 : EDGES);
 
@@ -950,8 +920,8 @@ public class BipartiteGraph extends CompositeTupleSet {
 			// fire event to all listeners
 			Object[] lstnrs = m_listeners.getArray();
 			for (int i = 0; i < lstnrs.length; ++i) {
-				 ((BipartiteGraphListener)lstnrs[i]).graphChanged(
-				 this, table, first, last, col, type);
+				((BipartiteGraphListener) lstnrs[i]).graphChanged(
+						this, table, first, last, col, type);
 			}
 		}
 	}
@@ -1074,12 +1044,19 @@ public class BipartiteGraph extends CompositeTupleSet {
 	// ------------------------------------------------------------------------
 	// Graph Linkage Schema
 
-	/** In-degree data field for the links table */
+	/**
+	 * In-degree data field for the links table
+	 */
 	protected static final String DEGREE = "_degree";
-	/** In-links adjacency list data field for the links table */
+	/**
+	 * In-links adjacency list data field for the links table
+	 */
 	protected static final String LINKS = "_inlinks";
-	/** Schema used for the internal graph linkage table */
+	/**
+	 * Schema used for the internal graph linkage table
+	 */
 	protected static final Schema LINKS_SCHEMA = new Schema();
+
 	static {
 		Integer defaultValue = new Integer(0);
 		LINKS_SCHEMA.addColumn(DEGREE, int.class, defaultValue);

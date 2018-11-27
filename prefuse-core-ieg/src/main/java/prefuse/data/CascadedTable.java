@@ -376,12 +376,12 @@ public class CascadedTable extends Table {
 	/**
 	 * @see prefuse.data.Table#addRows(int)
 	 */
-	public void addRows(int nrows) {
+	public int[] addRows(int nrows) {
 		if (m_parent != null) {
 			throw new IllegalStateException(
 					"Add rows not supported for CascadedTable.");
 		} else {
-			super.addRows(nrows);
+			return super.addRows(nrows);
 		}
 	}
 

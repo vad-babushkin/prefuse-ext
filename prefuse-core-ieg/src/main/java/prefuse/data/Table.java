@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import javax.swing.event.TableModelEvent;
 
@@ -371,10 +372,35 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	 *
 	 * @param nrows the number of rows to add.
 	 */
-	public void addRows(int nrows) {
+	public int[] addRows(int nrows) {
+		// keep track of inserted rows
+		int[] addedRows = new int[nrows];
+
+		// insert rows
 		for (int i = 0; i < nrows; ++i) {
-			addRow();
+			addedRows[i] = m_rows.addRow();
 		}
+
+		updateRowCount();
+
+		int left = addedRows[0];
+		int right = addedRows[0];
+		for (int i = 1; i < nrows; ++i) {
+			if (right + 1 == addedRows[i]) {
+				// next row in current range
+				right++;
+			} else {
+				// new range: fire and start a new current range
+				fireTableEvent(left, right, TableModelEvent.ALL_COLUMNS,
+						TableModelEvent.INSERT);
+				left = right = addedRows[i];
+			}
+		}
+		// fire last range
+		fireTableEvent(left, right, TableModelEvent.ALL_COLUMNS,
+				TableModelEvent.INSERT);
+
+		return addedRows;
 	}
 
 	/**
@@ -513,6 +539,7 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	 *
 	 * @param name the data field name for the column
 	 * @param type the data type, as a Java Class, for the column
+	 * @throws IllegalArgumentException if a column of that name already exists
 	 * @see prefuse.data.tuple.TupleSet#addColumn(java.lang.String, java.lang.Class)
 	 */
 	public void addColumn(String name, Class type) {
@@ -525,6 +552,7 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	 * @param name         the data field name for the column
 	 * @param type         the data type, as a Java Class, for the column
 	 * @param defaultValue the default value for column data values
+	 * @throws IllegalArgumentException if a column of that name already exists
 	 * @see prefuse.data.tuple.TupleSet#addColumn(java.lang.String, java.lang.Class, java.lang.Object)
 	 */
 	public void addColumn(String name, Class type, Object defaultValue) {
@@ -543,6 +571,7 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	 *             The string is parsed by the
 	 *             {@link prefuse.data.expression.parser.ExpressionParser}. If an error
 	 *             occurs during parsing, an exception will be thrown.
+	 * @throws IllegalArgumentException if a column of that name already exists
 	 * @see prefuse.data.tuple.TupleSet#addColumn(java.lang.String, java.lang.String)
 	 */
 	public void addColumn(String name, String expr) {
@@ -561,6 +590,7 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	 *
 	 * @param name the data field name for the column
 	 * @param expr the Expression that will determine the column values
+	 * @throws IllegalArgumentException if a column of that name already exists
 	 * @see prefuse.data.tuple.TupleSet#addColumn(java.lang.String, prefuse.data.expression.Expression)
 	 */
 	public void addColumn(String name, Expression expr) {
@@ -574,6 +604,7 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	 * @param name the data field name for the column
 	 * @param type the data type, as a Java Class, for the column
 	 * @param dflt the default value for column data values
+	 * @throws IllegalArgumentException if a column of that name already exists
 	 */
 	public void addConstantColumn(String name, Class type, Object dflt) {
 		addColumn(name, ColumnFactory.getConstantColumn(type, dflt));
@@ -935,6 +966,23 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	}
 
 	/**
+	 * Check if the <code>get</code> method for the given data field returns
+	 * values that are compatible with a given target type.
+	 *
+	 * @param index the column number of the data field to check
+	 * @param type  a Class instance to check for compatibility with the
+	 *              data field values.
+	 * @return true if the data field is compatible with provided type,
+	 * false otherwise. If the value is true, objects returned by
+	 * the {@link #get(int, int)} can be cast to the given type.
+	 * @see #get(int, int)
+	 */
+	public final boolean canGet(int index, Class type) {
+		Column col = getColumn(index);
+		return (col == null ? false : col.canGet(type));
+	}
+
+	/**
 	 * Check if the <code>set</code> method for the given data field can
 	 * accept values of a given target type.
 	 *
@@ -953,6 +1001,24 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	}
 
 	/**
+	 * Check if the <code>set</code> method for the given data field can
+	 * accept values of a given target type.
+	 *
+	 * @param index the column number of the data field to check
+	 * @param type  a Class instance to check for compatibility with the
+	 *              data field values.
+	 * @return true if the data field is compatible with provided type,
+	 * false otherwise. If the value is true, objects of the given type
+	 * can be used as parameters of the {@link #set(int, int, Object)}
+	 * method.
+	 * @see #set(int, int, Object)
+	 */
+	public final boolean canSet(int index, Class type) {
+		Column col = getColumn(index);
+		return (col == null ? false : col.canSet(type));
+	}
+
+	/**
 	 * Get the data value at the given row and field as an Object.
 	 *
 	 * @param row   the table row to get
@@ -964,6 +1030,9 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	 */
 	public Object get(int row, String field) {
 		int col = getColumnNumber(field);
+		// otherwise getColumn(col) would throw an obscure ArrayIndexOutofBoundsException
+		if (col == -1)
+			throw new NoSuchElementException("Column not found: " + field);
 		row = getColumnRow(row, col);
 		return getColumn(col).get(row);
 	}
@@ -1067,6 +1136,20 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	}
 
 	/**
+	 * Check if the given data field can return primitive <code>int</code>
+	 * values.
+	 *
+	 * @param index the column number of the data field to check
+	 * @return true if the data field can return primitive <code>int</code>
+	 * values, false otherwise. If true, the {@link #getInt(int, int)}
+	 * method can be used safely.
+	 */
+	public final boolean canGetInt(int index) {
+		Column col = getColumn(index);
+		return (col == null ? false : col.canGetInt());
+	}
+
+	/**
 	 * Check if the <code>setInt</code> method can safely be used for the
 	 * given data field.
 	 *
@@ -1076,6 +1159,19 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	 */
 	public final boolean canSetInt(String field) {
 		Column col = getColumn(field);
+		return (col == null ? false : col.canSetInt());
+	}
+
+	/**
+	 * Check if the <code>setInt</code> method can safely be used for the
+	 * given data field.
+	 *
+	 * @param index the column number of the data field to check
+	 * @return true if the {@link #setInt(int, int, int)} method can
+	 * safely be used for the given field, false otherwise.
+	 */
+	public final boolean canSetInt(int index) {
+		Column col = getColumn(index);
 		return (col == null ? false : col.canSetInt());
 	}
 
@@ -1152,6 +1248,20 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	}
 
 	/**
+	 * Check if the given data field can return primitive <code>long</code>
+	 * values.
+	 *
+	 * @param index the column number of the data field to check
+	 * @return true if the data field can return primitive <code>long</code>
+	 * values, false otherwise. If true, the {@link #getLong(int, int)}
+	 * method can be used safely.
+	 */
+	public final boolean canGetLong(int index) {
+		Column col = getColumn(index);
+		return (col == null ? false : col.canGetLong());
+	}
+
+	/**
 	 * Check if the <code>setLong</code> method can safely be used for the
 	 * given data field.
 	 *
@@ -1161,6 +1271,19 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	 */
 	public final boolean canSetLong(String field) {
 		Column col = getColumn(field);
+		return (col == null ? false : col.canSetLong());
+	}
+
+	/**
+	 * Check if the <code>setLong</code> method can safely be used for the
+	 * given data field.
+	 *
+	 * @param index the column number of the data field to check
+	 * @return true if the {@link #setLong(int, int, long)} method can
+	 * safely be used for the given field, false otherwise.
+	 */
+	public final boolean canSetLong(int index) {
+		Column col = getColumn(index);
 		return (col == null ? false : col.canSetLong());
 	}
 
@@ -1237,6 +1360,20 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	}
 
 	/**
+	 * Check if the given data field can return primitive <code>float</code>
+	 * values.
+	 *
+	 * @param index the column number of the data field to check
+	 * @return true if the data field can return primitive <code>float</code>
+	 * values, false otherwise. If true, the {@link #getFloat(int, int)}
+	 * method can be used safely.
+	 */
+	public final boolean canGetFloat(int index) {
+		Column col = getColumn(index);
+		return (col == null ? false : col.canGetFloat());
+	}
+
+	/**
 	 * Check if the <code>setFloat</code> method can safely be used for the
 	 * given data field.
 	 *
@@ -1246,6 +1383,19 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	 */
 	public final boolean canSetFloat(String field) {
 		Column col = getColumn(field);
+		return (col == null ? false : col.canSetFloat());
+	}
+
+	/**
+	 * Check if the <code>setFloat</code> method can safely be used for the
+	 * given data field.
+	 *
+	 * @param index the column number of the data field to check
+	 * @return true if the {@link #setFloat(int, int, float)} method can
+	 * safely be used for the given field, false otherwise.
+	 */
+	public final boolean canSetFloat(int index) {
+		Column col = getColumn(index);
 		return (col == null ? false : col.canSetFloat());
 	}
 
@@ -1322,6 +1472,20 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	}
 
 	/**
+	 * Check if the given data field can return primitive <code>double</code>
+	 * values.
+	 *
+	 * @param col the column number of the data field to check
+	 * @return true if the data field can return primitive <code>double</code>
+	 * values, false otherwise. If true, the {@link #getDouble(int, int)}
+	 * method can be used safely.
+	 */
+	public final boolean canGetDouble(int index) {
+		Column col = getColumn(index);
+		return (col == null ? false : col.canGetDouble());
+	}
+
+	/**
 	 * Check if the <code>setDouble</code> method can safely be used for the
 	 * given data field.
 	 *
@@ -1331,6 +1495,19 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	 */
 	public final boolean canSetDouble(String field) {
 		Column col = getColumn(field);
+		return (col == null ? false : col.canSetDouble());
+	}
+
+	/**
+	 * Check if the <code>setDouble</code> method can safely be used for the
+	 * given data field.
+	 *
+	 * @param index the column number of the data field to check
+	 * @return true if the {@link #setDouble(int, int, double)} method can
+	 * safely be used for the given field, false otherwise.
+	 */
+	public final boolean canSetDouble(int index) {
+		Column col = getColumn(index);
 		return (col == null ? false : col.canSetDouble());
 	}
 
@@ -1407,6 +1584,20 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	}
 
 	/**
+	 * Check if the given data field can return primitive <code>boolean</code>
+	 * values.
+	 *
+	 * @param index the column number of the data field to check
+	 * @return true if the data field can return primitive <code>boolean</code>
+	 * values, false otherwise. If true, the {@link #getBoolean(int, int)}
+	 * method can be used safely.
+	 */
+	public final boolean canGetBoolean(int index) {
+		Column col = getColumn(index);
+		return (col == null ? false : col.canGetBoolean());
+	}
+
+	/**
 	 * Check if the <code>setBoolean</code> method can safely be used for the
 	 * given data field.
 	 *
@@ -1416,6 +1607,19 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	 */
 	public final boolean canSetBoolean(String field) {
 		Column col = getColumn(field);
+		return (col == null ? false : col.canSetBoolean());
+	}
+
+	/**
+	 * Check if the <code>setBoolean</code> method can safely be used for the
+	 * given data field.
+	 *
+	 * @param index the column number of the data field to check
+	 * @return true if the {@link #setBoolean(int, int, boolean)} method can
+	 * safely be used for the given field, false otherwise.
+	 */
+	public final boolean canSetBoolean(int index) {
+		Column col = getColumn(index);
 		return (col == null ? false : col.canSetBoolean());
 	}
 
@@ -1478,16 +1682,28 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	// --------------------------------------------------------------
 
 	/**
-	 * Check if the given data field can return primitive <code>String</code>
-	 * values.
+	 * Check if the given data field can return <code>String</code> objects.
 	 *
 	 * @param field the data field to check
-	 * @return true if the data field can return primitive <code>String</code>
-	 * values, false otherwise. If true, the {@link #getString(int, String)}
+	 * @return true if the data field can return <code>String</code> objects,
+	 * false otherwise. If true, the {@link #getString(int, String)}
 	 * method can be used safely.
 	 */
 	public final boolean canGetString(String field) {
 		Column col = getColumn(field);
+		return (col == null ? false : col.canGetString());
+	}
+
+	/**
+	 * Check if the given data field can return <code>String</code> objects.
+	 *
+	 * @param index the column number of the data field to check
+	 * @return true if the data field can return <code>String</code> objects,
+	 * false otherwise. If true, the {@link #getString(int, int)}
+	 * method can be used safely.
+	 */
+	public final boolean canGetString(int index) {
+		Column col = getColumn(index);
 		return (col == null ? false : col.canGetString());
 	}
 
@@ -1501,6 +1717,19 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	 */
 	public final boolean canSetString(String field) {
 		Column col = getColumn(field);
+		return (col == null ? false : col.canSetString());
+	}
+
+	/**
+	 * Check if the <code>setString</code> method can safely be used for the
+	 * given data field.
+	 *
+	 * @param index the column number of the data field to check
+	 * @return true if the {@link #setString(int, int, String)} method can
+	 * safely be used for the given field, false otherwise.
+	 */
+	public final boolean canSetString(int index) {
+		Column col = getColumn(index);
 		return (col == null ? false : col.canSetString());
 	}
 
@@ -1563,16 +1792,28 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	// --------------------------------------------------------------
 
 	/**
-	 * Check if the given data field can return primitive <code>Date</code>
-	 * values.
+	 * Check if the given data field can return <code>Date</code> objects.
 	 *
 	 * @param field the data field to check
-	 * @return true if the data field can return primitive <code>Date</code>
-	 * values, false otherwise. If true, the {@link #getDate(int, String)}
+	 * @return true if the data field can return <code>Date</code> objects,
+	 * false otherwise. If true, the {@link #getDate(int, String)}
 	 * method can be used safely.
 	 */
 	public final boolean canGetDate(String field) {
 		Column col = getColumn(field);
+		return (col == null ? false : col.canGetDate());
+	}
+
+	/**
+	 * Check if the given data field can return <code>Date</code> objects.
+	 *
+	 * @param index the column number of the data field to check
+	 * @return true if the data field can return <code>Date</code> objects,
+	 * false otherwise. If true, the {@link #getDate(int, int)}
+	 * method can be used safely.
+	 */
+	public final boolean canGetDate(int index) {
+		Column col = getColumn(index);
 		return (col == null ? false : col.canGetDate());
 	}
 
@@ -1586,6 +1827,19 @@ public class Table extends AbstractTupleSet implements ColumnListener {
 	 */
 	public final boolean canSetDate(String field) {
 		Column col = getColumn(field);
+		return (col == null ? false : col.canSetDate());
+	}
+
+	/**
+	 * Check if the <code>setDate</code> method can safely be used for the
+	 * given data field.
+	 *
+	 * @param index the column number of the data field to check
+	 * @return true if the {@link #setDate(int, int, Date)} method can
+	 * safely be used for the given field, false otherwise.
+	 */
+	public final boolean canSetDate(int index) {
+		Column col = getColumn(index);
 		return (col == null ? false : col.canSetDate());
 	}
 

@@ -503,10 +503,38 @@ public class TableVisualItem extends TableTuple implements VisualItem {
 	}
 
 	/**
+	 * @see prefuse.visual.VisualItem#getSize()
+	 */
+	public double getSizeX() {
+		return ((VisualTable) m_table).getSize(m_row);
+	}
+
+	/**
+	 * @see prefuse.visual.VisualItem#getSizeY()
+	 */
+	public double getSizeY() {
+		return ((VisualTable) m_table).getSizeY(m_row);
+	}
+
+	/**
 	 * @see prefuse.visual.VisualItem#setSize(double)
 	 */
 	public void setSize(double size) {
 		((VisualTable) m_table).setSize(m_row, size);
+	}
+
+	/**
+	 * @see prefuse.visual.VisualItem#setSize(double)
+	 */
+	public void setSizeX(double size) {
+		((VisualTable) m_table).setSize(m_row, size);
+	}
+
+	/**
+	 * @see prefuse.visual.VisualItem#setSizeY(double)
+	 */
+	public void setSizeY(double size) {
+		((VisualTable) m_table).setSizeY(m_row, size);
 	}
 
 	/**
@@ -517,10 +545,38 @@ public class TableVisualItem extends TableTuple implements VisualItem {
 	}
 
 	/**
+	 * @see prefuse.visual.VisualItem#getStartSize()
+	 */
+	public double getStartSizeX() {
+		return ((VisualTable) m_table).getStartSize(m_row);
+	}
+
+	/**
+	 * @see prefuse.visual.VisualItem#getStartSizeY()
+	 */
+	public double getStartSizeY() {
+		return ((VisualTable) m_table).getStartSizeY(m_row);
+	}
+
+	/**
 	 * @see prefuse.visual.VisualItem#setStartSize(double)
 	 */
 	public void setStartSize(double size) {
 		((VisualTable) m_table).setStartSize(m_row, size);
+	}
+
+	/**
+	 * @see prefuse.visual.VisualItem#setStartSize(double)
+	 */
+	public void setStartSizeX(double size) {
+		((VisualTable) m_table).setStartSize(m_row, size);
+	}
+
+	/**
+	 * @see prefuse.visual.VisualItem#setStartSizeY(double)
+	 */
+	public void setStartSizeY(double size) {
+		((VisualTable) m_table).setStartSizeY(m_row, size);
 	}
 
 	/**
@@ -531,10 +587,38 @@ public class TableVisualItem extends TableTuple implements VisualItem {
 	}
 
 	/**
+	 * @see prefuse.visual.VisualItem#getEndSize()
+	 */
+	public double getEndSizeX() {
+		return ((VisualTable) m_table).getEndSize(m_row);
+	}
+
+	/**
+	 * @see prefuse.visual.VisualItem#getEndSize()
+	 */
+	public double getEndSizeY() {
+		return ((VisualTable) m_table).getEndSizeY(m_row);
+	}
+
+	/**
 	 * @see prefuse.visual.VisualItem#setEndSize(double)
 	 */
 	public void setEndSize(double size) {
 		((VisualTable) m_table).setEndSize(m_row, size);
+	}
+
+	/**
+	 * @see prefuse.visual.VisualItem#setEndSize(double)
+	 */
+	public void setEndSizeX(double size) {
+		((VisualTable) m_table).setEndSize(m_row, size);
+	}
+
+	/**
+	 * @see prefuse.visual.VisualItem#setEndSize(double)
+	 */
+	public void setEndSizeY(double size) {
+		((VisualTable) m_table).setEndSizeY(m_row, size);
 	}
 
 	// ------------------------------------------------------------------------

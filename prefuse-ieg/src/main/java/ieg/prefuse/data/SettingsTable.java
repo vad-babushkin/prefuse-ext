@@ -3,15 +3,12 @@ package ieg.prefuse.data;
 import prefuse.data.Table;
 
 /**
- * 
- * 
  * <p>
  * Added:          / TL<br>
- * Modifications: 
+ * Modifications:
  * </p>
- * 
- * @author Tim Lammarsch
  *
+ * @author Tim Lammarsch
  */
 public class SettingsTable extends Table {
 

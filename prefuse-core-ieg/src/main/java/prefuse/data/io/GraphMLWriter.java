@@ -6,6 +6,7 @@ package prefuse.data.io;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,15 +50,17 @@ public class GraphMLWriter extends AbstractGraphWriter {
 	/**
 	 * Map containing legal data types and their names in the GraphML spec
 	 */
-	private static final HashMap TYPES = new HashMap();
+	public static final java.util.Map TYPES;
 
 	static {
-		TYPES.put(int.class, Tokens.INT);
-		TYPES.put(long.class, Tokens.LONG);
-		TYPES.put(float.class, Tokens.FLOAT);
-		TYPES.put(double.class, Tokens.DOUBLE);
-		TYPES.put(boolean.class, Tokens.BOOLEAN);
-		TYPES.put(String.class, Tokens.STRING);
+		HashMap types = new HashMap();
+		types.put(int.class, Tokens.INT);
+		types.put(long.class, Tokens.LONG);
+		types.put(float.class, Tokens.FLOAT);
+		types.put(double.class, Tokens.DOUBLE);
+		types.put(boolean.class, Tokens.BOOLEAN);
+		types.put(String.class, Tokens.STRING);
+		TYPES = Collections.unmodifiableMap(types);
 	}
 
 	/**
@@ -84,15 +87,8 @@ public class GraphMLWriter extends AbstractGraphWriter {
 		xml.println();
 
 		// print graph contents
-		Object graphID = graph.getClientProperty(Tokens.ID);
-		if (graphID == null) {
-			xml.start(Tokens.GRAPH, Tokens.EDGEDEF, graph.isDirected() ? Tokens.DIRECTED : Tokens.UNDIRECTED);
-		} else {
-			xml.start(Tokens.GRAPH,
-					new String[]{Tokens.EDGEDEF, Tokens.ID},
-					new String[]{graph.isDirected() ? Tokens.DIRECTED : Tokens.UNDIRECTED, graphID.toString()},
-					2);
-		}
+		xml.start(Tokens.GRAPH, Tokens.EDGEDEF,
+				graph.isDirected() ? Tokens.DIRECTED : Tokens.UNDIRECTED);
 
 		// print the nodes
 		xml.comment("nodes");
@@ -195,7 +191,7 @@ public class GraphMLWriter extends AbstractGraphWriter {
 	 *
 	 * @param s the Schema to check
 	 */
-	private void checkGraphMLSchema(Schema s) throws DataIOException {
+	public static void checkGraphMLSchema(Schema s) throws DataIOException {
 		for (int i = 0; i < s.getColumnCount(); ++i) {
 			Class type = s.getColumnType(i);
 			if (TYPES.get(type) == null) {

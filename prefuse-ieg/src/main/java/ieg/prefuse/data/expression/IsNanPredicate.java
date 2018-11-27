@@ -8,32 +8,32 @@ import prefuse.data.expression.Predicate;
 
 public class IsNanPredicate extends FunctionExpression implements Predicate {
 
-    public IsNanPredicate(Expression expr) {
-        super(1);
-        this.addParameter(expr);
-    }
+	public IsNanPredicate(Expression expr) {
+		super(1);
+		this.addParameter(expr);
+	}
 
-    @SuppressWarnings("rawtypes")
-    @Override
-    public Class getType(Schema s) {
-        return boolean.class;
-    }
-    
-    public Object get(Tuple t) {
-        return new Boolean(getBoolean(t));
-    }
-    
-    @Override
-    public boolean getBoolean(Tuple t) {
-        if ( paramCount() == 1) {
-            return Double.isNaN(param(0).getDouble(t));
-        } else {
-            return false;
-        }
-    }
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Class getType(Schema s) {
+		return boolean.class;
+	}
 
-    @Override
-    public String getName() {
-        return "ISNAN";
-    }
+	public Object get(Tuple t) {
+		return new Boolean(getBoolean(t));
+	}
+
+	@Override
+	public boolean getBoolean(Tuple t) {
+		if (paramCount() == 1) {
+			return Double.isNaN(param(0).getDouble(t));
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public String getName() {
+		return "ISNAN";
+	}
 }

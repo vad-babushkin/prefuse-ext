@@ -3,15 +3,12 @@ package ieg.prefuse;
 import prefuse.util.ui.ValuedRangeModel;
 
 /**
- * 
- * 
  * <p>
  * Added:          / TL<br>
- * Modifications: 
+ * Modifications:
  * </p>
- * 
- * @author Tim Lammarsch
  *
+ * @author Tim Lammarsch
  */
 public interface RangeModelTransformationProvider {
 

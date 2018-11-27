@@ -5,39 +5,38 @@ import prefuse.data.Table;
 import prefuse.data.tuple.TupleManager;
 
 /**
- * Manager class for edges in the bipartite graph. 
+ * Manager class for edges in the bipartite graph.
  * Mostly reuses its superclass {@link TupleManager}.
- * 
- * @author Rind
  *
+ * @author Rind
  */
 public class BipartiteEdgeManager extends TupleManager {
-    
-    private BipartiteGraph bGraph;
 
-    @SuppressWarnings("rawtypes")
-    public BipartiteEdgeManager(Table t, BipartiteGraph bGraph, Class tupleType) {
-        super(t, null, tupleType);
-        this.bGraph = bGraph;
-    }
+	private BipartiteGraph bGraph;
 
-    @SuppressWarnings("rawtypes")
-    public BipartiteEdgeManager(Table t, Graph graph, BipartiteGraph bGraph, Class tupleType) {
-        super(t, graph, tupleType);
-        this.bGraph = bGraph;
-    }
+	@SuppressWarnings("rawtypes")
+	public BipartiteEdgeManager(Table t, BipartiteGraph bGraph, Class tupleType) {
+		super(t, null, tupleType);
+		this.bGraph = bGraph;
+	}
 
-    @Override
-    protected BipartiteEdge newTuple(int row) {
-        try {
-            BipartiteEdge t = (BipartiteEdge) m_tupleType.newInstance();
-            t.init(m_table, m_graph, bGraph, row);
-            return t;
-        } catch ( Exception e ) {
+	@SuppressWarnings("rawtypes")
+	public BipartiteEdgeManager(Table t, Graph graph, BipartiteGraph bGraph, Class tupleType) {
+		super(t, graph, tupleType);
+		this.bGraph = bGraph;
+	}
+
+	@Override
+	protected BipartiteEdge newTuple(int row) {
+		try {
+			BipartiteEdge t = (BipartiteEdge) m_tupleType.newInstance();
+			t.init(m_table, m_graph, bGraph, row);
+			return t;
+		} catch (Exception e) {
 //            Logger.getLogger(getClass().getName()).warn(
 //                e.getMessage()+"\n"+prefuse.util.StringLib.getStackTrace(e));
-            return null;
-        }
-    }
+			return null;
+		}
+	}
 
 }

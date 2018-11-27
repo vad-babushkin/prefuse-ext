@@ -139,17 +139,19 @@ public interface Node extends Tuple {
 
 	/**
 	 * Get the tree child node at the given index.
+	 * The method returns <tt>null</tt> if no such node index exists.
 	 *
 	 * @param idx the ordering index
-	 * @return the child node at the given index
+	 * @return the child node at the given index or <tt>null</tt>
 	 */
 	public Node getChild(int idx);
 
 	/**
 	 * Get this node's first tree child. This is the
 	 * same as looking up the node at index 0.
+	 * The method returns <tt>null</tt> if the node has no children.
 	 *
-	 * @return this node's first child node
+	 * @return this node's first child node or <tt>null</tt>
 	 */
 	public Node getFirstChild();
 
@@ -157,8 +159,9 @@ public interface Node extends Tuple {
 	 * Get this node's last tree child. This is the
 	 * same as looking up the node at the child count
 	 * minus 1.
+	 * The method returns <tt>null</tt> if the node has no children.
 	 *
-	 * @return this node's last child node
+	 * @return this node's last child node or <tt>null</tt>
 	 */
 	public Node getLastChild();
 

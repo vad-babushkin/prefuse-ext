@@ -465,6 +465,64 @@ public class Visualization {
 	}
 
 	/**
+	 * Add an empty VisualTree to this visualization, using the given data
+	 * group name and node schema. This adds a group of VisualItems that do
+	 * not have a backing data set, useful for creating interactive visual
+	 * objects that do not represent data. An exception will be thrown if the
+	 * group name is already in use.
+	 *
+	 * @param group      the data group name for the visualized data
+	 * @param nodeSchema the data schema to use for the visual node table
+	 * @return the added VisualTree
+	 */
+	public synchronized VisualTree addTree(String group, Schema nodeSchema) {
+		Schema edgeSchema = PrefuseLib.getVisualItemSchema();
+		edgeSchema.addColumn(Tree.DEFAULT_SOURCE_KEY, int.class, new Integer(-1));
+		edgeSchema.addColumn(Tree.DEFAULT_TARGET_KEY, int.class, new Integer(-1));
+
+		return addTree(group, nodeSchema, edgeSchema);
+	}
+
+	/**
+	 * Add an empty VisualTree to this visualization, using the given data
+	 * group name and node/edge schemas. This adds a group of VisualItems that do
+	 * not have a backing data set, useful for creating interactive visual
+	 * objects that do not represent data. An exception will be thrown if the
+	 * group name is already in use.
+	 *
+	 * @param group      the data group name for the visualized data
+	 * @param nodeSchema the data schema to use for the visual node table
+	 * @param edgeSchema the data schema to use for the visual edge table
+	 * @return the added VisualTree
+	 */
+	public synchronized VisualTree addTree(String group, Schema nodeSchema, Schema edgeSchema) {
+		checkGroupExists(group); // check before adding sub-tables
+		String ngroup = PrefuseLib.getGroupName(group, Graph.NODES);
+		String egroup = PrefuseLib.getGroupName(group, Graph.EDGES);
+
+		VisualTable nt, et;
+		nt = new VisualTable(this, ngroup, nodeSchema);
+		addDataGroup(ngroup, nt, null);
+		et = new VisualTable(this, egroup, edgeSchema);
+		addDataGroup(egroup, et, null);
+
+		VisualTree vt = new VisualTree(nt, et, null,
+				Tree.DEFAULT_SOURCE_KEY, Tree.DEFAULT_TARGET_KEY);
+		vt.setVisualization(this);
+		vt.setGroup(group);
+
+		addDataGroup(group, vt, null);
+
+		TupleManager ntm = new TupleManager(nt, vt, TableNodeItem.class);
+		TupleManager etm = new TupleManager(et, vt, TableEdgeItem.class);
+		nt.setTupleManager(ntm);
+		et.setTupleManager(etm);
+		vt.setTupleManagers(ntm, etm);
+
+		return vt;
+	}
+
+	/**
 	 * Adds a tree to this visualization, using the given data group
 	 * name. A visual abstraction of the data will be created and registered
 	 * with the visualization. An exception will be thrown if the group name
@@ -921,8 +979,8 @@ public class Visualization {
 	 * @param group the visual data group
 	 * @return the requested data group, or null if not found
 	 */
-	public TupleSet getVisualGroup(String group) {
-		return (TupleSet) m_visual.get(group);
+	public VisualTupleSet getVisualGroup(String group) {
+		return (VisualTupleSet) m_visual.get(group);
 	}
 
 	/**
@@ -1116,6 +1174,15 @@ public class Visualization {
 
 	// ------------------------------------------------------------------------
 	// Action Methods
+
+	/**
+	 * Get the full action list as ActivityMap.
+	 *
+	 * @return the m_actions
+	 */
+	public ActivityMap getActions() {
+		return m_actions;
+	}
 
 	/**
 	 * Add a data processing Action to this Visualization. The Action will be

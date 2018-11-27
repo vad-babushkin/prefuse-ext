@@ -344,7 +344,7 @@ public class TreeIndex implements Index, ColumnListener, TableListener {
 	 */
 	public IntIterator rows(int lo, int hi, int type) {
 		if (!(m_index instanceof IntIntSortedMap))
-			throw new IllegalStateException();
+			throw new IllegalStateException("Index is of class " + m_index.getClass().getSimpleName());
 
 		boolean reverse = (type & Index.TYPE_DESCENDING) > 0;
 		boolean linc = (type & Index.TYPE_LEFT_INCLUSIVE) > 0;

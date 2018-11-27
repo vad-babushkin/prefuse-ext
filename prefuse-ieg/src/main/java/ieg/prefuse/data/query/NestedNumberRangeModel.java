@@ -3,46 +3,43 @@ package ieg.prefuse.data.query;
 import prefuse.data.query.NumberRangeModel;
 
 /**
- * 
- * 
  * <p>
  * Added:          / TL<br>
- * Modifications: 
+ * Modifications:
  * </p>
- * 
- * @author Tim Lammarsch
  *
+ * @author Tim Lammarsch
  */
 public class NestedNumberRangeModel extends NumberRangeModel {
 
-    private static final long serialVersionUID = 1L;
-    
-    protected Number[] min;
+	private static final long serialVersionUID = 1L;
+
+	protected Number[] min;
 	protected Number[] max;
-	
+
 	/**
-	 * 
+	 *
 	 */
-	public NestedNumberRangeModel(Number lo, Number hi,Number[] min, Number[] max) {
-		super(lo,hi,lo,hi);
-		
+	public NestedNumberRangeModel(Number lo, Number hi, Number[] min, Number[] max) {
+		super(lo, hi, lo, hi);
+
 		this.min = min;
 		this.max = max;
-		
+
 		recalculateMinMax();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private void recalculateMinMax() {
 		double lmin = 1;
 		double lmax = 1;
-		for(int i=0; i<min.length; i++) {
+		for (int i = 0; i < min.length; i++) {
 			lmin *= min[i].doubleValue();
 			lmax *= max[i].doubleValue();
 		}
-		setValueRange((Number)getLowValue(), (Number)getHighValue(), lmin, lmax);
+		setValueRange((Number) getLowValue(), (Number) getHighValue(), lmin, lmax);
 	}
 
 	/**
