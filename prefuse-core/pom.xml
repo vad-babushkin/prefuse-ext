@@ -3,12 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>Prefuse</groupId>
-		<artifactId>Prefuse</artifactId>
+        <groupId>com.albedo.prefuse</groupId>
+        <artifactId>Prefuse</artifactId>
 		<version>1.0</version>
 	</parent>
 
-	<groupId>Prefuse</groupId>
 	<artifactId>prefuse-core</artifactId>
 	<version>${prefuse-core.version}</version>
 	<packaging>jar</packaging>

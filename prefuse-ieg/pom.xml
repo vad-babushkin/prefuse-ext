@@ -3,12 +3,11 @@
   	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>Prefuse</groupId>
-		<artifactId>Prefuse</artifactId>
+        <groupId>com.albedo.prefuse</groupId>
+        <artifactId>Prefuse</artifactId>
 		<version>1.0</version>
 	</parent>
 
-  	<groupId>prefuse</groupId>
   	<artifactId>prefuse-ieg</artifactId>
   	<version>${prefuse-ieg.version}</version>
   	<packaging>jar</packaging>
@@ -18,11 +17,9 @@
 	<dependencies>
 		<!--JDBC-->
 		<dependency>
-			<groupId>Prefuse</groupId>
-			<artifactId>prefuse-core</artifactId>
-			<version>1.0</version>
-			<!--<version>${mysql-connector-java.version}</version>-->
-			<!--<scope>compile</scope>-->
+			<groupId>com.albedo.prefuse</groupId>
+			<artifactId>prefuse-core-ieg</artifactId>
+			<version>${prefuse-core-ieg.version}</version>
 		</dependency>
 
 	</dependencies>

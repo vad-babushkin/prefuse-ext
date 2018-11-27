@@ -25,7 +25,11 @@ for several projects which depend on Prefuse. All changes are released under the
 
 # prefuse-core
 
-Original project fork [GitHub](https://github.com/prefuse/Prefuse) with refactoring
+Copy of original project [GitHub](https://github.com/prefuse/Prefuse) with refactoring
+
+# prefuse-core-ie
+
+Fork [GitHub](https://github.com/ieg-vienna/Prefuse) with refactoring
 
 # prefuse-ieg
 
