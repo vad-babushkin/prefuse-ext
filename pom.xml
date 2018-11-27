@@ -4,10 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>prefuse</groupId>
-	<artifactId>prefuse</artifactId>
+	<groupId>Prefuse</groupId>
+	<artifactId>Prefuse</artifactId>
 	<version>1.0</version>
-
+	<packaging>pom</packaging>
 
 	<repositories>
 		<repository>
@@ -208,9 +208,6 @@
 	</dependencies>
 
 	<build>
-		<sourceDirectory>src/main/java</sourceDirectory>
-		<testSourceDirectory>src/test/java</testSourceDirectory>
-
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -226,26 +223,6 @@
 		</pluginManagement>
 
 		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>3.0.0</version>
-				<executions>
-					<execution>
-						<id>add-source</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/demo/java</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
@@ -300,6 +277,14 @@
 		<maven-jar-plugin.version>2.4</maven-jar-plugin.version>
 		<maven-war-plugin.version>2.6</maven-war-plugin.version>
 
-	</properties>
+		<prefuse-core.version>1.0</prefuse-core.version>
+		<prefuse-ieg.version>1.0</prefuse-ieg.version>
 
+	</properties>
+	
+    <modules>
+        <module>prefuse-core</module>
+        <module>prefuse-ieg</module>
+    </modules>
+	
 </project>
