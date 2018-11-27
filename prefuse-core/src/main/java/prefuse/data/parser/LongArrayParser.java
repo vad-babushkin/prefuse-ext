@@ -44,6 +44,9 @@ public class LongArrayParser implements DataParser {
 	 * @see prefuse.data.parser.DataParser#canParse(java.lang.String)
 	 */
 	public boolean canParse(String text) {
+		if (text.length() == 0) {
+			return false;
+		}
 		try {
 			StringTokenizer st = new StringTokenizer(text, "\"[](){}, ");
 			while (st.hasMoreTokens()) {
