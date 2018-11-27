@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.albedo.prefuse</groupId>
+        <artifactId>Prefuse</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <artifactId>prefuse-ieg-demos</artifactId>
+    <version>${prefuse-ieg-demos.version}</version>
+    <packaging>jar</packaging>
+    <name>prefuse-ieg-demos</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.albedo.prefuse</groupId>
+            <artifactId>prefuse-core-ieg</artifactId>
+            <version>${prefuse-core-ieg.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.albedo.prefuse</groupId>
+            <artifactId>prefuse-ieg</artifactId>
+            <version>${prefuse-ieg.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons-lang.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.fortuna.ical4j</groupId>
+            <artifactId>ical4j</artifactId>
+            <version>1.0-rc3-atlassian-11</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.github.lucarosellini.rJava/JRI -->
+        <dependency>
+            <groupId>com.github.lucarosellini.rJava</groupId>
+            <artifactId>JRI</artifactId>
+            <version>0.9-7</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.lucarosellini.rJava/REngine -->
+        <dependency>
+            <groupId>com.github.lucarosellini.rJava</groupId>
+            <artifactId>REngine</artifactId>
+            <version>0.9-7</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.lucarosellini.rJava/JRIEngine -->
+        <dependency>
+            <groupId>com.github.lucarosellini.rJava</groupId>
+            <artifactId>JRIEngine</artifactId>
+            <version>0.9-7</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.rosuda.REngine/Rserve -->
+        <dependency>
+            <groupId>org.rosuda.REngine</groupId>
+            <artifactId>Rserve</artifactId>
+            <version>1.8.1</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/demo/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>

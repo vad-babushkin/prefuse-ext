@@ -254,6 +254,7 @@
 
 		<commons.io.version>2.4</commons.io.version>
 		<commons-lang.version>2.5</commons-lang.version>
+		<commons-lang3.version>3.7</commons-lang3.version>
 		<commons-beanutils.version>1.9.2</commons-beanutils.version>
 
 		<!--MAVEN-->
@@ -266,6 +267,7 @@
 		<prefuse-core-ieg.version>1.0</prefuse-core-ieg.version>
 		<prefuse-ieg.version>1.0</prefuse-ieg.version>
 		<prefuse-ext-demos.version>1.0</prefuse-ext-demos.version>
+		<prefuse-ieg-demos.version>1.0</prefuse-ieg-demos.version>
 
 	</properties>
 	
@@ -274,6 +276,7 @@
         <module>prefuse-core-ieg</module>
         <module>prefuse-ieg</module>
 	    <module>prefuse-ext-demos</module>
+        <module>prefuse-ieg-demos</module>
     </modules>
 	
 </project>
