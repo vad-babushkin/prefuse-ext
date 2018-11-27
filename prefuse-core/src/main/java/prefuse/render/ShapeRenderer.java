@@ -20,7 +20,7 @@ public class ShapeRenderer extends AbstractShapeRenderer {
 
 	private Ellipse2D m_ellipse = new Ellipse2D.Double();
 	private Rectangle2D m_rect = new Rectangle2D.Double();
-	private GeneralPath m_path = new GeneralPath();
+	protected GeneralPath m_path = new GeneralPath();
 
 	/**
 	 * Creates a new ShapeRenderer with default base size of 10 pixels.

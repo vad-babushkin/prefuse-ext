@@ -2,11 +2,30 @@
   	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>Prefuse</groupId>
+		<artifactId>Prefuse</artifactId>
+		<version>1.0</version>
+	</parent>
+
   	<groupId>prefuse</groupId>
   	<artifactId>prefuse-ieg</artifactId>
-  	<version>0.0.1-SNAPSHOT</version>
+  	<version>${prefuse-ieg.version}</version>
   	<packaging>jar</packaging>
 
   	<name>prefuse-ieg</name>
+
+	<dependencies>
+		<!--JDBC-->
+		<dependency>
+			<groupId>Prefuse</groupId>
+			<artifactId>prefuse-core</artifactId>
+			<version>1.0</version>
+			<!--<version>${mysql-connector-java.version}</version>-->
+			<!--<scope>compile</scope>-->
+		</dependency>
+
+	</dependencies>
+
 
 </project>
