@@ -11,7 +11,6 @@
   	<artifactId>prefuse-ieg</artifactId>
   	<version>${prefuse-ieg.version}</version>
   	<packaging>jar</packaging>
-
   	<name>prefuse-ieg</name>
 
 	<dependencies>

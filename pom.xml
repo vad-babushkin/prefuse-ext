@@ -265,6 +265,7 @@
 		<prefuse-core.version>1.0</prefuse-core.version>
 		<prefuse-core-ieg.version>1.0</prefuse-core-ieg.version>
 		<prefuse-ieg.version>1.0</prefuse-ieg.version>
+		<prefuse-ext-demos.version>1.0</prefuse-ext-demos.version>
 
 	</properties>
 	
@@ -272,6 +273,7 @@
         <module>prefuse-core</module>
         <module>prefuse-core-ieg</module>
         <module>prefuse-ieg</module>
+	    <module>prefuse-ext-demos</module>
     </modules>
 	
 </project>

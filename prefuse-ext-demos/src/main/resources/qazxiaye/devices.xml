@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<devices>
+  <pop_nb>2 3 5</pop_nb>
+  <mobile_link>10Mbps 200us</mobile_link>
+  <house_link>10Mbps 200us</house_link>
+  <wifi_link>54Mbps 50us</wifi_link>
+  <other_link>1000Mbps 100us</other_link>
+<cloud>
+  <id>0</id>
+  <capacity>668Mf 8</capacity>
+  <nb>8</nb>
+  <connect>pop0 pop1</connect>
+</cloud>
+<cloud>
+  <id>1</id>
+  <capacity>720Mf 4</capacity>
+  <nb>8</nb>
+  <connect>pop0 pop1</connect>
+</cloud>
+<cloud>
+  <id>2</id>
+  <capacity>883Mf 4</capacity>
+  <nb>4</nb>
+  <connect>pop0 pop1</connect>
+</cloud>
+<pop>
+  <id>0</id>
+  <capacity>21Mf 2</capacity>
+  <connect> pop4</connect>
+</pop>
+<pop>
+  <id>1</id>
+  <capacity>22Mf 2</capacity>
+  <connect> pop2 pop3</connect>
+</pop>
+<pop>
+  <id>2</id>
+  <capacity>14Mf 2</capacity>
+  <connect> pop3 pop4 pop5 pop8</connect>
+</pop>
+<pop>
+  <id>3</id>
+  <capacity>22Mf 4</capacity>
+  <connect> pop6 pop7 pop8 pop9</connect>
+</pop>
+<pop>
+  <id>4</id>
+  <capacity>13Mf 4</capacity>
+  <connect> pop9</connect>
+</pop>
+<pop>
+  <id>5</id>
+  <capacity>18Mf 2</capacity>
+  <connect> pop7 pop9</connect>
+  <cover>0 0 600 650</cover>
+</pop>
+<pop>
+  <id>6</id>
+  <capacity>22Mf 4</capacity>
+  <connect> pop7 pop9</connect>
+  <cover>600 0 1200 650</cover>
+</pop>
+<pop>
+  <id>7</id>
+  <capacity>14Mf 4</capacity>
+  <connect> pop8</connect>
+  <cover>0 650 600 1300</cover>
+</pop>
+<pop>
+  <id>8</id>
+  <capacity>21Mf 2</capacity>
+  <connect> pop9</connect>
+  <cover>600 650 1200 975</cover>
+</pop>
+<pop>
+  <id>9</id>
+  <capacity>16Mf 4</capacity>
+  <cover>600 975 1200 1300</cover>
+</pop>
+<bs>
+  <id>0</id>
+  <capacity>15Mf 2</capacity>
+  <cover>0 0 1200 650</cover>
+  <connect>pop5</connect>
+</bs>
+<bs>
+  <id>1</id>
+  <capacity>13Mf 4</capacity>
+  <cover>0 650 600 1300</cover>
+  <connect>pop7</connect>
+</bs>
+<bs>
+  <id>2</id>
+  <capacity>21Mf 2</capacity>
+  <cover>600 650 1200 1300</cover>
+  <connect>pop8</connect>
+</bs>
+<mobile>
+  <id>0</id>
+  <capacity>11Mf 2</capacity>
+</mobile>
+<mobile>
+  <id>1</id>
+  <capacity>11Mf 2</capacity>
+</mobile>
+<mobile>
+  <id>2</id>
+  <capacity>12Mf 1</capacity>
+</mobile>
+<mobile>
+  <id>3</id>
+  <capacity>11Mf 1</capacity>
+</mobile>
+<mobile>
+  <id>4</id>
+  <capacity>12Mf 1</capacity>
+</mobile>
+<mobile>
+  <id>5</id>
+  <capacity>10Mf 1</capacity>
+</mobile>
+<mobile>
+  <id>6</id>
+  <capacity>11Mf 2</capacity>
+</mobile>
+<mobile>
+  <id>7</id>
+  <capacity>8Mf 1</capacity>
+</mobile>
+<mobile>
+  <id>8</id>
+  <capacity>8Mf 1</capacity>
+</mobile>
+<mobile>
+  <id>9</id>
+  <capacity>11Mf 1</capacity>
+</mobile>
+<house>
+  <id>0</id>
+  <box>6Mf 1</box>
+  <pc>17Mf 4</pc>
+  <pc>15Mf 2</pc>
+</house>
+<house>
+  <id>1</id>
+  <box>6Mf 1</box>
+  <pc>15Mf 4</pc>
+  <pc>22Mf 2</pc>
+</house>
+<house>
+  <id>2</id>
+  <box>6Mf 1</box>
+  <pc>20Mf 2</pc>
+</house>
+<house>
+  <id>3</id>
+  <box>6Mf 1</box>
+  <pc>23Mf 2</pc>
+  <pc>22Mf 2</pc>
+</house>
+</devices>

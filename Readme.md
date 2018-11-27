@@ -18,19 +18,26 @@ It was developed until 2007 by its original author, [Jeffrey Heer](http://homes.
 Prefuse is licensed under the terms of a [BSD license](prefuse-core/license-prefuse.txt) and can be freely used for 
 both commercial and non-commercial purposes. The original website is at [prefuse.org](http://prefuse.org/).
 
-This project at [GitHub](https://github.com/vad-babushkin/Prefuse) is a fork which aims at providing easy maven access 
+This project at [vad-babushkin/Prefuse](https://github.com/vad-babushkin/Prefuse) is a fork which aims at providing easy maven access 
 for several projects which depend on Prefuse. All changes are released under the same original license.
 
 # Modules
 
 # prefuse-core
 
-Copy of original project [GitHub](https://github.com/prefuse/Prefuse) with refactoring
+Copy of original project [prefuse/Prefuse](https://github.com/prefuse/Prefuse) with refactoring
 
 # prefuse-core-ie
 
-Fork [GitHub](https://github.com/ieg-vienna/Prefuse) with refactoring
+Fork [ieg-vienna/Prefuse](https://github.com/ieg-vienna/Prefuse) with refactoring
 
 # prefuse-ieg
 
-Common Java classes to extend the InfoVis library prefuse [GitHub](http://github.com/ieg-vienna/ieg-prefuse)
+Common Java classes to extend the InfoVis library prefuse [ieg-vienna/ieg-prefuse](http://github.com/ieg-vienna/ieg-prefuse)
+
+# prefuse-ext-demos
+
+Demos from:
+
+- [markhm/prefuse_demos](https://github.com/markhm/prefuse_demos)
+- [qazxiaye/prefuseDemo_NetTopology](https://github.com/qazxiaye/prefuseDemo_NetTopology)
