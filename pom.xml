@@ -267,7 +267,7 @@
 		<prefuse-core-ieg.version>1.0</prefuse-core-ieg.version>
 		<prefuse-ieg.version>1.0</prefuse-ieg.version>
 		<prefuse-ext-demos.version>1.0</prefuse-ext-demos.version>
-		<prefuse-ieg-demos.version>1.0</prefuse-ieg-demos.version>
+		<prefuse-ieg-timeBench.version>1.0</prefuse-ieg-timeBench.version>
 
 	</properties>
 	
@@ -276,7 +276,7 @@
         <module>prefuse-core-ieg</module>
         <module>prefuse-ieg</module>
 	    <module>prefuse-ext-demos</module>
-        <module>prefuse-ieg-demos</module>
+        <module>prefuse-ieg-timeBench</module>
     </modules>
 	
 </project>

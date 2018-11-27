@@ -23,19 +23,23 @@ for several projects which depend on Prefuse. All changes are released under the
 
 # Modules
 
-# prefuse-core
+## prefuse-core
 
 Copy of original project [prefuse/Prefuse](https://github.com/prefuse/Prefuse) with refactoring
 
-# prefuse-core-ie
+## prefuse-core-ie
 
 Fork [ieg-vienna/Prefuse](https://github.com/ieg-vienna/Prefuse) with refactoring
 
-# prefuse-ieg
+## prefuse-ieg
 
 Common Java classes to extend the InfoVis library prefuse [ieg-vienna/ieg-prefuse](http://github.com/ieg-vienna/ieg-prefuse)
 
-# prefuse-ext-demos
+## prefuse-ieg-timeBench
+
+[ieg-vienna/TimeBench](http://github.com/ieg-vienna/TimeBench)
+
+## prefuse-ext-demos
 
 Demos from:
 
