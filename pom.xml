@@ -269,6 +269,7 @@
 	
     <modules>
         <module>prefuse-core</module>
+        <module>prefuse-core-ieg</module>
         <module>prefuse-ieg</module>
     </modules>
 	
