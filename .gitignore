@@ -1,6 +1,18 @@
-.idea
+# Intellij IDEA projects stuff
+.idea/
+*.iws
+*.ipr
 *.iml
-target
-*.DS_Store
-.mvn
-mvn*
+*.ids
+
+# Intellij IDEA plugins stuff
+atlassian-ide-plugin.xml
+
+# Intellij IDEA sub-modules stuff
+*/*.iml
+
+# Project's compiled files
+*/target/
+
+.flattened-pom.xml
+/target/
