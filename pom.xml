@@ -8,6 +8,7 @@
 	<artifactId>prefuse</artifactId>
 	<version>1.0</version>
 
+
 	<repositories>
 		<repository>
 			<id>central.maven.org</id>
@@ -207,6 +208,9 @@
 	</dependencies>
 
 	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<testSourceDirectory>src/test/java</testSourceDirectory>
+
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -220,7 +224,28 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+
 		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/demo/java</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
@@ -245,6 +270,7 @@
 				</executions>
 			</plugin>
 		</plugins>
+
 	</build>
 
 	<properties>
