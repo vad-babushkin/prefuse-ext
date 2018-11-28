@@ -1,0 +1,133 @@
+
+options {
+STATIC=false;
+}
+
+PARSER_BEGIN(CaffeParser)
+package com.caffetools.javacc;
+
+import com.caffetools.vizualization.CaffeBlock;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CaffeParser {
+    List<CaffeBlock> list;
+
+    public void add(CaffeBlock block){
+        if(list==null){
+            list = new ArrayList<CaffeBlock>();
+        }
+        list.add(block);
+    }
+
+    public List<CaffeBlock> getPrototxtNodes(){
+        return list;
+    }
+/*
+  public static void main(String args[]) throws ParseException {
+    CaffeParser parser = new CaffeParser(System.in);
+    parser.caffeFile();
+  }
+*/
+
+}
+
+PARSER_END(CaffeParser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| < "#" (~["\n"])* "\n" >
+}
+
+TOKEN :
+{
+  <LBRACE: "{"> |
+  <RBRACE: "}"> |
+  <SEMICOLON: ":"> |
+  <LITERAL: ["a"-"z","A"-"Z", "_"] (["a"-"z","A"-"Z","0"-"9","_"])* > |
+  <STRING: "\"" ( ( ~["\"","\\","\n","\r"])
+                      | ("\\" (
+                                ["n","t","v","b","r","f","a","\\","?","'","\""]
+                               |
+                                "0" (["0"-"7"])*
+                               |
+                                ["1"-"9"] (["0"-"9"])*
+                               |
+                                ("0x" | "0X") (["0"-"9","a"-"f","A"-"F"])+
+                              )
+                        )
+                      )*
+                      "\"" > |
+  < INTEGER_LITERAL:
+        <DECIMAL_LITERAL> (["l","L"])?
+      | <HEX_LITERAL> (["l","L"])?
+      | <OCTAL_LITERAL> (["l","L"])?
+  >
+|
+  < #DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
+|
+  < #HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ >
+|
+  < #OCTAL_LITERAL: "0" (["0"-"7"])* >
+|
+  < FP_LITERAL:
+        (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
+      | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
+      | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
+      | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]
+  >
+|
+  < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+
+}
+void caffeFile() :
+{
+    CaffeBlock block;
+}
+{
+    ( LOOKAHEAD(2) <LITERAL> <SEMICOLON> <STRING> )?
+    ( block = caffeBlock() { add(block); } )*
+}
+
+CaffeBlock caffeBlock() :
+{
+    CaffeBlock cb = new CaffeBlock("layers");
+    Token t;
+}
+{
+ t = <LITERAL> <LBRACE>
+ ( properties(cb) )*
+ <RBRACE>
+ {
+    cb.setBlockKind(t.image);
+    return cb;
+ }
+}
+
+void properties( CaffeBlock block ) :
+{ Token t1, t2; }
+{
+  t1 = <LITERAL>  (
+                  ( <SEMICOLON> (
+                            t2 = <LITERAL>{ block.add(t1, t2); } |
+                            t2 = <STRING> { block.add(t1, t2); } |
+                            t2 = <INTEGER_LITERAL> { block.add(t1, t2); } |
+                            t2 = <FP_LITERAL> { block.add(t1, t2); } |
+                            includePhase( t1.image )
+                            )) |
+                  (  <LBRACE>  {CaffeBlock cb = new CaffeBlock(t1.image); } ( properties(cb) )* { block.add(t1.image, cb); } <RBRACE> )
+                  )
+}
+
+void includePhase( String name ) :
+{
+    CaffeBlock b = new CaffeBlock(name);
+}
+{
+    <LBRACE> ( properties(b) )* <RBRACE>
+}
+

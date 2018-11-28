@@ -47,6 +47,10 @@ Common Java classes to extend the InfoVis library prefuse [ieg-vienna/ieg-prefus
 
 [ieg-vienna/EvalBench](http://github.com/ieg-vienna/EvalBench)
 
+## prefuse-caffe-layout-visualization
+
+[thingumajig/prefuse-caffe-layout-visualization](https://github.com/thingumajig/prefuse-caffe-layout-visualization)
+
 ## prefuse-ext-demos
 
 Demos from:
