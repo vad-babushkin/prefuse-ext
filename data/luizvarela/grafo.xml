@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+	<graph edgedefault="undirected">
+
+		<!-- data schema -->
+		<key id="name" for="node" attr.name="name" attr.type="string"/>
+		<key id="weight" for="edge" attr.name="weight" attr.type="double"/>
+
+		<!-- nodes -->  
+		<node id="1">
+			<data key="name">A</data>
+		</node>
+		<node id="101">
+			<data key="name">F</data>
+		</node>
+		<node id="201">
+			<data key="name">I</data>
+		</node>
+		<node id="5">
+			<data key="name">C</data>
+		</node>
+		<node id="105">
+			<data key="name">D</data>
+		</node>
+		<edge source="1" target="5" weight="0"></edge>
+			
+		<edge source="1" target="105" weight="100"></edge>
+			
+		<edge source="101" target="5" weight="1"></edge>
+			
+		<edge source="101" target="105" weight="101"></edge>
+			
+		<edge source="201" target="5" weight="2"></edge>
+			
+		<edge source="201" target="105" weight="102"></edge>
+			
+
+	</graph>
+</graphml>

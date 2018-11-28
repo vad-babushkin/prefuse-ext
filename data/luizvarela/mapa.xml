@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<mapa>
+    <vertice init="true" x="200" y="200" nome="FARN">
+        <arestas peso="6" destino="Tirol" />
+        <arestas peso="5" destino="Petropolis" />
+    </vertice>
+    <vertice x="400" y="100" nome="Tirol">
+        <arestas peso="6" destino="Alecrim" />
+        <arestas peso="10" destino="Dix-Sept-Rosado" />
+        <arestas peso="2" destino="Petropolis" />
+    </vertice>
+    <vertice x="400" y="300" nome="Petropolis">
+        <arestas peso="3" destino="Alecrim" />		
+    </vertice>
+    <vertice x="600" y="100" nome="Alecrim">
+        <arestas peso="3" destino="Dix-Sept-Rosado" />
+    </vertice>
+    <vertice fim="true" x="600" y="300" nome="Dix-Sept-Rosado" />
+</mapa>
