@@ -138,23 +138,23 @@
 				</executions>
 			</plugin>
 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.6.0</version>
-				<executions>
-					<execution>
-						<id>my-execution</id>
-						<phase>package</phase>
-						<goals>
-							<goal>java</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<mainClass>com.caffetools.vizualization.CaffeViz</mainClass>
-				</configuration>
-			</plugin>
+			<!--<plugin>-->
+				<!--<groupId>org.codehaus.mojo</groupId>-->
+				<!--<artifactId>exec-maven-plugin</artifactId>-->
+				<!--<version>1.6.0</version>-->
+				<!--<executions>-->
+					<!--<execution>-->
+						<!--<id>my-execution</id>-->
+						<!--<phase>package</phase>-->
+						<!--<goals>-->
+							<!--<goal>java</goal>-->
+						<!--</goals>-->
+					<!--</execution>-->
+				<!--</executions>-->
+				<!--<configuration>-->
+					<!--<mainClass>com.caffetools.vizualization.CaffeViz</mainClass>-->
+				<!--</configuration>-->
+			<!--</plugin>-->
 
 		</plugins>
 		<resources>
