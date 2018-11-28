@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="quantitativeTask" type="quantitativeQuestion"/>
+
+  <xs:element name="task" type="taskType"/>
+
+  <xs:element name="taskList" type="taskListType"/>
+
+  <xs:complexType name="taskListType">
+    <xs:sequence>
+      <xs:element ref="task" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="taskType">
+    <xs:all>
+      <xs:element name="configuration">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="entry" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="key" minOccurs="0" type="xs:string"/>
+                  <xs:element name="value" minOccurs="0" type="xs:string"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="finishDate" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="questions">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="choice-selection" type="choiceSelectionQuestion"/>
+              <xs:element name="quantitative" type="quantitativeQuestion"/>
+              <xs:element name="text-input" type="textInputQuestion"/>
+              <xs:element name="date" type="dateQuestion"/>
+              <xs:element name="likert" type="likertskalaQuestion"/>
+              <xs:element name="item-selection" type="itemSelectionQuestion"/>
+              <xs:element name="yesno" type="yesNoQuestion"/>
+            </xs:choice>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="runningIndex" type="xs:int" minOccurs="0"/>
+      <xs:element name="screenshotFilename" type="xs:string" minOccurs="0"/>
+      <xs:element name="startDate" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="task-description" type="xs:string" minOccurs="0"/>
+      <xs:element name="task-instruction" type="xs:string" minOccurs="0"/>
+      <xs:element name="task-type" type="xs:string" minOccurs="0"/>
+    </xs:all>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="choiceSelectionQuestion">
+    <xs:complexContent>
+      <xs:extension base="questionType">
+        <xs:sequence>
+          <xs:element name="correctAnswers" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="correctAnswer" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="givenAnswers" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="givenAnswer" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="maxChoices" type="xs:int" nillable="true" default="1" minOccurs="0"/>
+          <xs:element name="possibleAnswers" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="possibleAnswer" type="choiceOption" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="questionType" abstract="true">
+    <xs:sequence>
+      <xs:element name="question-text" type="xs:string"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="choiceOption">
+    <xs:sequence>
+      <xs:element name="displayLabel" type="xs:string" minOccurs="0"/>
+      <xs:element name="image" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="label" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="quantitativeQuestion">
+    <xs:complexContent>
+      <xs:extension base="questionType">
+        <xs:sequence>
+          <xs:element name="correctValue" type="xs:double" minOccurs="0"/>
+          <xs:element name="givenAnswer" type="xs:double" minOccurs="0"/>
+          <xs:element name="is-integer" type="xs:boolean" default="true"/>
+          <xs:element name="maximum" type="xs:double"/>
+          <xs:element name="maximumString" type="xs:string" minOccurs="0"/>
+          <xs:element name="minimum" type="xs:double"/>
+          <xs:element name="minimumString" type="xs:string" minOccurs="0"/>
+          <xs:element name="step-size" type="xs:double" default="1.0"/>
+          <xs:element name="tolerance" type="xs:double" minOccurs="0"/>
+          <xs:element name="unit" type="xs:string" default="" minOccurs="0"/>
+          <xs:element name="use-spinner" type="xs:boolean" default="true"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="textInputQuestion">
+    <xs:complexContent>
+      <xs:extension base="questionType">
+        <xs:sequence>
+          <xs:element name="correctAnswer" type="xs:string" minOccurs="0"/>
+          <xs:element name="givenAnswer" type="xs:string" minOccurs="0"/>
+          <xs:element name="regEx" type="xs:string" minOccurs="0"/>
+          <xs:element name="singleLine" type="xs:boolean" default="true"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="dateQuestion">
+    <xs:complexContent>
+      <xs:extension base="questionType">
+        <xs:sequence>
+          <xs:element name="correctAnswer" type="xs:dateTime" minOccurs="0"/>
+          <xs:element name="givenAnswer" type="xs:dateTime" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="likertskalaQuestion">
+    <xs:complexContent>
+      <xs:extension base="questionType">
+        <xs:sequence>
+          <xs:element name="correctAnswer" type="xs:int" minOccurs="0"/>
+          <xs:element name="count-options" type="xs:int"/>
+          <xs:element name="givenAnswer" type="xs:int" minOccurs="0"/>
+          <xs:element name="left-label" type="xs:string" minOccurs="0"/>
+          <xs:element name="right-label" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="itemSelectionQuestion">
+    <xs:complexContent>
+      <xs:extension base="questionType">
+        <xs:sequence>
+          <xs:element name="correctAnswers" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="correctAnswer" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="givenAnswers" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="givenAnswer" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="yesNoQuestion">
+    <xs:complexContent>
+      <xs:extension base="questionType">
+        <xs:sequence>
+          <xs:element name="correctAnswer" type="xs:boolean" minOccurs="0"/>
+          <xs:element name="givenAnswer" type="xs:boolean" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>
+

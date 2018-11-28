@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<taskList>
+	<task id="TaskId1">
+		<configuration/>
+		<task-description>Task containing a single choice question.</task-description>
+		<task-instruction>Select one of the following options. (Hint: the correct answer is the first option)</task-instruction>
+		<task-type>TaskTypeDemoExampleChoice</task-type>
+		<questions>
+			<choice-selection id="q1">
+				<question-text>Select option:</question-text>
+				<correctAnswers>
+					<correctAnswer>option1</correctAnswer>
+				</correctAnswers>
+				<maxChoices>1</maxChoices>
+				<possibleAnswers>
+					<possibleAnswer label="option1">
+						<displayLabel>Option 1</displayLabel>
+					</possibleAnswer>
+					<possibleAnswer label="Option 2">
+                    </possibleAnswer>
+					<possibleAnswer label="option3">
+						<displayLabel>Option 3</displayLabel>
+					</possibleAnswer>
+				</possibleAnswers>
+			</choice-selection>
+		</questions>
+	</task>
+	<task id="TaskId2">
+		<configuration/>
+		<task-description>Task containing a multiple choice question.</task-description>
+		<task-instruction>Select one or more of the following options. (Hint: the correct answer is the first and the third option)</task-instruction>
+		<task-type>TaskTypeDemoExampleChoice</task-type>
+		<questions>
+			<choice-selection id="q1">
+				<question-text>Select option(s):</question-text>
+				<correctAnswers>
+					<correctAnswer>option1</correctAnswer>
+					<correctAnswer>option3</correctAnswer>
+				</correctAnswers>
+				<maxChoices>2</maxChoices>
+				<possibleAnswers>
+					<possibleAnswer label="option1">
+						<displayLabel>Option 1</displayLabel>
+					</possibleAnswer>
+					<possibleAnswer label="option2">
+						<displayLabel>Option 2</displayLabel>
+					</possibleAnswer>
+					<possibleAnswer label="option3">
+						<displayLabel>Option 3</displayLabel>
+					</possibleAnswer>
+				</possibleAnswers>
+			</choice-selection>
+		</questions>
+	</task>
+	<task id="TaskId3">
+		<task-description>Task containing a text question. </task-description>
+		<task-instruction>Enter a text. (Hint: the correct answer is "correct").</task-instruction>
+		<task-type>TaskTypeDemoExampleText</task-type>
+		<configuration/>
+		<questions>
+			<text-input id="q1">
+				<question-text>Enter:</question-text>
+				<correctAnswer>correct</correctAnswer>
+				<regEx>[a-z]*</regEx>
+				<singleLine>false</singleLine>
+			</text-input>
+		</questions>
+	</task>
+	<task id="TaskId4">
+		<task-description>Task containing a quantitative question.</task-description>
+		<task-instruction>Choose a number. (Hint: the correct answer is "0.0")</task-instruction>
+		<task-type>TaskTypeDemoExampleQuantitative</task-type>
+		<configuration/>
+		<questions>
+			<quantitative id="q1">
+				<question-text>Choose:</question-text>
+				<correctValue>0.0</correctValue>
+				<is-integer>false</is-integer>
+				<maximum>100.0</maximum>
+				<maximumString>100</maximumString>
+				<minimum>0.0</minimum>
+				<minimumString>0</minimumString>
+				<step-size>0.0</step-size>
+				<tolerance>11.0</tolerance>
+				<unit>m</unit>
+				<use-spinner>false</use-spinner>
+			</quantitative>
+		</questions>
+	</task>
+	<task id="TaskId5">
+		<task-description>Task containing a quantitative question using a spinner.</task-description>
+		<task-instruction>Enter or choose a number. (Hint: the correct answer is "42")</task-instruction>
+		<task-type>TaskTypeDemoExampleQuantitative</task-type>
+		<configuration/>
+		<questions>
+			<quantitative id="q1">
+				<question-text>Choose:</question-text>
+				<correctValue>42.0</correctValue>
+				<is-integer>false</is-integer>
+				<maximum>100.0</maximum>
+				<minimum>0.0</minimum>
+				<step-size>1.0</step-size>
+				<tolerance>11.0</tolerance>
+				<unit>m</unit>
+				<use-spinner>true</use-spinner>
+			</quantitative>
+		</questions>
+	</task>
+	<task id="TaskId6">
+		<task-description>Task containing a Likert question.</task-description>
+		<task-instruction>Select any item between easy and hard. (Qualitative question: no correctness needed)</task-instruction>
+		<task-type>TaskTypeDemoExampleLikert</task-type>
+		<configuration/>
+		<questions>
+			<likert id="q1">
+				<question-text>Select item:</question-text>
+				<count-options>4</count-options>
+				<left-label>easy</left-label>
+				<right-label>hard</right-label>
+			</likert>
+		</questions>
+	</task>
+	<task id="TaskId7">
+		<task-description>Task containing a date question.</task-description>
+		<task-instruction>Select any date. (Qualitative question: no correctness needed)</task-instruction>
+		<task-type>TaskTypeDemoExampleDate</task-type>
+		<configuration/>
+		<questions>
+			<date id="q1">
+				<question-text>Select date:</question-text>
+			</date>
+		</questions>
+	</task>
+	<task id="TaskId8">
+		<task-description>Task containing a yes/no question.</task-description>
+		<task-instruction>Select yes or no. (Qualitative question: no correctness needed)</task-instruction>
+		<task-type>TaskTypeDemoExampleChoice</task-type>
+		<configuration/>
+		<questions>
+			<yesno id="q1">
+				<question-text>Select:</question-text>
+			</yesno>
+		</questions>
+	</task>
+</taskList>

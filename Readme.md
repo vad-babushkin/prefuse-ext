@@ -43,6 +43,10 @@ Common Java classes to extend the InfoVis library prefuse [ieg-vienna/ieg-prefus
 
 [ieg-vienna/TimeBench](http://github.com/ieg-vienna/TimeBench)
 
+## prefuse-ieg-evalBench
+
+[ieg-vienna/EvalBench](http://github.com/ieg-vienna/EvalBench)
+
 ## prefuse-ext-demos
 
 Demos from:
