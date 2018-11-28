@@ -31,6 +31,10 @@ Copy of original project [prefuse/Prefuse](https://github.com/prefuse/Prefuse) w
 
 Fork [ieg-vienna/Prefuse](https://github.com/ieg-vienna/Prefuse) with refactoring
 
+## prefuse-pleyades
+
+Java classes to extend prefuse. Pleyades platform.
+
 ## prefuse-ieg
 
 Common Java classes to extend the InfoVis library prefuse [ieg-vienna/ieg-prefuse](http://github.com/ieg-vienna/ieg-prefuse)

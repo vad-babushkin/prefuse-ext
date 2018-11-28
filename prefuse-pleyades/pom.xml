@@ -10,10 +10,10 @@
 		<version>1.0</version>
 	</parent>
 
-	<artifactId>prefuse-ext-demos</artifactId>
-	<version>${prefuse-ext-demos.version}</version>
+	<artifactId>prefuse-pleyades</artifactId>
+	<version>${prefuse-pleyades.version}</version>
 	<packaging>jar</packaging>
-	<name>prefuse-ext-demos</name>
+	<name>prefuse-pleyades</name>
 
 	<dependencies>
 		<!-- core -->
@@ -25,28 +25,5 @@
 
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>3.0.0</version>
-				<executions>
-					<execution>
-						<id>add-source</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/demo/java</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 
 </project>
