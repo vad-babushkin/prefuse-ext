@@ -58,3 +58,4 @@ Demos from:
 - [markhm/prefuse_demos](https://github.com/markhm/prefuse_demos)
 - [qazxiaye/prefuseDemo_NetTopology](https://github.com/qazxiaye/prefuseDemo_NetTopology)
 - [roguh/prefusetreevis](https://github.com/roguh/prefusetreevis)
+- [tangwing/MovieGraph](https://github.com/tangwing/MovieGraph)
