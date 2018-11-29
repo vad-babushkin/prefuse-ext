@@ -31,6 +31,26 @@ Copy of original project [prefuse/Prefuse](https://github.com/prefuse/Prefuse) w
 
 Fork [ieg-vienna/Prefuse](https://github.com/ieg-vienna/Prefuse) with refactoring
 
+## profusians
+
+[Profusians](http://goosebumps4all.net/profusians) is an open source "add on" library for the wonderful prefuse 
+visualization toolkit. It aims to
+
+- provide solutions for tasks on top of prefuse
+- inspire other prefuse developer to share their insights about prefuse in form of open source
+- help to shape/establish the SOS license 
+
+##### social open source license (SOS)
+
+Initially planned as a "new" type of license, we boil it down to the following agreement for the time being 
+The profusians library can be used
+
+- in open source projects under GPLv3 license
+- in non open source projects if a certain amount is donated to a NGO of your choice 
+
+So basically this software is licensed under GPLv3 and we will find ways for people to use it under a different license 
+if requested, just [contact](http://goosebumps4all.net/profusians/wiki/Contact) us.
+
 ## prefuse-pleyades
 
 Java classes to extend prefuse. Pleyades platform.

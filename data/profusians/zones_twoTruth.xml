@@ -1,0 +1,8 @@
+<zonexml>
+
+
+<!-- polygon zones-->
+<zone shape = "polygonal" type="flexible" name="blue zone" shapedata="-400,-400,300,300,-200,-200,100,100,0,0,-100,-100,200,200,-300,-300,350,-350,-350,250,250,-150,-150,50,50,-50,-50,150,150,-250,-250,350"  itemcolor="0,0,100" fillcolor="0,0,200"></zone>
+<zone shape = "polygonal" type="flexible" name="yellow zone" shapedata="400,400,-300,-300,200,200,-100,-100,0,0,100,100,-200,-200,300,300,-350,350,350,-250,-250,150,150,-50,-50,50,50,-150,-150,250,250,-350"  itemcolor="255,255,0" fillcolor="255,255,64"></zone>
+
+</zonexml>

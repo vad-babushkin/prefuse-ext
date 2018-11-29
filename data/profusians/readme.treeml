@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- prefuse TreeML Writer | Fri Aug 03 08:52:28 IST 2007 -->
+<tree>
+  <declarations>
+    <attributeDecl name="title" type="String"/>
+    <attributeDecl name="text" type="String"/>
+  </declarations>
+
+  <branch>
+    <attribute name="title" value="good morning"/>
+    <attribute name="text" value="welcome to the world of treefuse"/>
+    <leaf>
+      <attribute name="title" value="Introduction"/>
+      <attribute name="text" value="Treefuse is a very basic tree editing utility."/>
+    </leaf>
+    <branch>
+      <attribute name="title" value="Basic Commands"/>
+      <attribute name="text" value="The following key commands are available at the moment."/>
+      <leaf>
+        <attribute name="title" value="CTRL-H"/>
+        <attribute name="text" value="open this help tree (closed through ESC)"/>
+      </leaf>
+      <leaf>
+        <attribute name="title" value="UP,DOWN, LEFT and RIGHT"/>
+        <attribute name="text" value="please use the keyboard arrow keys to navigate through the tree"/>
+      </leaf>
+      <leaf>
+        <attribute name="title" value="CTRL-UP "/>
+        <attribute name="text" value="swaping the node position of the current node and its previous sibling"/>
+      </leaf>
+      <leaf>
+        <attribute name="title" value="CTRL-DOWN"/>
+        <attribute name="text" value="swaping the node position of the current node and its next sibling"/>
+      </leaf>
+      <leaf>
+        <attribute name="title" value="CTRL-N"/>
+        <attribute name="text" value="adding a new node"/>
+      </leaf>
+      <leaf>
+        <attribute name="title" value="CTRL-R"/>
+        <attribute name="text" value="removing the current node. The removed node's children become children of the removed node's parent"/>
+      </leaf>
+      
+      <leaf>
+        <attribute name="title" value="CTRL-T"/>
+        <attribute name="text" value="removing the current node and the complete subtree starting from it"/>
+      </leaf>
+      
+      <leaf>
+        <attribute name="title" value="SPACE"/>
+        <attribute name="text" value="editing the title of the current node"/>
+      </leaf>
+      <leaf>
+        <attribute name="title" value="CTRL-SPACE"/>
+        <attribute name="text" value="editing the text of the current node"/>
+      </leaf>
+      <leaf>
+        <attribute name="title" value="ESC"/>
+        <attribute name="text" value="stop editing, don&apos;t save changes - if the help tree is shown, ESC closes it"/>
+      </leaf>
+      <leaf>
+        <attribute name="title" value="RETURN"/>
+        <attribute name="text" value="save changes and stop editing"/>
+      </leaf>
+      <leaf>
+        <attribute name="title" value="CTRL-X"/>
+        <attribute name="text" value="CUT the current node and the subtree starting from it"/>
+      </leaf>
+      <leaf>
+        <attribute name="title" value="CTRL-C"/>
+        <attribute name="text" value="COPY the current node and the subtree starting from it"/>
+      </leaf>
+      <leaf>
+        <attribute name="title" value="CTRL-V"/>
+        <attribute name="text" value="PASTE the previously cuted or copied subtree(s)"/>
+      </leaf>
+      <leaf>
+        <attribute name="title" value="CTRL-Z"/>
+        <attribute name="text" value="UNDO the last modification step"/>
+      </leaf>
+      <leaf>
+        <attribute name="title" value="CTRL-Y"/>
+        <attribute name="text" value="REDO"/>
+      </leaf>
+    </branch>
+    <leaf>
+      <attribute name="title" value="License"/>
+      <attribute name="text" value="Treefuse is published under the GPL license."/>
+    </leaf>
+  </branch>
+</tree>

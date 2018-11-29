@@ -1,0 +1,28 @@
+<zonexml>
+
+
+<!-- circular zones-->
+<zone shape="circular"  shapedata="0,0,20"  itemcolor="255,0,0" fillcolor="255,20,0,255"></zone>
+<zone shape="circular"  shapedata="0,0,30"  itemcolor="230,40,0" fillcolor="230,40,0,230"></zone>
+<zone shape="circular"  shapedata="0,0,40"  itemcolor="210,50,0" fillcolor="210,50,0,210"></zone>
+<zone shape="circular"  shapedata="0,0,50"  itemcolor="190,60,0" fillcolor="190,60,0,190"></zone>
+<zone shape="circular"  shapedata="0,0,60"  itemcolor="170,100,0" fillcolor="170,100,0,170"></zone>
+
+<zone shape="circular"  shapedata="0,0,70"  itemcolor="130,140,10" fillcolor="130,140,10,150"></zone>
+<zone shape="circular"  shapedata="0,0,80"  itemcolor="90,160,20" fillcolor="90,160,20,130"></zone>
+<zone shape="circular"  shapedata="0,0,90"  itemcolor="80,140,30" fillcolor="80,140,30,110"></zone>
+<zone shape="circular"  shapedata="0,0,100"  itemcolor="70,130,40" fillcolor="70,130,40,90"></zone>
+
+<zone shape="circular"  shapedata="0,0,110"  itemcolor="70,120,60" fillcolor="70,120,60,70"></zone>
+<zone shape="circular"  shapedata="0,0,120"  itemcolor="50,120,70" fillcolor="50,120,70,60"></zone>
+<zone shape="circular"  shapedata="0,0,130"  itemcolor="30,120,80" fillcolor="30,120,80,50"></zone>
+<zone shape="circular"  shapedata="0,0,140"  itemcolor="10,120,90" fillcolor="10,120,90,40"></zone>
+<zone shape="circular"  shapedata="0,0,150"  itemcolor="0,110,100" fillcolor="0,110,100,30"></zone>
+<zone shape="circular"  shapedata="0,0,160"  itemcolor="0,100,110" fillcolor="0,100,110,20"></zone>
+<zone shape="circular"  shapedata="0,0,170"  itemcolor="0,90,120" fillcolor="0,90,120,10"></zone>
+<zone shape="circular"  shapedata="0,0,180"  itemcolor="0,70,140" fillcolor="0,70,140,10"></zone>
+<zone shape="circular"  shapedata="0,0,190"  itemcolor="0,50,170" fillcolor="0,50,170,10"></zone>
+
+
+
+</zonexml>

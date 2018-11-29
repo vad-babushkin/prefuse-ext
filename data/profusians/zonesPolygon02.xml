@@ -1,0 +1,13 @@
+<zonexml>
+
+<!-- circular zones-->
+
+<zone shape="circular" name="red zone" shapedata="-100,-100,60"  itemcolor="200,0,0" fillcolor="200,0,0,111"></zone>
+<zone shape="circular" name="blue zone" shapedata="100,100,50"  itemcolor="0,100,200" fillcolor="0,100,200,111"></zone>
+
+<!-- polygonal zones-->
+<zone shape="polygonal"  name="green zone" shapedata="-200,-200,-110,20,-110 , 100,200,200,40,20"  itemcolor="0,200,0" fillcolor="0,200,0,111"></zone>
+<zone shape="polygonal"  name="purple zone" shapedata="100,100,200,200,150,150 , -200,0,0,-50,-50,-200"   itemcolor="100,0,100" fillcolor="100,0,100,111"></zone>
+
+
+</zonexml>

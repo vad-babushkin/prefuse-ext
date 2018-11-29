@@ -1,0 +1,9 @@
+<zonexml>
+
+
+<!-- circular zones-->
+<zone shape="circular"  type="flexible" name="red zone" shapedata="0,0,20"  itemcolor="255,0,0" fillcolor="255,0,0,144"></zone>
+<zone shape="circular"  type="flexible" name="yellow zone" shapedata="0,0,20"  itemcolor="255,255,0" fillcolor="255,255,0,144"></zone>
+<zone shape="circular"  type="flexible" name="green zone" shapedata="0,0,20"  itemcolor="0,255,0" fillcolor="0,255,0,144"></zone>
+
+</zonexml>

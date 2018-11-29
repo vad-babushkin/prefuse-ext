@@ -1,0 +1,17 @@
+<zonexml>
+
+
+<!-- rectangular zones-->
+<zone shape="rectangular" name="india" type="flexible" shapedata="-200,200,40,40"  itemcolor="0,200,0" fillcolor="0,200,0,111"></zone>
+<zone shape="rectangular" name="japan" type="flexible" shapedata="-160,200,40,40"  itemcolor="200,0,0" fillcolor="200,0,0,111"></zone>
+<zone shape="rectangular" name="france" type="flexible" shapedata="-120,200,40,40"  itemcolor="0,0,200" fillcolor="0,0,200,111"></zone>
+<zone shape="rectangular" name="bhutan" type="flexible" shapedata="-80,200,40,40"  itemcolor="255,255,0" fillcolor="255,255,0,111"></zone>
+<zone shape="rectangular" name="america" type="flexible" shapedata="-40,200,40,40"  itemcolor="100,0,200" fillcolor="100,0,200,111"></zone>
+<zone shape="rectangular" name="italy" type="flexible" shapedata="0,200,40,40"  itemcolor="200,0,100" fillcolor="200,0,100,111"></zone>
+<zone shape="rectangular" name="brasil" type="flexible" shapedata="40,200,40,40"  itemcolor="0,255,0" fillcolor="0,255,0,111"></zone>
+<zone shape="rectangular" name="australia" type="flexible" shapedata="80,200,40,40"  itemcolor="255,0,0" fillcolor="255,0,0,111"></zone>
+<zone shape="rectangular" name="germany" type="flexible" shapedata="120,200,40,40"  itemcolor="0,0,255" fillcolor="0,0,255,111"></zone>
+<zone shape="rectangular" name="mexico" type="flexible" shapedata="160,200,40,40"  itemcolor="200,155,0" fillcolor="200,155,0,111"></zone>
+<zone shape="rectangular" name="nepal" type="flexible" shapedata="200,200,40,40"  itemcolor="0,110,155" fillcolor="0,110,155,111"></zone>
+
+</zonexml>

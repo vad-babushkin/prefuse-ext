@@ -1,0 +1,17 @@
+<zonexml>
+
+<!-- circular zones-->
+<zone shape="circular" name="zone for all"       shapedata="-300,-150,70" ></zone>
+<zone shape="circular" name="zone this and that" shapedata="-200,-50,50" ></zone>
+<zone shape="circular" name="fun zone"      shapedata="-100,150,70" ></zone>
+<zone shape="circular" name="just another zone"  shapedata="200,50,50" ></zone>
+<zone shape="circular" name="nonzone"            shapedata="100,-150,90" ></zone>
+
+<!-- rectangular zones-->
+<zone shape = "rectangular"  name="supreme"   shapedata="-300,150,100,120" ></zone>
+<zone shape = "rectangular"  name="no use"    shapedata="20,100,160,120" ></zone>
+<zone shape = "rectangular"  name="amazing"   shapedata="-140,-150,100,100" ></zone>
+<zone shape = "rectangular"  name="and so on" shapedata="320,-90,60,300" ></zone>
+
+
+</zonexml>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- prefuse TreeML Writer | Tue Mar 04 17:38:02 IST 2008 -->
+<tree>
+  <declarations>
+    <attributeDecl name="title" type="String"/>
+    <attributeDecl name="text" type="String"/>
+  </declarations>
+
+  <branch>
+    <attribute name="title" value="good morning "/>
+    <attribute name="text" value="Welcome to treefuse. This demo is mainly meant to demonstrate the usage of the profuse.utl.TreeLib class and obviously not yet an standalone application as such.  Please press CTRL-H to get an overview over possible commands and ESC to escape from the read only help tree. "/>
+    <branch>
+      <attribute name="title" value="huhu"/>
+      <attribute name="text" value="press space to edit"/>
+      <branch>
+        <attribute name="title" value="huhufhdfhdk"/>
+        <attribute name="text" value="bdhkshdks"/>
+        <leaf>
+          <attribute name="title" value="huhu"/>
+          <attribute name="text" value="press space to edit"/>
+        </leaf>
+      </branch>
+      <branch>
+        <attribute name="title" value="huhufhdfhdk"/>
+        <attribute name="text" value="bdhkshdks"/>
+        <leaf>
+          <attribute name="title" value="huhu"/>
+          <attribute name="text" value="press space to edit"/>
+        </leaf>
+      </branch>
+      <branch>
+        <attribute name="title" value="huhufhdfhdk"/>
+        <attribute name="text" value="bdhkshdks"/>
+        <leaf>
+          <attribute name="title" value="huhu"/>
+          <attribute name="text" value="press space to edit"/>
+        </leaf>
+        <branch>
+          <attribute name="title" value="huhufhdfhdk"/>
+          <attribute name="text" value="bdhkshdks"/>
+          <leaf>
+            <attribute name="title" value="huhu"/>
+            <attribute name="text" value="press space to edit"/>
+          </leaf>
+        </branch>
+        <branch>
+          <attribute name="title" value="huhufhdfhdk"/>
+          <attribute name="text" value="bdhkshdks"/>
+          <leaf>
+            <attribute name="title" value="huhu"/>
+            <attribute name="text" value="press space to edit"/>
+          </leaf>
+          <branch>
+            <attribute name="title" value="huhufhdfhdk"/>
+            <attribute name="text" value="bdhkshdks"/>
+            <leaf>
+              <attribute name="title" value="huhu"/>
+              <attribute name="text" value="press space to edit"/>
+            </leaf>
+          </branch>
+          <branch>
+            <attribute name="title" value="huhufhdfhdk"/>
+            <attribute name="text" value="bdhkshdks"/>
+            <leaf>
+              <attribute name="title" value="huhu"/>
+              <attribute name="text" value="press space to edit"/>
+            </leaf>
+          </branch>
+        </branch>
+      </branch>
+    </branch>
+    <branch>
+      <attribute name="title" value="huhufhdfhdk"/>
+      <attribute name="text" value="bdhkshdks"/>
+      <leaf>
+        <attribute name="title" value="huhu"/>
+        <attribute name="text" value="press space to edit"/>
+      </leaf>
+      <branch>
+        <attribute name="title" value="huhufhdfhdk"/>
+        <attribute name="text" value="bdhkshdks"/>
+        <leaf>
+          <attribute name="title" value="huhu"/>
+          <attribute name="text" value="press space to edit"/>
+        </leaf>
+        <branch>
+          <attribute name="title" value="huhufhdfhdk"/>
+          <attribute name="text" value="bdhkshdks"/>
+          <leaf>
+            <attribute name="title" value="huhu"/>
+            <attribute name="text" value="press space to edit"/>
+          </leaf>
+        </branch>
+        <branch>
+          <attribute name="title" value="huhufhdfhdk"/>
+          <attribute name="text" value="bdhkshdks"/>
+          <leaf>
+            <attribute name="title" value="huhu"/>
+            <attribute name="text" value="press space to edit"/>
+          </leaf>
+          <branch>
+            <attribute name="title" value="huhufhdfhdk"/>
+            <attribute name="text" value="bdhkshdks"/>
+            <leaf>
+              <attribute name="title" value="huhu"/>
+              <attribute name="text" value="press space to edit"/>
+            </leaf>
+          </branch>
+          <branch>
+            <attribute name="title" value="huhufhdfhdk"/>
+            <attribute name="text" value="bdhkshdks"/>
+            <leaf>
+              <attribute name="title" value="huhu"/>
+              <attribute name="text" value="press space to edit"/>
+            </leaf>
+          </branch>
+        </branch>
+      </branch>
+    </branch>
+  </branch>
+</tree>
