@@ -117,11 +117,11 @@ public class DataMountain extends Display {
 	}
 
 	public static JComponent demo() {
-		String datafile = "/amazon.txt";
+		String datafile = "data/amazon.txt";
 		Table data = null;
 		try {
 			data = (new DelimitedTextTableReader()).readTable(datafile);
-			data.addColumn("image", "CONCAT('/images/',id,'.01.MZZZZZZZ.jpg')");
+			data.addColumn("image", "CONCAT('data/images/',id,'.01.MZZZZZZZ.jpg')");
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);

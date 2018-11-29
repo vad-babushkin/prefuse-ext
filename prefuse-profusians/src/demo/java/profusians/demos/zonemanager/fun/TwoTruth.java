@@ -269,7 +269,7 @@ public class TwoTruth extends Display {
 
 	m_zoneManager.setZoneFactory(new TwoTruth_ZoneFactory());
 
-	m_zoneManager.addZonesFromFile("data/zones_twoTruth.xml");
+	m_zoneManager.addZonesFromFile("data/profusians/zones_twoTruth.xml");
 
     }
 

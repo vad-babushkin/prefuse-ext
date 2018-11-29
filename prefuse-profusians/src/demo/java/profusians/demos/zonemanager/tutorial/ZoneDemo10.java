@@ -228,7 +228,7 @@ public class ZoneDemo10 extends Display {
 	zoneManager = new ZoneManager(m_vis, fsim);
 	zoneManager.setZoneFactory(new ZoneDemo10_ZoneFactory());
 
-	zoneManager.addZonesFromFile("data/zones10.xml");
+	zoneManager.addZonesFromFile("data/profusians/zones10.xml");
 
     }
 

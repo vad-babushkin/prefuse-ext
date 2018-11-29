@@ -242,7 +242,7 @@ public class TrafficLights extends Display {
 	zoneManager = new ZoneManager(m_vis, fsim);
 	zoneManager.setZoneFactory(new TrafficLights_ZoneFactory(zoneManager));
 
-	zoneManager.addZonesFromFile("data/zones_trafficLights.xml");
+	zoneManager.addZonesFromFile("data/profusians/zones_trafficLights.xml");
 
     }
 

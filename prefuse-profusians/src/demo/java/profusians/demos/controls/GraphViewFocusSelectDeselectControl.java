@@ -255,7 +255,7 @@ public class GraphViewFocusSelectDeselectControl extends JPanel {
 	// String datafile = null;
 	// String label = "label";
 
-	String datafile = "data/socialnet.xml";
+	String datafile = "data/profusians/socialnet.xml";
 	String label = "name";
 
 	if (args.length > 1) {

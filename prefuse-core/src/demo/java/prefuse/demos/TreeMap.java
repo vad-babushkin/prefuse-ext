@@ -60,7 +60,7 @@ import prefuse.visual.sort.TreeDepthItemSorter;
  */
 public class TreeMap extends Display {
 
-	public static final String TREE_CHI = "/chi-ontology.xml.gz";
+	public static final String TREE_CHI = "data/chi-ontology.xml.gz";
 
 	// create data description of labels, setting colors, fonts ahead of time
 	private static final Schema LABEL_SCHEMA = PrefuseLib.getVisualItemSchema();

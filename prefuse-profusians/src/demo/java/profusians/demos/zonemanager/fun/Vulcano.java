@@ -195,7 +195,7 @@ public class Vulcano extends Display {
 	zoneManager = new ZoneManager(m_vis, fsim);
 
 	if (true) {
-	    zoneManager.addZonesFromFile("data/zones_vulcano.xml");
+	    zoneManager.addZonesFromFile("data/profusians/zones_vulcano.xml");
 	} else {
 
 	    for (int i = 0; i < 111; i++) {

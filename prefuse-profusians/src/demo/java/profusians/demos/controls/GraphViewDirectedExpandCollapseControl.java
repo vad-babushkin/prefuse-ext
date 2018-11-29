@@ -264,7 +264,7 @@ public class GraphViewDirectedExpandCollapseControl extends JPanel {
 	UILib.setPlatformLookAndFeel();
 
 	// create graphview
-	String datafile = "data/socialnetDirected.xml";
+	String datafile = "data/profusians/profusians/socialnetDirected.xml";
 	String label = "name";
 	if (args.length > 1) {
 	    datafile = args[0];

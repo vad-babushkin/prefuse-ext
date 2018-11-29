@@ -94,7 +94,7 @@ import profusians.render.RotationLabelRenderer;
 
 public class RadialGraphViewRotationTreeLayout extends Display {
 
-    public static final String DATA_FILE = "data/socialnet.xml";
+    public static final String DATA_FILE = "data/profusians/socialnet.xml";
 
     private static final String tree = "tree";
 

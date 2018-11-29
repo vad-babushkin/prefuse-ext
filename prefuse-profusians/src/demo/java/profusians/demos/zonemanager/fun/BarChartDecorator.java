@@ -307,7 +307,7 @@ public class BarChartDecorator extends Display {
 
 	zoneManager.addColumnToZoneAggregateTable("rotation", double.class);
 
-	zoneManager.addZonesFromFile("data/zones_barChart.xml");
+	zoneManager.addZonesFromFile("data/profusians/zones_barChart.xml");
 	
 
     }

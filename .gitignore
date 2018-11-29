@@ -17,5 +17,8 @@ atlassian-ide-plugin.xml
 .flattened-pom.xml
 /target/
 
-prefuse-caffe-layout-visualization/logs/application.log
-logs/application.log
+prefuse-caffe-layout-visualization/logs/*
+
+logs/*
+
+treefuse.treeml

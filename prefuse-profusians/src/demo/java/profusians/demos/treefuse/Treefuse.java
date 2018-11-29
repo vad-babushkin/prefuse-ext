@@ -134,9 +134,9 @@ public class Treefuse extends Display implements KeyListener {
 
     private static TreeMemory treeMem;
 
-    private final static String readmeFile = "readme.treeml";
+    private final static String readmeFile = "data/profusians/readme.treeml";
 
-    private static String treefuseFile = "treefuse.treeml";
+    private static String treefuseFile = "data/profusians/treefuse.treeml";
 
     private static String lastUsedFile;
 

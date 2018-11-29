@@ -281,7 +281,7 @@ public class GraphViewEdgeLabelLayout extends JPanel {
 	// String label = "label";
 
 	// MAD - reading the xml which includes edge data "relation"
-	String datafile = "data/socialnetRelations.xml";
+	String datafile = "data/profusians/socialnetRelations.xml";
 	String label = "name";
 
 	if (args.length > 1) {

@@ -70,7 +70,7 @@ import profusians.action.layout.FlexibleTreeRootCollapsedSubtreeLayout;
  */
 public class TreeViewYakeyeFilter extends Display {
 
-    public static final String TREE_CHI = "data/chi-ontology.xml.gz";
+    public static final String TREE_CHI = "data/profusians/chi-ontology.xml.gz";
 
     private static final String tree = "tree";
 

@@ -202,7 +202,7 @@ public class ZoneDemoPolygon02 extends Display {
 
 	zoneManager = new ZoneManager(m_vis, fsim);
 
-	zoneManager.addZonesFromFile("data/zonesPolygon02.xml");
+	zoneManager.addZonesFromFile("data/profusians/zonesPolygon02.xml");
 
     }
 

@@ -281,7 +281,7 @@ public class GraphViewDirectedNeighborHiglightControl extends JPanel {
 	// String datafile = null;
 	// String label = "label";
 
-	String datafile = "data/socialnetDirected.xml";
+	String datafile = "data/profusians/socialnetDirected.xml";
 	String label = "name";
 
 	if (args.length > 1) {

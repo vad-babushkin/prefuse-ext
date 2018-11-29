@@ -239,7 +239,7 @@ public class PrefuseHolidayCamps extends Display {
 
 	zoneManager = new ZoneManager(m_vis, fsim);
 
-	zoneManager.addZonesFromFile("data/zones_prefuseHolidayCamps.xml");
+	zoneManager.addZonesFromFile("data/profusians/zones_prefuseHolidayCamps.xml");
 
 	// setting the colors
 

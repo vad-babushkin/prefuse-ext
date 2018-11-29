@@ -290,7 +290,7 @@ public class GraphViewExtendedNeighborHighlightControl extends JPanel {
 	UILib.setPlatformLookAndFeel();
 
 	// create graphview
-	String datafile = "data/socialcross.xml";
+	String datafile = "data/profusians/socialcross.xml";
 	String label = "name";
 	if (args.length > 1) {
 	    datafile = args[0];

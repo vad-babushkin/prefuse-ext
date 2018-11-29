@@ -147,7 +147,7 @@ public class ZoneDemo04 extends Display {
 
 	zoneManager = new ZoneManager(m_vis, fsim);
 
-	zoneManager.addZonesFromFile("data/zones04.xml");
+	zoneManager.addZonesFromFile("data/profusians/zones04.xml");
 
     }
 
