@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--  An excerpt of an egocentric social network  -->
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+	<graph edgedefault="undirected">
+
+		<!-- data schema -->
+		<key id="name" for="node" attr.name="name" attr.type="string" />
+		<key id="num" for="node" attr.name="num" attr.type="integer" />
+
+		<!-- nodes -->
+		<node id="1">
+			<data key="name">Edge
+				Node 1</data>
+			<data key="num">1</data>
+		</node>
+		<node id="2">
+			<data key="name">Edge
+				Node 2</data>
+			<data key="num">2</data>
+		</node>
+		<node id="3">
+			<data key="name">Node 3</data>
+			<data key="num">3</data>
+		</node>
+		<node id="4">
+			<data key="name">Edge
+				Node 4</data>
+			<data key="num">4</data>
+		</node>
+		<node id="5">
+			<data key="name">Node 5</data>
+			<data key="num">5</data>
+		</node>
+		<node id="6">
+			<data key="name">Edge
+				Node 6</data>
+			<data key="num">6</data>
+		</node>
+		<node id="7">
+			<data key="name">Node 7</data>
+			<data key="num">7</data>
+		</node>
+		<node id="8">
+			<data key="name">Node 8</data>
+			<data key="num">8</data>
+		</node>
+		<node id="9">
+			<data key="name">Node 9</data>
+			<data key="num">9</data>
+		</node>
+		<node id="10">
+			<data key="name">Edge
+				Node 10</data>
+			<data key="num">10</data>
+		</node>
+		<node id="11">
+			<data key="name">Node 11</data>
+			<data key="num">11</data>
+		</node>
+		<node id="12">
+			<data key="name">Node 12</data>
+			<data key="num">12</data>
+		</node>
+		<node id="13">
+			<data key="name">Node 13</data>
+			<data key="num">13</data>
+		</node>
+		<node id="14">
+			<data key="name">Node 14</data>
+			<data key="num">14</data>
+		</node>
+		<node id="15">
+			<data key="name">Node 15</data>
+			<data key="num">15</data>
+		</node>
+		<node id="16">
+			<data key="name">Edge
+				Node 16</data>
+			<data key="num">16</data>
+		</node>
+		<node id="17">
+			<data key="name">Edge
+				Node 17</data>
+			<data key="num">17</data>
+		</node>
+		<node id="18">
+			<data key="name">Node 18</data>
+			<data key="num">18</data>
+		</node>
+		<node id="19">
+			<data key="name">Node 19</data>
+			<data key="num">19</data>
+		</node>
+		<node id="20">
+			<data key="name">Node 20</data>
+			<data key="num">20</data>
+		</node>
+		<node id="21">
+			<data key="name">Edge
+				Node 21</data>
+			<data key="num">21</data>
+		</node>
+		<node id="22">
+			<data key="name">Node 22</data>
+			<data key="num">22</data>
+		</node>
+		<node id="23">
+			<data key="name">Edge
+				Node 23</data>
+			<data key="num">23</data>
+		</node>
+		<node id="24">
+			<data key="name">Node 24</data>
+			<data key="num">24</data>
+		</node>
+		<node id="25">
+			<data key="name">Edge
+				Node 25</data>
+			<data key="num">25</data>
+		</node>
+		<node id="26">
+			<data key="name">Node 26</data>
+			<data key="num">26</data>
+		</node>
+		<node id="27">
+			<data key="name">Node 27</data>
+			<data key="num">27</data>
+		</node>
+		<node id="28">
+			<data key="name">Node 28</data>
+			<data key="num">28</data>
+		</node>
+		<node id="29">
+			<data key="name">Edge
+				Node 29</data>
+			<data key="num">29</data>
+		</node>
+		<node id="30">
+			<data key="name">Edge
+				Node 30</data>
+			<data key="num">30</data>
+		</node>
+		<node id="31">
+			<data key="name">Node 31</data>
+			<data key="num">31</data>
+		</node>
+		<node id="32">
+			<data key="name">Edge
+				Node 32</data>
+			<data key="num">32</data>
+		</node>
+
+		<!-- edge 1 -->
+		<edge source="1" target="2"></edge>
+		<edge source="1" target="3"></edge>
+		<!-- edge 2 -->
+		<edge source="2" target="3"></edge>
+		<edge source="2" target="9"></edge>
+		<edge source="2" target="10"></edge>
+		<!-- edge 3 -->
+		<edge source="3" target="4"></edge>
+		<edge source="3" target="5"></edge>
+		<edge source="3" target="11"></edge>
+		<!-- edge 4 -->
+		<edge source="4" target="5"></edge>
+		<!-- edge 5 -->
+		<edge source="5" target="6"></edge>
+		<edge source="5" target="7"></edge>
+		<edge source="5" target="16"></edge>
+		<!-- edge 6 -->
+		<edge source="6" target="13"></edge>
+		<edge source="6" target="17"></edge>
+		<!-- edge 7 -->
+		<edge source="7" target="9"></edge>
+		<edge source="7" target="13"></edge>
+		<!-- edge 9 -->
+		<edge source="9" target="11"></edge>
+		<edge source="9" target="14"></edge>
+		<edge source="9" target="15"></edge>
+		<!-- edge 10 -->
+		<edge source="10" target="11"></edge>
+		<edge source="10" target="18"></edge>
+		<!-- edge 11 -->
+		<edge source="11" target="14"></edge>
+		<edge source="11" target="15"></edge>
+		<edge source="11" target="19"></edge>
+		<!-- edge 13 -->
+		<edge source="13" target="14"></edge>
+		<edge source="13" target="17"></edge>
+		<!-- edge 14 -->
+		<edge source="14" target="15"></edge>
+		<edge source="14" target="16"></edge>
+		<edge source="14" target="26"></edge>
+		<!-- edge 15 -->
+		<edge source="15" target="20"></edge>
+		<!-- edge 16 -->
+		<edge source="16" target="17"></edge>
+		<edge source="16" target="31"></edge>
+		<edge source="16" target="32"></edge>
+		<!-- edge 18 -->
+		<edge source="18" target="19"></edge>
+		<edge source="18" target="21"></edge>
+		<!-- edge 19 -->
+		<edge source="19" target="20"></edge>
+		<edge source="19" target="24"></edge>
+		<!-- edge 20 -->
+		<edge source="20" target="26"></edge>
+		<edge source="20" target="27"></edge>
+		<!-- edge 21 -->
+		<edge source="21" target="22"></edge>
+		<!-- edge 22 -->
+		<edge source="22" target="23"></edge>
+		<edge source="22" target="24"></edge>
+		<!-- edge 23 -->
+		<edge source="23" target="25"></edge>
+		<!-- edge 24 -->
+		<edge source="24" target="25"></edge>
+		<edge source="24" target="27"></edge>
+		<!-- edge 25 -->
+		<edge source="25" target="27"></edge>
+		<edge source="25" target="29"></edge>
+		<!-- edge 26 -->
+		<edge source="26" target="27"></edge>
+		<edge source="26" target="31"></edge>
+		<!-- edge 27 -->
+		<edge source="27" target="28"></edge>
+		<!-- edge 28 -->
+		<edge source="28" target="29"></edge>
+		<edge source="28" target="30"></edge>
+		<edge source="28" target="31"></edge>
+		<!-- edge 30 -->
+		<edge source="30" target="32"></edge>
+		<!-- edge 31 -->
+		<edge source="31" target="32"></edge>
+
+	</graph>
+</graphml>

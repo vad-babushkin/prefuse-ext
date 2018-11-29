@@ -1,0 +1,86 @@
+[index] index=0
+[network] load=0.84, network-blocking=0.00000, oeo-port-util-at-edge=0.00072, oeo-port-util-at-core=0.00030
+[node] load=0.84, node=1, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=2, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=3, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=4, node-blocking=0.00000, node-oeo-port-util=0.00313, node-oeo-traffic-bw-ratio=0.00016,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=0.99984, total-requested-bw-per-node=0.02000
+[node] load=0.84, node=5, node-blocking=0.00000, node-oeo-port-util=0.00250, node-oeo-traffic-bw-ratio=0.00013,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=0.99988, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=6, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=7, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=8, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=9, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=10, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=11, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=12, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=13, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=14, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=15, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=16, node-blocking=0.00000, node-oeo-port-util=0.00313, node-oeo-traffic-bw-ratio=0.00016,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=0.99984, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=17, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=18, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=19, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=20, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=21, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=22, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=23, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=24, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=25, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=26, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=27, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=28, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=29, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=30, node-blocking=0.00000, node-oeo-port-util=0.00000, node-oeo-traffic-bw-ratio=0.00000,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=1.00000, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=31, node-blocking=0.00000, node-oeo-port-util=0.00313, node-oeo-traffic-bw-ratio=0.00016,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=0.99984, total-requested-bw-per-node=0.00000
+[node] load=0.84, node=32, node-blocking=0.00000, node-oeo-port-util=0.00313, node-oeo-traffic-bw-ratio=0.00016,node-ooo-traffic-bw-ratio=0.00000, node-unused-bw-ratio=0.99984, total-requested-bw-per-node=0.02000
+[link] source=1, destination=2, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=1, destination=3, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=2, destination=3, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=2, destination=9, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=2, destination=10, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=3, destination=4, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=3, destination=5, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=3, destination=11, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=4, destination=5, wavelength-usage-ratio=0.01250, bw-usage-ratio=0.00062
+[link] source=5, destination=6, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=5, destination=7, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=5, destination=16, wavelength-usage-ratio=0.01250, bw-usage-ratio=0.00062
+[link] source=6, destination=13, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=6, destination=17, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=7, destination=9, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=7, destination=13, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=9, destination=11, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=9, destination=14, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=10, destination=11, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=10, destination=18, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=11, destination=14, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=11, destination=15, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=11, destination=19, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=13, destination=14, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=13, destination=17, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=14, destination=15, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=14, destination=16, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=14, destination=26, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=15, destination=20, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=16, destination=17, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=16, destination=31, wavelength-usage-ratio=0.01250, bw-usage-ratio=0.00062
+[link] source=18, destination=19, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=18, destination=21, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=19, destination=20, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=19, destination=24, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=20, destination=26, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=21, destination=22, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=22, destination=23, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=22, destination=24, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=23, destination=25, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=24, destination=25, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=24, destination=27, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=25, destination=27, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=25, destination=29, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=26, destination=27, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=26, destination=31, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=27, destination=28, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=28, destination=29, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=28, destination=30, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=28, destination=31, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=30, destination=32, wavelength-usage-ratio=0.00000, bw-usage-ratio=0.00000
+[link] source=31, destination=32, wavelength-usage-ratio=0.01250, bw-usage-ratio=0.00062

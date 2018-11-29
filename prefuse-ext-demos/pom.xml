@@ -22,6 +22,11 @@
 			<artifactId>prefuse-core</artifactId>
 			<version>${prefuse-core.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.albedo.prefuse</groupId>
+			<artifactId>prefuse-profusians</artifactId>
+			<version>20080629</version>
+		</dependency>
 
 	</dependencies>
 
