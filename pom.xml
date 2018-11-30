@@ -284,6 +284,7 @@
 	    <module>prefuse-caffe-layout-visualization</module>
 	    <module>prefuse-profusians</module>
 	    <module>prefuse-alpha</module>
+        <module>prefuse-alpha-apps</module>
     </modules>
 	
 </project>
