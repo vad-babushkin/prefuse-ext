@@ -1,253 +1,451 @@
 package edu.berkeley.guir.prefuse.render;
 
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Paint;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
+import java.awt.geom.RoundRectangle2D;
+
 import edu.berkeley.guir.prefuse.VisualItem;
 import edu.berkeley.guir.prefuse.util.FontLib;
 import edu.berkeley.guir.prefuse.util.StringAbbreviator;
 
-import java.awt.*;
-import java.awt.geom.*;
+/**
+ * Renders an item as an image and a text string.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
+public class TextImageItemRenderer extends ShapeRenderer {
 
-public class TextImageItemRenderer
-		extends ShapeRenderer {
-	public static final int ALIGNMENT_LEFT = 0;
-	public static final int ALIGNMENT_RIGHT = 1;
+	public static final int ALIGNMENT_LEFT   = 0;
+	public static final int ALIGNMENT_RIGHT  = 1;
 	public static final int ALIGNMENT_CENTER = 2;
 	public static final int ALIGNMENT_BOTTOM = 1;
-	public static final int ALIGNMENT_TOP = 0;
+	public static final int ALIGNMENT_TOP    = 0;
+	
 	protected ImageFactory m_images = new ImageFactory();
+	
 	protected String m_labelName = "label";
 	protected String m_imageName = "image";
-	protected int m_xAlign = 2;
-	protected int m_yAlign = 2;
+	
+	protected int m_arcWidth;
+	protected int m_arcHeight;
+	
+	protected int m_xAlign = ALIGNMENT_CENTER;
+	protected int m_yAlign = ALIGNMENT_CENTER;
 	protected int m_horizBorder = 3;
-	protected int m_vertBorder = 0;
+	protected int m_vertBorder  = 0;
 	protected int m_imageMargin = 4;
+    
 	protected int m_maxTextWidth = -1;
-	protected int m_abbrevType = 3;
+	protected int m_abbrevType = StringAbbreviator.TRUNCATE;
 	protected StringAbbreviator m_abbrev = StringAbbreviator.getInstance();
-	protected double m_imageSize = 1.0D;
-	protected Font m_font = new Font("SansSerif", 0, 10);
-	protected RectangularShape m_imageBox = new Rectangle2D.Float();
-	protected Point2D m_tmpPoint = new Point2D.Double();
-	protected AffineTransform m_transform = new AffineTransform();
+	
+    protected double m_imageSize = 1.0;
+    protected boolean m_showImages = true;
+	
+	protected Font m_font = new Font("SansSerif", Font.PLAIN, 10);
+    protected RectangularShape m_imageBox  = new Rectangle2D.Float();
+	protected Point2D     m_tmpPoint = new Point2D.Double();
+    protected AffineTransform m_transform = new AffineTransform();
 
-	public void setRoundedCorner(int paramInt1, int paramInt2) {
-		if (((paramInt1 == 0) || (paramInt2 == 0)) && (!(this.m_imageBox instanceof Rectangle2D))) {
-			this.m_imageBox = new Rectangle2D.Float();
-		} else {
-			if (!(this.m_imageBox instanceof RoundRectangle2D)) {
-				this.m_imageBox = new RoundRectangle2D.Float();
-			}
-			((RoundRectangle2D) this.m_imageBox).setRoundRect(0.0D, 0.0D, 10.0D, 10.0D, paramInt1, paramInt2);
-		}
-	}
+    /**
+     * Rounds the corners of the bounding rectangle in which the text
+     * string is rendered.
+     * @param arcWidth the width of the curved corner
+     * @param arcHeight the height of the curved corner
+     */
+    public void setRoundedCorner(int arcWidth, int arcHeight) {
+        if ( (arcWidth == 0 || arcHeight == 0) && 
+                !(m_imageBox instanceof Rectangle2D) ) {
+            m_imageBox = new Rectangle2D.Float();
+        } else {
+            if ( !(m_imageBox instanceof RoundRectangle2D) )
+                m_imageBox = new RoundRectangle2D.Float();
+            ((RoundRectangle2D)m_imageBox)
+                .setRoundRect(0,0,10,10,arcWidth,arcHeight);                    
+        }
+        m_arcWidth = arcWidth;
+        m_arcHeight = arcHeight;
+    } //
 
+	/**
+	 * Get the attribute name of the text to draw.
+	 * @return the text attribute name
+	 */
 	public String getTextAttributeName() {
-		return this.m_labelName;
-	}
-
-	public void setTextAttributeName(String paramString) {
-		this.m_labelName = paramString;
-	}
-
-	public void setMaxTextWidth(int paramInt) {
-		this.m_maxTextWidth = paramInt;
-	}
-
-	public void setAbbrevType(int paramInt) {
-		this.m_abbrevType = paramInt;
-	}
-
-	protected String getText(VisualItem paramVisualItem) {
-		String str = paramVisualItem.getAttribute(this.m_labelName);
-		if (this.m_maxTextWidth > -1) {
-			Font localFont = paramVisualItem.getFont();
-			if (localFont == null) {
-				localFont = this.m_font;
-			}
-			FontMetrics localFontMetrics = Renderer.DEFAULT_GRAPHICS.getFontMetrics(localFont);
-			if (localFontMetrics.stringWidth(str) > this.m_maxTextWidth) {
-				str = this.m_abbrev.abbreviate(str, this.m_abbrevType, localFontMetrics, this.m_maxTextWidth);
-			}
+		return m_labelName;
+	} //
+	
+	/**
+	 * Set the attribute name for the text to draw.
+	 * @param name the text attribute name
+	 */
+	public void setTextAttributeName(String name) {
+		m_labelName = name;
+	} //    
+    
+	/**
+	 * Sets the maximum width that should be allowed of the text label.
+	 * A value of -1 specifies no limit (this is the default).
+	 * @param maxWidth the maximum width of the text or -1 for no limit
+	 */
+	public void setMaxTextWidth(int maxWidth) {
+	    m_maxTextWidth = maxWidth;
+	} //
+	
+	/**
+	 * Sets the type of abbreviation to be used if a text label is longer
+	 * than the maximum text width. The value should be one of the constants
+	 * provided by the {@link edu.berkeley.guir.prefuse.util.StringAbbreviator
+	 * StringAbbreviator} class. To enable abbreviation, you must first set
+	 * the maximum text width using the {@link #setMaxTextWidth(int) 
+	 * setMaxTextWidth} method.
+	 * @param abbrevType the abbreviation type to use. Should be one of the
+	 * constants provided by the 
+	 * {@link edu.berkeley.guir.prefuse.util.StringAbbreviator
+	 * StringAbbreviator} class (e.g. StringAbbreviator.TRUNCATE or 
+	 * StringAbbreviator.NAME).
+	 */
+	public void setAbbrevType(int abbrevType) {
+	    m_abbrevType = abbrevType;
+	} //
+	
+	/**
+	 * Returns the text to draw. Subclasses can override this class to
+	 * perform custom text rendering.
+	 * @param item the item to represent as a <code>String</code>
+	 * @return a <code>String</code> to draw
+	 */
+	protected String getText(VisualItem item) {
+		String s =  (String)item.getAttribute(m_labelName);
+		if ( m_maxTextWidth > -1 ) {
+		    Font font = item.getFont();
+		    if ( font == null ) { font = m_font; }
+		    FontMetrics fm = DEFAULT_GRAPHICS.getFontMetrics(font);
+		    if ( fm.stringWidth(s) > m_maxTextWidth ) {
+		        s = m_abbrev.abbreviate(s, m_abbrevType, fm, m_maxTextWidth);			
+		    }
 		}
-		return str;
-	}
-
-	public void setImageSize(double paramDouble) {
-		this.m_imageSize = paramDouble;
-	}
-
-	public void setMaxImageDimensions(int paramInt1, int paramInt2) {
-		this.m_images.setMaxImageDimensions(paramInt1, paramInt2);
-	}
-
+		return s;
+	} //    
+    
+    /**
+     * Sets the display-time scaling factor for images. This scaling
+     * is applied at rendering time, to scale the image immediately upon
+     * loading instead, refer to the {@link #setMaxImageDimensions(int,int)
+     * setMaxImageDimensions} method.
+     * @param size the scaling factor for displaying images
+     */
+    public void setImageSize(double size) {
+        m_imageSize = size;
+    } //
+    
+	/**
+	 * Sets maximum image dimensions, used to control scaling of loaded images
+     * This scaling is enforced immediately upon loading of the image, to 
+     * scale the image at rendering time instead, refer to the 
+     * {@link #setImageSize(double) setImageSize} method.
+	 * @param width the max width of images (-1 for no limit)
+	 * @param height the max height of images (-1 for no limit)
+	 */
+	public void setMaxImageDimensions(int width, int height) {
+		m_images.setMaxImageDimensions(width, height);
+	} //
+	
+	/**
+	 * Get the attribute name of the image to draw.
+	 * @return the image attribute name
+	 */
 	public String getImageAttributeName() {
-		return this.m_imageName;
-	}
+		return m_imageName;
+	} //
+	
+	/**
+	 * Set the attribute name for the image to draw.
+	 * @param name the image attribute name
+	 */
+	public void setImageAttributeName(String name) {
+		m_imageName = name;
+	} //	
+	
+	/**
+	 * Returns a URL for the image to draw. Subclasses can override 
+	 * this class to perform custom image selection.
+	 * @param item the item for which to select an image to draw
+	 * @return an <code>Image</code> to draw
+	 */
+	protected String getImageLocation(VisualItem item) {
+		return item.getAttribute(m_imageName);
+	} //
+	
+	protected Image getImage(VisualItem item) {
+	    if ( !m_showImages ) return null;
+		String imageLoc = getImageLocation(item);
+		return ( imageLoc == null ? null : m_images.getImage(imageLoc) );
+	} //
 
-	public void setImageAttributeName(String paramString) {
-		this.m_imageName = paramString;
-	}
-
-	protected String getImageLocation(VisualItem paramVisualItem) {
-		return paramVisualItem.getAttribute(this.m_imageName);
-	}
-
-	protected Image getImage(VisualItem paramVisualItem) {
-		String str = getImageLocation(paramVisualItem);
-		return str == null ? null : this.m_images.getImage(str);
-	}
-
-	protected Shape getRawShape(VisualItem paramVisualItem) {
-		double d1 = paramVisualItem.getSize();
-		Image localImage = getImage(paramVisualItem);
-		double d2 = d1 * this.m_imageSize;
-		double d3 = localImage == null ? 0.0D : d2 * localImage.getHeight(null);
-		double d4 = localImage == null ? 0.0D : d2 * localImage.getWidth(null);
-		this.m_font = paramVisualItem.getFont();
-		if (d1 != 1.0D) {
-			this.m_font = FontLib.getFont(this.m_font.getName(), this.m_font.getStyle(), (int) Math.round(d1 * this.m_font.getSize()));
+	/**
+	 * @see edu.berkeley.guir.prefuse.render.ShapeRenderer#getRawShape(edu.berkeley.guir.prefuse.VisualItem)
+	 */
+	protected Shape getRawShape(VisualItem item) {
+        double size = item.getSize();
+        
+		// get image dimensions
+		Image img = getImage(item);
+        double is = size*m_imageSize;
+		double ih = (img==null ? 0 : is*img.getHeight(null));
+		double iw = (img==null ? 0 : is*img.getWidth(null));
+		// get text dimensions
+		m_font = item.getFont();
+        if ( size != 1 )
+          m_font = FontLib.getFont(m_font.getName(), m_font.getStyle(),
+                      			size*m_font.getSize());
+        
+		String s = getText(item);
+		if ( s == null ) { s = ""; }
+		
+        FontMetrics fm = DEFAULT_GRAPHICS.getFontMetrics(m_font);
+		int th = fm.getHeight();
+		int tw = fm.stringWidth(s)+2;
+		
+		double w = tw + iw + 
+                size*(2*m_horizBorder + (tw>0 && iw>0 ? m_imageMargin : 0));
+		double h = Math.max(th, ih) + size*2*m_vertBorder;
+		
+		getAlignedPoint(m_tmpPoint, item, w, h, m_xAlign, m_yAlign);
+		
+		if ( m_imageBox instanceof RoundRectangle2D ) {
+		    ((RoundRectangle2D)m_imageBox)
+            	.setRoundRect(m_tmpPoint.getX(),m_tmpPoint.getY(),w,h,
+            	        size*m_arcWidth,size*m_arcHeight);
+		} else {
+		    m_imageBox.setFrame(m_tmpPoint.getX(),m_tmpPoint.getY(),w,h);
 		}
-		String str = getText(paramVisualItem);
-		if (str == null) {
-			str = "";
+		return m_imageBox;
+	} //
+	
+	/**
+	 * Helper method, which calculates the top-left co-ordinate of a node
+	 * given the node's alignment.
+	 */
+	protected static void getAlignedPoint(Point2D p, VisualItem item, 
+            double w, double h, int xAlign, int yAlign)
+    {
+		double x = item.getX(), y = item.getY();
+		if ( xAlign == ALIGNMENT_CENTER ) {
+			x = x-(w/2);
+		} else if ( xAlign == ALIGNMENT_RIGHT ) {
+			x = x-w;
 		}
-		FontMetrics localFontMetrics = Renderer.DEFAULT_GRAPHICS.getFontMetrics(this.m_font);
-		int i = localFontMetrics.getHeight();
-		int j = localFontMetrics.stringWidth(str);
-		double d5 = j + d4 + d1 * (2 * this.m_horizBorder + ((j > 0) && (d4 > 0.0D) ? this.m_imageMargin : 0));
-		double d6 = Math.max(i, d3) + d1 * 2.0D * this.m_vertBorder;
-		getAlignedPoint(this.m_tmpPoint, paramVisualItem, d5, d6, this.m_xAlign, this.m_yAlign);
-		this.m_imageBox.setFrame(this.m_tmpPoint.getX(), this.m_tmpPoint.getY(), d5, d6);
-		return this.m_imageBox;
-	}
+		if ( yAlign == ALIGNMENT_CENTER ) {
+			y = y-(h/2);
+		} else if ( yAlign == ALIGNMENT_BOTTOM ) {
+			y = y-h;
+		}
+		p.setLocation(x,y);
+	} //
+	
+	/**
+	 * @see edu.berkeley.guir.prefuse.render.Renderer#render(java.awt.Graphics2D, edu.berkeley.guir.prefuse.VisualItem)
+	 */
+	public void render(Graphics2D g, VisualItem item) {
+        Shape shape = getShape(item);
+        if ( shape == null ) return;
+        
+        Paint itemColor = item.getColor();
+        Paint fillColor = item.getFillColor();
+        
+        // render the fill
+        int type = getRenderType(item);
+        if ( type==RENDER_TYPE_FILL || type==RENDER_TYPE_DRAW_AND_FILL ) {
+            g.setPaint(fillColor);
+            g.fill(shape);
+        }
 
-	protected static void getAlignedPoint(Point2D paramPoint2D, VisualItem paramVisualItem, double paramDouble1, double paramDouble2, int paramInt1, int paramInt2) {
-		double d1 = paramVisualItem.getX();
-		double d2 = paramVisualItem.getY();
-		if (paramInt1 == 2) {
-			d1 -= paramDouble1 / 2.0D;
-		} else if (paramInt1 == 1) {
-			d1 -= paramDouble1;
-		}
-		if (paramInt2 == 2) {
-			d2 -= paramDouble2 / 2.0D;
-		} else if (paramInt2 == 1) {
-			d2 -= paramDouble2;
-		}
-		paramPoint2D.setLocation(d1, d2);
-	}
-
-	public void render(Graphics2D paramGraphics2D, VisualItem paramVisualItem) {
-		Shape localShape = getShape(paramVisualItem);
-		if (localShape == null) {
+        // render image and text next
+        String s = getText(item);
+		Image img = getImage(item);
+		if ( s == null && img == null )
 			return;
-		}
-		Paint localPaint1 = paramVisualItem.getColor();
-		Paint localPaint2 = paramVisualItem.getFillColor();
-		int i = getRenderType(paramVisualItem);
-		if ((i == 2) || (i == 3)) {
-			paramGraphics2D.setPaint(localPaint2);
-			paramGraphics2D.fill(localShape);
-		}
-		String str = getText(paramVisualItem);
-		Image localImage = getImage(paramVisualItem);
-		if ((str == null) && (localImage == null)) {
-			return;
-		}
-		Rectangle2D localRectangle2D = localShape.getBounds2D();
-		double d1 = paramVisualItem.getSize();
-		double d2 = localRectangle2D.getMinX() + d1 * this.m_horizBorder;
-		Object localObject;
-		double d3;
-		if (localImage != null) {
-			localObject = paramGraphics2D.getComposite();
-			if ((localPaint2 instanceof Color)) {
-				int j = ((Color) localPaint2).getAlpha();
-				if (j < 255) {
-					AlphaComposite localAlphaComposite = AlphaComposite.getInstance(10, j / 255.0F);
-					paramGraphics2D.setComposite(localAlphaComposite);
+						
+		Rectangle2D r = shape.getBounds2D();
+        double size = item.getSize();
+		double x = r.getMinX() + size*m_horizBorder;
+			
+        // render image
+		if ( img != null ) {
+			Composite comp = g.getComposite();
+               // enable alpha blending for image, if needed
+			if ( fillColor instanceof Color) {
+				int alpha = ((Color)fillColor).getAlpha();
+				if ( alpha < 255 ) {
+					AlphaComposite alphaComp = 
+						AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 
+							((float)alpha)/255);
+					g.setComposite(alphaComp);
 				}
 			}
-			d3 = this.m_imageSize * d1;
-			double d4 = d3 * localImage.getWidth(null);
-			double d5 = d3 * localImage.getHeight(null);
-			double d6 = localRectangle2D.getMinY() + (localRectangle2D.getHeight() - d5) / 2.0D;
-			this.m_transform.setTransform(d3, 0.0D, 0.0D, d3, d2, d6);
-			paramGraphics2D.drawImage(localImage, this.m_transform, null);
-			d2 += d4 + (str != null ? d1 * this.m_imageMargin : 0.0D);
-			paramGraphics2D.setComposite((Composite) localObject);
+            
+            double is = m_imageSize*size;
+            double w = is*img.getWidth(null);
+            double h = is*img.getHeight(null);
+            double y = r.getMinY() + (r.getHeight()-h)/2;
+            
+            m_transform.setTransform(is,0,0,is,x,y);
+            g.drawImage(img, m_transform, null);
+            
+			x += w + (s!=null && w>0 ? size*m_imageMargin : 0);
+			g.setComposite(comp);
 		}
-		if (str != null) {
-			paramGraphics2D.setPaint(localPaint1);
-			paramGraphics2D.setFont(this.m_font);
-			localObject = Renderer.DEFAULT_GRAPHICS.getFontMetrics(this.m_font);
-			d3 = localRectangle2D.getY() + (localRectangle2D.getHeight() - ((FontMetrics) localObject).getHeight()) / 2.0D + ((FontMetrics) localObject).getAscent();
-			paramGraphics2D.drawString(str, (float) d2, (float) d3);
+        
+        // render text
+		if ( s != null ) {
+			g.setPaint(itemColor);
+			g.setFont(m_font);
+			FontMetrics fm = DEFAULT_GRAPHICS.getFontMetrics(m_font);
+			double y = r.getY() + (r.getHeight()-fm.getHeight())/2+fm.getAscent();
+			g.drawString(s, (float)x+1, (float)y);
 		}
-		if ((i == 1) || (i == 3)) {
-			localObject = paramGraphics2D.getStroke();
-			BasicStroke localBasicStroke = getStroke(paramVisualItem);
-			if (localBasicStroke != null) {
-				paramGraphics2D.setStroke(localBasicStroke);
-			}
-			paramGraphics2D.setPaint(localPaint1);
-			paramGraphics2D.draw(localShape);
-			paramGraphics2D.setStroke((Stroke) localObject);
-		}
-	}
-
-	public ImageFactory getImageFactory() {
-		return this.m_images;
-	}
-
-	public void setImageFactory(ImageFactory paramImageFactory) {
-		this.m_images = paramImageFactory;
-	}
-
+	
+        // now draw border
+		if (type==RENDER_TYPE_DRAW || type==RENDER_TYPE_DRAW_AND_FILL) {
+		    Stroke st = g.getStroke();
+		    Stroke ist = getStroke(item);
+		    if ( ist != null ) g.setStroke(ist);
+            g.setPaint(itemColor);
+            g.draw(shape);
+            g.setStroke(st);
+        }
+	} //
+	
+    /**
+     * Returns the image factory used by this renderer.
+     * @return the image factory
+     */
+    public ImageFactory getImageFactory() {
+        return m_images;
+    } //
+    
+    /**
+     * Sets the image factory used by this renderer.
+     * @param ifact the image factory
+     */
+    public void setImageFactory(ImageFactory ifact) {
+        m_images = ifact;
+    } //
+    
+	/**
+	 * Get the horizontal alignment of this node with respect to it's
+	 * location co-ordinate.
+	 * @return the horizontal alignment
+	 */
 	public int getHorizontalAlignment() {
-		return this.m_xAlign;
-	}
-
+		return m_xAlign;
+	} //
+	
+	/**
+	 * Get the vertical alignment of this node with respect to it's
+	 * location co-ordinate.
+	 * @return the vertical alignment
+	 */
 	public int getVerticalAlignment() {
-		return this.m_yAlign;
-	}
-
-	public void setHorizontalAlignment(int paramInt) {
-		this.m_xAlign = paramInt;
-	}
-
-	public void setVerticalAlignment(int paramInt) {
-		this.m_yAlign = paramInt;
-	}
-
-	public int getHorizontalPadding() {
-		return this.m_horizBorder;
-	}
-
-	public void setHorizontalPadding(int paramInt) {
-		this.m_horizBorder = paramInt;
-	}
-
-	public int getVerticalPadding() {
-		return this.m_vertBorder;
-	}
-
-	public void setVerticalPadding(int paramInt) {
-		this.m_vertBorder = paramInt;
-	}
-
-	public int getImageSpacing() {
-		return this.m_imageMargin;
-	}
-
-	public void setImageSpacing(int paramInt) {
-		this.m_imageMargin = paramInt;
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/render/TextImageItemRenderer.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
- */
+		return m_yAlign;
+	} //
+	
+	/**
+	 * Set the horizontal alignment of this node with respect to it's
+	 * location co-ordinate.
+	 * @param align the horizontal alignment
+	 */	
+	public void setHorizontalAlignment(int align) {
+		m_xAlign = align;
+	} //
+	
+	/**
+	 * Set the vertical alignment of this node with respect to it's
+	 * location co-ordinate.
+	 * @param align the vertical alignment
+	 */	
+	public void setVerticalAlignment(int align) {
+		m_yAlign = align;
+	} //
+	
+    /**
+     * Returns the amount of padding in pixels between text 
+     * and the border of this item along the horizontal dimension.
+     * @return the horizontal padding
+     */
+    public int getHorizontalPadding() {
+        return m_horizBorder;
+    } //
+    
+    /**
+     * Sets the amount of padding in pixels between text 
+     * and the border of this item along the horizontal dimension.
+     * @param xpad the horizontal padding to set
+     */
+    public void setHorizontalPadding(int xpad) {
+        m_horizBorder = xpad;
+    } //
+    
+    /**
+     * Returns the amount of padding in pixels between text 
+     * and the border of this item along the vertical dimension.
+     * @return the vertical padding
+     */
+    public int getVerticalPadding() {
+        return m_vertBorder;
+    } //
+    
+    /**
+     * Sets the amount of padding in pixels between text 
+     * and the border of this item along the vertical dimension.
+     * @param ypad the vertical padding
+     */
+    public void setVerticalPadding(int ypad) {
+        m_vertBorder = ypad;
+    } //
+    
+    /**
+     * Returns the amount of spacing in pixels between image and text.
+     * @return the space in pixels between image and text
+     */
+    public int getImageSpacing() {
+        return m_imageMargin;
+    } //
+    
+    /**
+     * Sets the amount of padding in pixels between image and text.
+     * @param s the space in pixels between image and text
+     */
+    public void setImageSpacing(int s) {
+        m_imageMargin = s;
+    } //
+    
+    /**
+     * @return Returns the m_showImages.
+     */
+    public boolean isShowImages() {
+        return m_showImages;
+    } //
+    
+    /**
+     * @param images The m_showImages to set.
+     */
+    public void setShowImages(boolean show) {
+        m_showImages = show;
+    } //
+    
+} // end of class TextImageItemRenderer

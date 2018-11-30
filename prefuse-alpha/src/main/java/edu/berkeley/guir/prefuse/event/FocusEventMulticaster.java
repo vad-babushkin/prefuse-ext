@@ -2,54 +2,54 @@ package edu.berkeley.guir.prefuse.event;
 
 import java.util.EventListener;
 
-public class FocusEventMulticaster
-		extends EventMulticaster
-		implements FocusListener {
-	public static FocusListener add(FocusListener paramFocusListener1, FocusListener paramFocusListener2) {
-		return (FocusListener) addInternal(paramFocusListener1, paramFocusListener2);
-	}
-
-	public static FocusListener remove(FocusListener paramFocusListener1, FocusListener paramFocusListener2) {
-		return (FocusListener) removeInternal(paramFocusListener1, paramFocusListener2);
-	}
-
-	protected static EventListener addInternal(EventListener paramEventListener1, EventListener paramEventListener2) {
-		if (paramEventListener1 == null) {
-			return paramEventListener2;
-		}
-		if (paramEventListener2 == null) {
-			return paramEventListener1;
-		}
-		return new FocusEventMulticaster(paramEventListener1, paramEventListener2);
-	}
-
-	protected EventListener remove(EventListener paramEventListener) {
-		if (paramEventListener == this.a) {
-			return this.b;
-		}
-		if (paramEventListener == this.b) {
-			return this.a;
-		}
-		EventListener localEventListener1 = removeInternal(this.a, paramEventListener);
-		EventListener localEventListener2 = removeInternal(this.b, paramEventListener);
-		if ((localEventListener1 == this.a) && (localEventListener2 == this.b)) {
-			return this;
-		}
-		return addInternal(localEventListener1, localEventListener2);
-	}
-
-	protected FocusEventMulticaster(EventListener paramEventListener1, EventListener paramEventListener2) {
-		super(paramEventListener1, paramEventListener2);
-	}
-
-	public void focusChanged(FocusEvent paramFocusEvent) {
-		((FocusListener) this.a).focusChanged(paramFocusEvent);
-		((FocusListener) this.b).focusChanged(paramFocusEvent);
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/event/FocusEventMulticaster.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Manages a list of listeners for focus events.
+ * 
+ * @author newbergr
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class FocusEventMulticaster extends EventMulticaster
+    implements FocusListener
+{
+
+	public static FocusListener add(FocusListener a, FocusListener b) {
+		return (FocusListener) addInternal(a, b);
+	} //
+
+	public static FocusListener remove(FocusListener a, FocusListener b) {
+		return (FocusListener) removeInternal(a, b);
+	} //
+
+    protected static EventListener addInternal(
+            EventListener a, EventListener b)
+    {
+        if (a == null)
+            return b;
+        if (b == null)
+            return a;
+        return new FocusEventMulticaster(a, b);
+    } //      
+
+	protected EventListener remove(EventListener oldl) {
+		if (oldl == a)
+			return b;
+		if (oldl == b)
+			return a;
+		EventListener a2 = removeInternal(a, oldl);
+		EventListener b2 = removeInternal(b, oldl);
+		if (a2 == a && b2 == b) {
+			return this; // it's not here
+		}
+		return addInternal(a2, b2);
+	} //
+    
+	protected FocusEventMulticaster(EventListener a, EventListener b) {
+        super(a, b);
+	} //
+
+    public void focusChanged(FocusEvent e) {
+        ((FocusListener) a).focusChanged(e);
+        ((FocusListener) b).focusChanged(e);
+    } //
+	
+} // end of class FocusEventMulticaster

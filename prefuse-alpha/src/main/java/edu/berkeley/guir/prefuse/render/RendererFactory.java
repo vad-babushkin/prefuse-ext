@@ -2,12 +2,20 @@ package edu.berkeley.guir.prefuse.render;
 
 import edu.berkeley.guir.prefuse.VisualItem;
 
-public abstract interface RendererFactory {
-	public abstract Renderer getRenderer(VisualItem paramVisualItem);
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/render/RendererFactory.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * The RendererFactory is responsible for providing the proper Renderer
+ * instance for drawing a given VisualItem.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public interface RendererFactory {
+
+	/**
+	 * Return the appropriate renderer to draw the given VisualItem.
+	 * @param item the item for which to retrieve the renderer
+	 * @return the Renderer for the given VisualItem
+	 */
+	public Renderer getRenderer(VisualItem item);
+
+} // end of interface RendererFactory

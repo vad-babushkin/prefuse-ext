@@ -1,85 +1,112 @@
 package edu.berkeley.guir.prefuse.graph.event;
 
+import java.util.EventListener;
+
 import edu.berkeley.guir.prefuse.event.EventMulticaster;
 import edu.berkeley.guir.prefuse.graph.Edge;
 import edu.berkeley.guir.prefuse.graph.Graph;
 import edu.berkeley.guir.prefuse.graph.Node;
 
-import java.util.EventListener;
-
-public class GraphEventMulticaster
-		extends EventMulticaster
-		implements GraphEventListener {
-	public void nodeAdded(Graph paramGraph, Node paramNode) {
-		((GraphEventListener) this.a).nodeAdded(paramGraph, paramNode);
-		((GraphEventListener) this.b).nodeAdded(paramGraph, paramNode);
-	}
-
-	public void nodeRemoved(Graph paramGraph, Node paramNode) {
-		((GraphEventListener) this.a).nodeRemoved(paramGraph, paramNode);
-		((GraphEventListener) this.b).nodeRemoved(paramGraph, paramNode);
-	}
-
-	public void nodeReplaced(Graph paramGraph, Node paramNode1, Node paramNode2) {
-		((GraphEventListener) this.a).nodeReplaced(paramGraph, paramNode1, paramNode2);
-		((GraphEventListener) this.b).nodeReplaced(paramGraph, paramNode1, paramNode2);
-	}
-
-	public void edgeAdded(Graph paramGraph, Edge paramEdge) {
-		((GraphEventListener) this.a).edgeAdded(paramGraph, paramEdge);
-		((GraphEventListener) this.b).edgeAdded(paramGraph, paramEdge);
-	}
-
-	public void edgeRemoved(Graph paramGraph, Edge paramEdge) {
-		((GraphEventListener) this.a).edgeRemoved(paramGraph, paramEdge);
-		((GraphEventListener) this.b).edgeRemoved(paramGraph, paramEdge);
-	}
-
-	public void edgeReplaced(Graph paramGraph, Edge paramEdge1, Edge paramEdge2) {
-		((GraphEventListener) this.a).edgeReplaced(paramGraph, paramEdge1, paramEdge2);
-		((GraphEventListener) this.b).edgeReplaced(paramGraph, paramEdge1, paramEdge2);
-	}
-
-	public static GraphEventListener add(GraphEventListener paramGraphEventListener1, GraphEventListener paramGraphEventListener2) {
-		return (GraphEventListener) addInternal(paramGraphEventListener1, paramGraphEventListener2);
-	}
-
-	public static GraphEventListener remove(GraphEventListener paramGraphEventListener1, GraphEventListener paramGraphEventListener2) {
-		return (GraphEventListener) removeInternal(paramGraphEventListener1, paramGraphEventListener2);
-	}
-
-	protected static EventListener addInternal(EventListener paramEventListener1, EventListener paramEventListener2) {
-		if (paramEventListener1 == null) {
-			return paramEventListener2;
-		}
-		if (paramEventListener2 == null) {
-			return paramEventListener1;
-		}
-		return new GraphEventMulticaster(paramEventListener1, paramEventListener2);
-	}
-
-	protected EventListener remove(EventListener paramEventListener) {
-		if (paramEventListener == this.a) {
-			return this.b;
-		}
-		if (paramEventListener == this.b) {
-			return this.a;
-		}
-		EventListener localEventListener1 = removeInternal(this.a, paramEventListener);
-		EventListener localEventListener2 = removeInternal(this.b, paramEventListener);
-		if ((localEventListener1 == this.a) && (localEventListener2 == this.b)) {
-			return this;
-		}
-		return addInternal(localEventListener1, localEventListener2);
-	}
-
-	protected GraphEventMulticaster(EventListener paramEventListener1, EventListener paramEventListener2) {
-		super(paramEventListener1, paramEventListener2);
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/graph/event/GraphEventMulticaster.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Manages listeners for graph modification events.
+ * 
+ * @author newbergr
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class GraphEventMulticaster extends EventMulticaster 
+    implements GraphEventListener
+{
+    /**
+     * @see edu.berkeley.guir.prefuse.graph.event.GraphEventListener#nodeAdded(edu.berkeley.guir.prefuse.graph.Graph, edu.berkeley.guir.prefuse.graph.Node)
+     */
+	public void nodeAdded(Graph g, Node n) {
+		((GraphEventListener) a).nodeAdded(g,n);
+		((GraphEventListener) b).nodeAdded(g,n);
+	} //
+
+    /**
+     * @see edu.berkeley.guir.prefuse.graph.event.GraphEventListener#nodeRemoved(edu.berkeley.guir.prefuse.graph.Graph, edu.berkeley.guir.prefuse.graph.Node)
+     */
+	public void nodeRemoved(Graph g, Node n) {
+		((GraphEventListener) a).nodeRemoved(g,n);
+		((GraphEventListener) b).nodeRemoved(g,n);
+	} //
+
+    /**
+     * @see edu.berkeley.guir.prefuse.graph.event.GraphEventListener#nodeReplaced(edu.berkeley.guir.prefuse.graph.Graph, edu.berkeley.guir.prefuse.graph.Node, edu.berkeley.guir.prefuse.graph.Node)
+     */
+	public void nodeReplaced(Graph g, Node o, Node n) {
+		((GraphEventListener) a).nodeReplaced(g,o,n);
+		((GraphEventListener) b).nodeReplaced(g,o,n);		
+	} //
+
+    /**
+     * @see edu.berkeley.guir.prefuse.graph.event.GraphEventListener#edgeAdded(edu.berkeley.guir.prefuse.graph.Graph, edu.berkeley.guir.prefuse.graph.Edge)
+     */
+	public void edgeAdded(Graph g, Edge e) {
+		((GraphEventListener) a).edgeAdded(g,e);
+		((GraphEventListener) b).edgeAdded(g,e);
+	} //
+
+    /**
+     * @see edu.berkeley.guir.prefuse.graph.event.GraphEventListener#edgeRemoved(edu.berkeley.guir.prefuse.graph.Graph, edu.berkeley.guir.prefuse.graph.Edge)
+     */
+	public void edgeRemoved(Graph g, Edge e) {
+		((GraphEventListener) a).edgeRemoved(g,e);
+		((GraphEventListener) b).edgeRemoved(g,e);
+	} //
+
+    /**
+     * @see edu.berkeley.guir.prefuse.graph.event.GraphEventListener#edgeReplaced(edu.berkeley.guir.prefuse.graph.Graph, edu.berkeley.guir.prefuse.graph.Edge, edu.berkeley.guir.prefuse.graph.Edge)
+     */
+	public void edgeReplaced(Graph g, Edge o, Edge n) {
+		((GraphEventListener) a).edgeReplaced(g,o,n);
+		((GraphEventListener) b).edgeReplaced(g,o,n);		
+	} //
+
+	public static GraphEventListener add(GraphEventListener a, GraphEventListener b) {
+		return (GraphEventListener) addInternal(a, b);
+	} //
+
+	public static GraphEventListener remove(GraphEventListener a, GraphEventListener b) {
+		return (GraphEventListener) removeInternal(a, b);
+	} //
+
+	/** 
+	 * Returns the resulting multicast listener from adding listener-a
+	 * and listener-b together.  
+	 * If listener-a is null, it returns listener-b;  
+	 * If listener-b is null, it returns listener-a
+	 * If neither are null, then it creates and returns
+	 * a new AWTEventMulticaster instance which chains a with b.
+	 * @param a event listener-a
+	 * @param b event listener-b
+	 */
+	protected static EventListener addInternal(
+		EventListener a,
+		EventListener b) {
+		if (a == null)
+			return b;
+		if (b == null)
+			return a;
+		return new GraphEventMulticaster(a, b);
+	} //
+
+	protected EventListener remove(EventListener oldl) {
+		if (oldl == a)
+			return b;
+		if (oldl == b)
+			return a;
+		EventListener a2 = removeInternal(a, oldl);
+		EventListener b2 = removeInternal(b, oldl);
+		if (a2 == a && b2 == b) {
+			return this; // it's not here
+		}
+		return addInternal(a2, b2);
+	} //
+	
+	protected GraphEventMulticaster(EventListener a, EventListener b) {
+		super(a,b);
+	} //
+
+} // end of class PrefuseEventMulticaster

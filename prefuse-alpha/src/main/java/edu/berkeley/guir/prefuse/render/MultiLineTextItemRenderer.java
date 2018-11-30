@@ -1,158 +1,178 @@
 package edu.berkeley.guir.prefuse.render;
 
-import edu.berkeley.guir.prefuse.VisualItem;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.ArrayList;
+import edu.berkeley.guir.prefuse.VisualItem;
+import edu.berkeley.guir.prefuse.render.TextItemRenderer;
 
-public class MultiLineTextItemRenderer
-		extends TextItemRenderer {
+/**
+ * A text renderer that allows the text to be split among multiple lines.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
+public class MultiLineTextItemRenderer extends TextItemRenderer {
+
 	public static final int DEFAULT_MAXLINES = 1;
-	protected ArrayList m_attrList = new ArrayList();
-
-	public void addTextAttribute(String paramString) {
-		addTextAttribute(paramString, 1, null);
-	}
-
-	public void addTextAttribute(String paramString, int paramInt) {
-		this.m_attrList.add(new TextEntry(paramString, paramInt, null));
-	}
-
-	public void addTextAttribute(String paramString, int paramInt, Font paramFont) {
-		this.m_attrList.add(new TextEntry(paramString, paramInt, paramFont));
-	}
-
-	protected String getText(VisualItem paramVisualItem) {
-		throw new UnsupportedOperationException();
-	}
-
-	protected String getText(VisualItem paramVisualItem, int paramInt) {
-		String str = ((TextEntry) this.m_attrList.get(paramInt)).name;
-		return paramVisualItem.getAttribute(str);
-	}
-
-	public int getNumEntries() {
-		return this.m_attrList.size();
-	}
-
-	protected int getMaxLines(int paramInt) {
-		return ((TextEntry) this.m_attrList.get(paramInt)).maxlines;
-	}
-
-	protected Font getFont(VisualItem paramVisualItem, int paramInt) {
-		Font localFont = ((TextEntry) this.m_attrList.get(paramInt)).font;
-		if (localFont == null) {
-			localFont = paramVisualItem.getFont();
-		}
-		if (localFont == null) {
-			localFont = this.m_font;
-		}
-		return localFont;
-	}
-
-	protected Shape getRawShape(VisualItem paramVisualItem) {
-		int i = 2 * this.m_horizBorder;
-		int j = 2 * this.m_vertBorder;
-		for (int k = 0; k < getNumEntries(); k++) {
-			Font localFont = getFont(paramVisualItem, k);
-			FontMetrics localFontMetrics = Renderer.DEFAULT_GRAPHICS.getFontMetrics(localFont);
-			String str = getText(paramVisualItem, k);
-			int m = getMaxLines(k);
-			if (str != null) {
-				j += localFontMetrics.getHeight();
-				i = Math.max(i, localFontMetrics.stringWidth(str) + 2 * this.m_horizBorder);
-			}
-		}
-		getAlignedPoint(this.m_tmpPoint, paramVisualItem, i, j, this.m_xAlign, this.m_yAlign);
-		this.m_textBox.setFrame(this.m_tmpPoint.getX(), this.m_tmpPoint.getY(), i, j);
-		return this.m_textBox;
-	}
-
-	public Rectangle getEntryBounds(VisualItem paramVisualItem, int paramInt) {
-		int i = this.m_vertBorder;
-		int j = 0;
-		int k = 0;
-		int m = 2 * this.m_horizBorder;
-		int n = 2 * this.m_vertBorder;
-		for (int i1 = 0; i1 <= paramInt; i1++) {
-			Font localFont = getFont(paramVisualItem, i1);
-			FontMetrics localFontMetrics = Renderer.DEFAULT_GRAPHICS.getFontMetrics(localFont);
-			String str = getText(paramVisualItem, i1);
-			int i2 = getMaxLines(i1);
-			if (str != null) {
-				n += localFontMetrics.getHeight();
-				m = Math.max(m, localFontMetrics.stringWidth(str) + 2 * this.m_horizBorder);
-				if (i1 < paramInt) {
-					i += localFontMetrics.getHeight();
-				} else if (i1 == paramInt) {
-					j = localFontMetrics.stringWidth(str) + 2 * this.m_horizBorder;
-					k = localFontMetrics.getHeight();
-				}
-			}
-		}
-		getAlignedPoint(this.m_tmpPoint, paramVisualItem, m, n, this.m_xAlign, this.m_yAlign);
-		this.m_textBox.setFrame(this.m_tmpPoint.getX(), this.m_tmpPoint.getY() + i, j, k);
-		return this.m_textBox.getBounds();
-	}
-
-	public void render(Graphics2D paramGraphics2D, VisualItem paramVisualItem) {
-		Paint localPaint1 = paramVisualItem.getFillColor();
-		Paint localPaint2 = paramVisualItem.getColor();
-		Shape localShape = getShape(paramVisualItem);
-		if (localShape != null) {
-			switch (getRenderType(paramVisualItem)) {
-				case 1:
-					paramGraphics2D.setPaint(localPaint2);
-					paramGraphics2D.draw(localShape);
-					break;
-				case 2:
-					paramGraphics2D.setPaint(localPaint1);
-					paramGraphics2D.fill(localShape);
-					break;
-				case 3:
-					paramGraphics2D.setPaint(localPaint1);
-					paramGraphics2D.fill(localShape);
-					paramGraphics2D.setPaint(localPaint2);
-					paramGraphics2D.draw(localShape);
-			}
-			Rectangle localRectangle1 = localShape.getBounds();
-			int i = localRectangle1.y + this.m_vertBorder;
-			for (int j = 0; j < getNumEntries(); j++) {
-				Font localFont = getFont(paramVisualItem, j);
-				FontMetrics localFontMetrics = Renderer.DEFAULT_GRAPHICS.getFontMetrics(localFont);
-				String str = getText(paramVisualItem, j);
-				int k = getMaxLines(j);
-				if (str != null) {
-					Color localColor = (Color) paramVisualItem.getVizAttribute("overlay_" + j);
-					if (localColor != null) {
-						paramGraphics2D.setColor(localColor);
-						Rectangle localRectangle2 = new Rectangle(localRectangle1.x + this.m_horizBorder, i, localFontMetrics.stringWidth(str), localFontMetrics.getHeight());
-						paramGraphics2D.fill(localRectangle2);
-					}
-					paramGraphics2D.setPaint(localPaint2);
-					paramGraphics2D.setFont(localFont);
-					paramGraphics2D.drawString(str, localRectangle1.x + this.m_horizBorder, i + localFontMetrics.getAscent());
-					i += localFontMetrics.getHeight();
-				}
-			}
-		}
-	}
 
 	protected class TextEntry {
+		public TextEntry(String n, int m, Font f) {
+			name = n;
+			maxlines = m;
+			font = f;
+		}
 		String name;
 		int maxlines;
 		Font font;
+	} //
+	protected ArrayList m_attrList = new ArrayList();
 
-		public TextEntry(String paramString, int paramInt, Font paramFont) {
-			this.name = paramString;
-			this.maxlines = paramInt;
-			this.font = paramFont;
+	public void addTextAttribute(String attrName) {
+		addTextAttribute(attrName, DEFAULT_MAXLINES, null);
+	} //
+
+	public void addTextAttribute(String attrName, int maxlines) {
+		m_attrList.add(new TextEntry(attrName, maxlines, null));
+	} //
+	
+	public void addTextAttribute(String attrName, int maxlines, Font font) {
+		m_attrList.add(new TextEntry(attrName, maxlines, font));
+	} //
+
+	/**
+	 * This method is not applicable in this class. Calling it
+	 * causes an exception to be generated.
+	 * @throws UnsupportedOperationException if called.
+	 */
+	protected String getText(VisualItem item) {
+		throw new UnsupportedOperationException();
+	} //
+	
+	protected String getText(VisualItem item, int entry) {
+		String name = ((TextEntry)m_attrList.get(entry)).name;
+		return item.getAttribute(name);
+	} //
+	
+	public int getNumEntries() {
+		return m_attrList.size();
+	} //
+	
+	protected int getMaxLines(int entry) {
+		return ((TextEntry)m_attrList.get(entry)).maxlines;
+	} //
+	
+	protected Font getFont(VisualItem item, int entry) {
+		Font f = ((TextEntry)m_attrList.get(entry)).font;
+		if ( f == null ) { f = item.getFont();	}
+		if ( f == null ) { f = m_font; }
+		return f;
+	} //
+
+	/**
+	 * @see edu.berkeley.guir.prefuse.render.ShapeRenderer#getRawShape(edu.berkeley.guir.prefuse.VisualItem)
+	 */
+	protected Shape getRawShape(VisualItem item) {
+		
+		int w = 2*m_horizBorder;
+		int h = 2*m_vertBorder;
+		
+		for ( int i = 0; i < getNumEntries(); i++ ) {
+			Font font = getFont(item, i);
+			FontMetrics fm = DEFAULT_GRAPHICS.getFontMetrics(font);
+			String  text = getText(item, i);
+			int maxlines = getMaxLines(i); 	
+			if ( text != null ) {
+				h += fm.getHeight();
+				w = Math.max(w, fm.stringWidth(text) + 2*m_horizBorder);
+			}
 		}
-	}
-}
+		getAlignedPoint(m_tmpPoint, item, w, h, m_xAlign, m_yAlign);
+		m_textBox.setFrame(m_tmpPoint.getX(),m_tmpPoint.getY(),w,h);
+		return m_textBox;
+	} //
+	
+	public Rectangle getEntryBounds(VisualItem item, int entry) {
+		
+		int dy = m_vertBorder, ew = 0, eh = 0;
+		int w = 2*m_horizBorder;
+		int h = 2*m_vertBorder;
 
+		for ( int i = 0; i <= entry; i++ ) {
+			Font font = getFont(item, i);
+			FontMetrics fm = DEFAULT_GRAPHICS.getFontMetrics(font);
+			String  text = getText(item, i);
+			int maxlines = getMaxLines(i);
+			if ( text != null ) {
+				h += fm.getHeight();
+				w = Math.max(w, fm.stringWidth(text) + 2*m_horizBorder);
+				if ( i < entry ) {
+					dy += fm.getHeight();
+				} else if ( i == entry ) {
+					ew = fm.stringWidth(text) + 2*m_horizBorder;
+					eh = fm.getHeight();
+				}
+			}
+		}
+		getAlignedPoint(m_tmpPoint, item, w, h, m_xAlign, m_yAlign);
+		m_textBox.setFrame(m_tmpPoint.getX(),m_tmpPoint.getY()+dy,ew,eh);
+		return m_textBox.getBounds();
+	} //
 
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/render/MultiLineTextItemRenderer.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
- */
+	/**
+	 * @see edu.berkeley.guir.prefuse.render.Renderer#render(java.awt.Graphics2D, edu.berkeley.guir.prefuse.VisualItem)
+	 */
+	public void render(Graphics2D g, VisualItem item) {
+		Paint fillColor = item.getFillColor();
+		Paint itemColor = item.getColor();
+		Shape shape = getShape(item);
+		if (shape != null) {
+			switch (getRenderType(item)) {
+				case RENDER_TYPE_DRAW :
+					g.setPaint(itemColor);
+					g.draw(shape);
+					break;
+				case RENDER_TYPE_FILL :
+					g.setPaint(fillColor);
+					g.fill(shape);
+					break;
+				case RENDER_TYPE_DRAW_AND_FILL :
+					g.setPaint(fillColor);
+					g.fill(shape);
+					g.setPaint(itemColor);
+					g.draw(shape);
+					break;
+			}
+
+			Rectangle r = shape.getBounds();
+			
+			int h = r.y + m_vertBorder;
+			for ( int i = 0; i < getNumEntries(); i++ ) {
+				Font font = getFont(item, i);
+				FontMetrics fm = DEFAULT_GRAPHICS.getFontMetrics(font);
+				String  text = getText(item, i);
+				int maxlines = getMaxLines(i);
+				if ( text != null ) {
+					Color overlay = (Color)item.getVizAttribute("overlay_"+i);
+					if ( overlay != null ) {
+						g.setColor(overlay);
+						Rectangle or = new Rectangle(r.x+m_horizBorder, h, 
+							fm.stringWidth(text), fm.getHeight());
+						g.fill(or);
+					}
+					
+					g.setPaint(itemColor);
+					g.setFont(font);
+					g.drawString(text, r.x+m_horizBorder, h+fm.getAscent());
+					h += fm.getHeight();
+				}
+			}
+		}
+	} //
+
+} // end of class MultiLineTextItemRenderer

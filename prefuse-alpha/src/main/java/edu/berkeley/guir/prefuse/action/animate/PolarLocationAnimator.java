@@ -1,9 +1,9 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
 package edu.berkeley.guir.prefuse.action.animate;
+
+import java.awt.geom.Point2D;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import edu.berkeley.guir.prefuse.AggregateItem;
 import edu.berkeley.guir.prefuse.Display;
@@ -16,131 +16,135 @@ import edu.berkeley.guir.prefuse.event.FocusListener;
 import edu.berkeley.guir.prefuse.graph.Entity;
 import edu.berkeley.guir.prefuse.graph.Node;
 import edu.berkeley.guir.prefuse.graph.TreeNode;
-import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
+/**
+ * Interpolates between starting and ending display locations by linearly
+ * interpolating between polar co-ordinates.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
 public class PolarLocationAnimator extends AbstractAction implements FocusListener {
-	private static final double TWO_PI = 6.283185307179586D;
-	private Point2D m_anchor = new Double();
+
+	private static final double TWO_PI = 2*Math.PI;
+	
+    private Point2D m_anchor = new Point2D.Double();
 	private Set m_linear = new HashSet();
-	private ItemRegistry m_registry;
+    private ItemRegistry m_registry;
 
-	public PolarLocationAnimator() {
-	}
+    private Point2D getAnchor(ItemRegistry registry) {
+        Display d = registry.getDisplay(0);
+        m_anchor.setLocation(d.getWidth()/2,d.getHeight()/2);
+        d.getAbsoluteCoordinate(m_anchor, m_anchor);
+        return m_anchor;
+    }
+    
+	public void run(ItemRegistry registry, double frac) {
+	    if ( registry != m_registry ) {
+	        if ( m_registry != null )
+                m_registry.getDefaultFocusSet().removeFocusListener(this);
+            m_registry = registry;
+            m_registry.getDefaultFocusSet().addFocusListener(this);
+        }
+        
+        Point2D anchor = getAnchor(registry);
+		
+		double ax, ay, sx, sy, ex, ey, x, y;
+		double dt1, dt2, sr, st, er, et, r, t, stt, ett;
 
-	private Point2D getAnchor(ItemRegistry var1) {
-		Display var2 = var1.getDisplay(0);
-		this.m_anchor.setLocation((double)(var2.getWidth() / 2), (double)(var2.getHeight() / 2));
-		var2.getAbsoluteCoordinate(this.m_anchor, this.m_anchor);
-		return this.m_anchor;
-	}
+		ax = anchor.getX();
+		ay = anchor.getY();
+		
+		Iterator itemIter = m_registry.getItems();
+		while ( itemIter.hasNext() ) {
+			VisualItem item = (VisualItem)itemIter.next();
+			Point2D startLoc = item.getStartLocation();
+			Point2D endLoc   = item.getEndLocation();
+            
+			sx = startLoc.getX() - ax;
+			sy = startLoc.getY() - ay;
+			ex = endLoc.getX() - ax;
+			ey = endLoc.getY() - ay;
 
-	public void run(ItemRegistry var1, double var2) {
-		if (var1 != this.m_registry) {
-			if (this.m_registry != null) {
-				this.m_registry.getDefaultFocusSet().removeFocusListener(this);
-			}
-
-			this.m_registry = var1;
-			this.m_registry.getDefaultFocusSet().addFocusListener(this);
-		}
-
-		Point2D var4 = this.getAnchor(var1);
-		double var5 = var4.getX();
-		double var7 = var4.getY();
-		Iterator var41 = this.m_registry.getItems();
-
-		while(var41.hasNext()) {
-			VisualItem var42 = (VisualItem)var41.next();
-			Point2D var43 = var42.getStartLocation();
-			Point2D var44 = var42.getEndLocation();
-			double var9 = var43.getX() - var5;
-			double var11 = var43.getY() - var7;
-			double var13 = var44.getX() - var5;
-			double var15 = var44.getY() - var7;
-			double var17;
-			double var19;
-			double var21;
-			double var23;
-			double var27;
-			double var31;
-			double var35;
-			double var37;
-			double var39;
-			if (this.m_linear.contains(var42)) {
-				var17 = var43.getX() + var2 * (var44.getX() - var43.getX());
-				var19 = var43.getY() + var2 * (var44.getY() - var43.getY());
-				var42.setLocation(var17, var19);
+			// linearly interpolate to and from focus
+			if ( m_linear.contains(item) ) {
+				x = startLoc.getX() + frac * (endLoc.getX()-startLoc.getX());
+				y = startLoc.getY() + frac * (endLoc.getY()-startLoc.getY());
+				item.setLocation(x,y);
 			} else {
-				double var25 = Math.sqrt(var9 * var9 + var11 * var11);
-				if (var42 instanceof NodeItem && java.lang.Double.isNaN(var25)) {
-					var25 = Math.sqrt(var9 * var9 + var11 * var11);
-				}
-
-				var27 = Math.atan2(var11, var9);
-				double var29 = Math.sqrt(var13 * var13 + var15 * var15);
-				if (var42 instanceof NodeItem && java.lang.Double.isNaN(var29)) {
-					var29 = Math.sqrt(var13 * var13 + var15 * var15);
-				}
-
-				var31 = Math.atan2(var15, var13);
-				var37 = this.translate(var27);
-				var39 = this.translate(var31);
-				var21 = var31 - var27;
-				var23 = var39 - var37;
-				if (Math.abs(var21) < Math.abs(var23)) {
-					var35 = var27 + var2 * var21;
+				sr = Math.sqrt(sx*sx + sy*sy);
+                if ( item instanceof NodeItem && Double.isNaN(sr) ) {
+                    // for reasons unknown to me, some versions of Java screw up
+                    // a perfectly legal floating point calc, returning NaN(!)
+                    // here is a crappy hack that seems to work -- just try again!
+                    sr = Math.sqrt(sx*sx + sy*sy);
+                }
+                
+				st = Math.atan2(sy,sx);
+                
+				er = Math.sqrt(ex*ex + ey*ey);
+                if ( item instanceof NodeItem && Double.isNaN(er) ) {
+                    // for reasons unknown to me, some versions of Java screw up
+                    // a perfectly legal floating point calc, returning NaN(!)
+                    // here is a crappy hack that seems to work -- just try again!
+                    er = Math.sqrt(ex*ex + ey*ey);
+                }
+                
+				et = Math.atan2(ey,ex);
+				stt = translate(st);
+				ett = translate(et);
+				
+				dt1 = et - st;
+				dt2 = ett - stt;
+				
+				if ( Math.abs(dt1) < Math.abs(dt2) ) {
+					t = st + frac * dt1;
 				} else {
-					var35 = var37 + var2 * var23;
+					t = stt + frac * dt2;
 				}
-
-				double var33 = var25 + var2 * (var29 - var25);
-				var17 = (double)Math.round(var5 + var33 * Math.cos(var35));
-				var19 = (double)Math.round(var7 + var33 * Math.sin(var35));
-				var42.setLocation(var17, var19);
+				r = sr + frac * (er - sr);
+							
+				x = Math.round(ax + r*Math.cos(t));
+				y = Math.round(ay + r*Math.sin(t));
+                
+				item.setLocation(x,y);
 			}
-
-			if (var42 instanceof AggregateItem) {
-				AggregateItem var45 = (AggregateItem)var42;
-				var27 = var45.getStartOrientation();
-				var31 = var45.getEndOrientation();
-				var37 = this.translate(var27);
-				var39 = this.translate(var31);
-				var21 = var31 - var27;
-				var23 = var39 - var37;
-				if (Math.abs(var21) < Math.abs(var23)) {
-					var35 = var27 + var2 * var21;
+			
+			if ( item instanceof AggregateItem ) {
+				AggregateItem aggr = (AggregateItem)item;
+				st = aggr.getStartOrientation();
+				et = aggr.getEndOrientation();
+				stt = translate(st);
+				ett = translate(et);
+				
+				dt1 = et - st;
+				dt2 = ett - stt;
+				
+				if ( Math.abs(dt1) < Math.abs(dt2) ) {
+					t = st + frac * dt1;
 				} else {
-					var35 = var37 + var2 * var23;
+					t = stt + frac * dt2;
 				}
-
-				var45.setOrientation(var35);
+				aggr.setOrientation(t);
 			}
 		}
+	} //
 
-	}
+	private double translate(double t) {
+		return ( t < 0 ? t+TWO_PI : t );
+	} //
 
-	private double translate(double var1) {
-		return var1 < 0.0D ? var1 + 6.283185307179586D : var1;
-	}
+    public void focusChanged(FocusEvent e) {
+        if ( e.getEventType() == FocusEvent.FOCUS_SET ) {
+            m_linear.clear();
+            Entity[] rem = e.getRemovedFoci();
+            if ( rem.length == 0 ) return;
+            if ( rem[0] instanceof Node ) {
+                TreeNode p = m_registry.getNodeItem((Node)rem[0]);
+                for ( ; p != null; p = p.getParent() )        
+                    m_linear.add(p);
+            }
+        }
+    } //
 
-	public void focusChanged(FocusEvent var1) {
-		if (var1.getEventType() == 2) {
-			this.m_linear.clear();
-			Entity[] var2 = var1.getRemovedFoci();
-			if (var2.length == 0) {
-				return;
-			}
-
-			if (var2[0] instanceof Node) {
-				for(Object var3 = this.m_registry.getNodeItem((Node)var2[0]); var3 != null; var3 = ((TreeNode)var3).getParent()) {
-					this.m_linear.add(var3);
-				}
-			}
-		}
-
-	}
-}
+} // end of class PolarLocationAnimator

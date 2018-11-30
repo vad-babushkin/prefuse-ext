@@ -1,18 +1,32 @@
 package edu.berkeley.guir.prefuse.action.filter;
 
-public class GarbageCollector
-		extends Filter {
-	public GarbageCollector(String paramString) {
-		super(paramString, true);
-	}
-
-	public GarbageCollector(String[] paramArrayOfString) {
-		super(paramArrayOfString, true);
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/action/filter/GarbageCollector.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Signals the <code>ItemRegistry</code> to perform a garbage collection 
+ * operation. The class type of the <code>VisualItem</code> to garbage
+ * collect must be specified through the constructor and/or 
+ * <code>addItemClass()</code> method.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class GarbageCollector extends Filter {
+	
+    /**
+     * Creates a new instance that signals garbage collection for the given
+     * item class.
+     * @param itemClass the item class to garbage collect
+     */
+	public GarbageCollector(String itemClass) {
+		super(itemClass, true);
+	} //
+
+    /**
+     * Creates a new instance that signals garbage collection for the given
+     * item classes.
+     * @param itemClasses the item classes to garbage collect
+     */
+	public GarbageCollector(String[] itemClasses) {
+	    super(itemClasses, true);
+    } //
+
+} // end of class GarbageCollector

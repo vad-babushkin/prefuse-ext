@@ -2,26 +2,45 @@ package edu.berkeley.guir.prefuse.event;
 
 import edu.berkeley.guir.prefuse.activity.Activity;
 
-public class ActivityAdapter
-		implements ActivityListener {
-	public void activityScheduled(Activity paramActivity) {
-	}
-
-	public void activityStarted(Activity paramActivity) {
-	}
-
-	public void activityStepped(Activity paramActivity) {
-	}
-
-	public void activityFinished(Activity paramActivity) {
-	}
-
-	public void activityCancelled(Activity paramActivity) {
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/event/ActivityAdapter.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Adapter class for ActivityListeners. Provides empty implementations of
+ * ActivityListener routines.
+ * 
+ * Feb 9, 2004 - jheer - Created class
+ *
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class ActivityAdapter implements ActivityListener {
+
+    /**
+     * @see edu.berkeley.guir.prefuse.event.ActivityListener#activityScheduled(edu.berkeley.guir.prefuse.activity.Activity)
+     */
+    public void activityScheduled(Activity a) {
+    } //
+
+    /**
+     * @see edu.berkeley.guir.prefuse.event.ActivityListener#activityStarted(edu.berkeley.guir.prefuse.activity.Activity)
+     */
+    public void activityStarted(Activity a) {
+    } //
+
+    /**
+     * @see edu.berkeley.guir.prefuse.event.ActivityListener#activityStepped(edu.berkeley.guir.prefuse.activity.Activity)
+     */
+    public void activityStepped(Activity a) {
+    } //
+
+    /**
+     * @see edu.berkeley.guir.prefuse.event.ActivityListener#activityFinished(edu.berkeley.guir.prefuse.activity.Activity)
+     */
+    public void activityFinished(Activity a) {
+    } //
+
+    /**
+     * @see edu.berkeley.guir.prefuse.event.ActivityListener#activityCancelled(edu.berkeley.guir.prefuse.activity.Activity)
+     */
+    public void activityCancelled(Activity a) {
+    } //
+
+} // end of class ActivityAdapter

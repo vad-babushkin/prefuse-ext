@@ -4,32 +4,46 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public class ReverseListIterator
-		implements Iterator {
+/**
+ * Iterator that traverses a list in reverse.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
+public class ReverseListIterator implements Iterator {
+
 	ListIterator m_iter;
 
-	public ReverseListIterator(List paramList) {
-		this.m_iter = paramList.listIterator();
-		while (this.m_iter.hasNext()) {
-			this.m_iter.next();
-		}
-	}
+	/**
+	 * Constructor.
+	 * @param list the list to traverse in reverse
+	 */
+	public ReverseListIterator(List list) {
+		m_iter = list.listIterator();
+		// we shouldn't have to do this... but things weren't working properly
+		// when attempting to use the previous() method right off the bat.
+		while ( m_iter.hasNext() ) { m_iter.next(); }	
+	} //
 
+	/**
+	 * @see java.util.Iterator#remove()
+	 */
 	public void remove() {
 		throw new UnsupportedOperationException("Remove not supported");
-	}
+	} //
 
+	/**
+	 * @see java.util.Iterator#hasNext()
+	 */
 	public boolean hasNext() {
-		return this.m_iter.hasPrevious();
-	}
+		return m_iter.hasPrevious();
+	} //
 
-	public Object next() {
-		return this.m_iter.previous();
-	}
-}
+	/**
+	 * @see java.util.Iterator#next()
+	 */
+	public Object next() {		
+		return m_iter.previous();
+	} //
 
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/collections/ReverseListIterator.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
- */
+} // end of class ReverseListIterator

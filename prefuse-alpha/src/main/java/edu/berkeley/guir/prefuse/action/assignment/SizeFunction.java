@@ -1,30 +1,33 @@
 package edu.berkeley.guir.prefuse.action.assignment;
 
-import edu.berkeley.guir.prefuse.ItemRegistry;
-import edu.berkeley.guir.prefuse.VisualItem;
-import edu.berkeley.guir.prefuse.action.AbstractAction;
-
 import java.util.Iterator;
 
-public class SizeFunction
-		extends AbstractAction {
-	public void run(ItemRegistry paramItemRegistry, double paramDouble) {
-		Iterator localIterator = paramItemRegistry.getItems();
-		while (localIterator.hasNext()) {
-			VisualItem localVisualItem = (VisualItem) localIterator.next();
-			double d = getSize(localVisualItem);
-			localVisualItem.updateSize(d);
-			localVisualItem.setSize(d);
-		}
-	}
+import edu.berkeley.guir.prefuse.VisualItem;
+import edu.berkeley.guir.prefuse.ItemRegistry;
+import edu.berkeley.guir.prefuse.action.AbstractAction;
 
-	public double getSize(VisualItem paramVisualItem) {
-		return 1.0D;
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/action/assignment/SizeFunction.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Simple SizeFunction that blindly returns a size of "1" for all
+ * items. Subclasses should override the getSize() method to provide
+ * custom size assignment for VisualItems.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class SizeFunction extends AbstractAction {
+
+	public void run(ItemRegistry registry, double frac) {
+		Iterator itemIter = registry.getItems();
+		while ( itemIter.hasNext() ) {
+			VisualItem item = (VisualItem)itemIter.next();
+			double size = getSize(item);
+			item.updateSize(size);
+			item.setSize(size);
+		}
+	} //
+	
+	public double getSize(VisualItem item) {
+		return 1;
+	} //
+
+} // end of class SizeFunction

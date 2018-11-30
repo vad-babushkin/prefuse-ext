@@ -1,281 +1,328 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
 package edu.berkeley.guir.prefusex.force;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Random;
 
+/**
+ * A quad-tree based implementation of the Barnes-Hut algorithm for
+ *  efficient n-body force simulations. This can be used to create
+ *  force-based layouts of graphs. All input NodeItems to the simulation
+ *  are expected to have a "mass" attribute of type float, retrievable 
+ *  by the call item.getVizAttribute("mass").
+ * 
+ * The Barnes-Hut algorithm originally appeared in <i>"A Hierarchical 
+ *  O(n log n)force calculation algorithm" by J. Barnes and P. Hut, Nature, 
+ *  v.324, December 1986</i>. For more details on the algorithm, see one of
+ *  the following links --
+ * <ul>
+ *   <li><a href="http://www.cs.berkeley.edu/~demmel/cs267/lecture26/lecture26.html">James Demmel's UC Berkeley lecture notes</a>
+ *   <li><a href="http://www.physics.gmu.edu/~large/lr_forces/desc/bh/bhdesc.html">Description of the Barnes-Hut algorithm</a>
+ *   <li><a href="http://www.ifa.hawaii.edu/~barnes/treecode/treeguide.html">Joshua Barnes' recent implementation</a>
+ * </ul>
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
 public class NBodyForce extends AbstractForce {
-	private static String[] pnames = new String[]{"GravitationalConstant", "MinimumDistance", "BarnesHutTheta"};
-	public static final float DEFAULT_GRAV_CONSTANT = -0.4F;
-	public static final float DEFAULT_MIN_DISTANCE = -1.0F;
-	public static final float DEFAULT_THETA = 0.9F;
-	public static final int GRAVITATIONAL_CONST = 0;
-	public static final int MIN_DISTANCE = 1;
-	public static final int BARNES_HUT_THETA = 2;
-	private float xMin;
-	private float xMax;
-	private float yMin;
-	private float yMax;
-	private NBodyForce.QuadTreeNodeFactory factory;
-	private NBodyForce.QuadTreeNode root;
 
-	public NBodyForce() {
-		this(-0.4F, -1.0F, 0.9F);
-	}
+	/* 
+	 * The labeling scheme for quadtree child nodes goes row by row.
+	 *   0 | 1    0 -> top left,    1 -> top right
+	 *  -------
+	 *   2 | 3    2 -> bottom left, 3 -> bottom right
+	 */
 
-	public NBodyForce(float var1, float var2, float var3) {
-		this.factory = new NBodyForce.QuadTreeNodeFactory();
-		this.params = new float[]{var1, var2, var3};
-		this.root = this.factory.getQuadTreeNode();
-	}
+    private static String[] pnames = new String[] { "GravitationalConstant", 
+            "MinimumDistance", "BarnesHutTheta"  };
+    
+    public static final float DEFAULT_GRAV_CONSTANT = -0.4f;
+    public static final float DEFAULT_MIN_DISTANCE = -1f;
+    public static final float DEFAULT_THETA = 0.9f;
+    public static final int GRAVITATIONAL_CONST = 0;
+    public static final int MIN_DISTANCE = 1;
+    public static final int BARNES_HUT_THETA = 2;
+    
+    private float xMin, xMax, yMin, yMax;
+	private QuadTreeNodeFactory factory = new QuadTreeNodeFactory();
+	private QuadTreeNode root;
+	
+	private Random rand = new Random(12345678L); // deterministic randomness
 
-	public boolean isItemForce() {
-		return true;
-	}
+    /**
+     * Construct a new empty NBodyForce simulation.
+     */
+    public NBodyForce() {
+        this(DEFAULT_GRAV_CONSTANT, DEFAULT_MIN_DISTANCE, DEFAULT_THETA);
+    } //
+    
+    public NBodyForce(float gravConstant, float minDistance, float theta) {
+        params = new float[] { gravConstant, minDistance, theta };
+        root = factory.getQuadTreeNode();
+    } //
 
-	protected String[] getParameterNames() {
-		return pnames;
-	}
+    public boolean isItemForce() {
+        return true;
+    } //
+    
+    protected String[] getParameterNames() {
+        return pnames;
+    } //
+    
+	/**
+	 * Set the bounds of the region for which to compute the n-body simulation
+	 * @param xMin the minimum x-coordinate
+	 * @param yMin the minimum y-coordinate
+	 * @param xMax the maximum x-coordinate
+	 * @param yMax the maximum y-coordinate
+	 */
+	private void setBounds(int xMin, int yMin, int xMax, int yMax) {
+		this.xMin = xMin;
+        this.yMin = yMin;
+        this.xMax = xMax;
+        this.yMax = yMax;
+	} //
 
-	private void setBounds(int var1, int var2, int var3, int var4) {
-		this.xMin = (float)var1;
-		this.yMin = (float)var2;
-		this.xMax = (float)var3;
-		this.yMax = (float)var4;
-	}
-
+	/**
+	 * Clears the quadtree of all entries.
+	 */
 	public void clear() {
-		this.clearHelper(this.root);
-		this.root = this.factory.getQuadTreeNode();
-	}
-
-	private void clearHelper(NBodyForce.QuadTreeNode var1) {
-		for(int var2 = 0; var2 < var1.children.length; ++var2) {
-			if (var1.children[var2] != null) {
-				this.clearHelper(var1.children[var2]);
-			}
+		clearHelper(root);
+		root = factory.getQuadTreeNode();
+	} //
+	
+	private void clearHelper(QuadTreeNode n) {
+		for ( int i = 0; i < n.children.length; i++ ) {
+			if ( n.children[i] != null )
+				clearHelper(n.children[i]);
 		}
+		factory.reclaim(n);
+	} //
 
-		this.factory.reclaim(var1);
-	}
+	/**
+	 * Initialize the simulation with the provided enclosing simulation. After
+     * this call has been made, the simulation can be queried for the 
+     * n-body force on a given item.
+	 * @param fsim the enclosing ForceSimulator
+	 */
+	public void init(ForceSimulator fsim) {
+		clear(); // clear internal state
+        
+        // compute and squarify bounds of quadtree
+        int x1 = Integer.MAX_VALUE, y1 = Integer.MAX_VALUE;
+        int x2 = Integer.MIN_VALUE, y2 = Integer.MIN_VALUE;
+        Iterator itemIter = fsim.getItems();
+        while ( itemIter.hasNext() ) {
+            ForceItem item = (ForceItem)itemIter.next();
+            int x = (int)Math.round(item.location[0]);
+            int y = (int)Math.round(item.location[1]);
+            if ( x < x1 ) x1 = x;
+            if ( y < y1 ) y1 = y;
+            if ( x > x2 ) x2 = x;
+            if ( y > y2 ) y2 = y;
+        }
+        int dx = x2-x1, dy = y2-y1;
+        if ( dx > dy ) { y2 = y1 + dx; } else { x2 = x1 + dy; }
+        setBounds(x1,y1,x2,y2);
+        
+        // insert items into quadtree
+        itemIter = fsim.getItems();
+        while ( itemIter.hasNext() ) {
+            ForceItem item = (ForceItem)itemIter.next();
+            insert(item);
+        }
+        
+        // calculate magnitudes and centers of mass
+		calcMass(root);
+	} //
 
-	public void init(ForceSimulator var1) {
-		this.clear();
-		int var2 = 2147483647;
-		int var3 = 2147483647;
-		int var4 = -2147483648;
-		int var5 = -2147483648;
-		Iterator var6 = var1.getItems();
+	/**
+	 * Inserts an item into the quadtree.
+	 * @param item the ForceItem to add.
+	 * @throws IllegalStateException if the current location of the item is
+	 *  outside the bounds of the quadtree
+	 */
+	public void insert(ForceItem item) {
+		// insert item into the quadtrees
+	    try {
+	        insert(item, root, xMin, yMin, xMax, yMax);
+	    } catch ( StackOverflowError e ) {
+	        e.printStackTrace();
+	    }
+	} //
 
-		int var8;
-		while(var6.hasNext()) {
-			ForceItem var7 = (ForceItem)var6.next();
-			var8 = Math.round(var7.location[0]);
-			int var9 = Math.round(var7.location[1]);
-			if (var8 < var2) {
-				var2 = var8;
-			}
-
-			if (var9 < var3) {
-				var3 = var9;
-			}
-
-			if (var8 > var4) {
-				var4 = var8;
-			}
-
-			if (var9 > var5) {
-				var5 = var9;
-			}
+	private void insert(ForceItem p, QuadTreeNode n, 
+                        float x1, float y1, float x2, float y2)
+    {
+		// try to insert particle p at node n in the quadtree
+		// by construction, each leaf will contain either 1 or 0 particles
+		if ( n.hasChildren ) {
+			// n contains more than 1 particle
+			insertHelper(p,n,x1,y1,x2,y2);
+		} else if ( n.value != null ) {
+			// n contains 1 particle
+            if ( isSameLocation(n.value, p) ) {
+                insertHelper(p,n,x1,y1,x2,y2);
+            } else {
+                ForceItem v = n.value; n.value = null;
+                insertHelper(v,n,x1,y1,x2,y2);
+                insertHelper(p,n,x1,y1,x2,y2);
+            }
+		} else { 
+			// n is empty, so is a leaf
+			n.value = p;
 		}
-
-		int var10 = var4 - var2;
-		var8 = var5 - var3;
-		if (var10 > var8) {
-			var5 = var3 + var10;
-		} else {
-			var4 = var2 + var8;
+	} //
+    
+    private static boolean isSameLocation(ForceItem f1, ForceItem f2) {
+        float dx = Math.abs(f1.location[0]-f2.location[0]);
+        float dy = Math.abs(f1.location[1]-f2.location[1]);
+        return ( dx < 0.01 && dy < 0.01 );
+    } //
+    
+	private void insertHelper(ForceItem p, QuadTreeNode n, 
+                              float x1, float y1, float x2, float y2)
+    {   
+		float x = p.location[0], y = p.location[1];
+		float splitx = x1 + ((x2-x1)/2);
+		float splity = y1 + ((y2-y1)/2);
+		int i = (x>=splitx ? 1 : 0) + (y>=splity ? 2 : 0);
+		// create new child node, if necessary
+		if ( n.children[i] == null ) {
+			n.children[i] = factory.getQuadTreeNode();
+			n.hasChildren = true;
 		}
+		// update bounds
+		if ( i==1 || i==3 ) x1 = splitx; else x2 = splitx;
+		if ( i > 1 )        y1 = splity; else y2 = splity;
+		// recurse 
+		insert(p,n.children[i],x1,y1,x2,y2);		
+	} //
 
-		this.setBounds(var2, var3, var4, var5);
-		var6 = var1.getItems();
+	private void calcMass(QuadTreeNode n) {
+		float xcom = 0, ycom = 0;
+		n.mass = 0;
+        if ( n.hasChildren ) {
+    		for ( int i=0; i < n.children.length; i++ ) {
+    			if ( n.children[i] != null ) {
+    				calcMass(n.children[i]);
+    				n.mass += n.children[i].mass;
+    				xcom += n.children[i].mass * n.children[i].com[0];
+    				ycom += n.children[i].mass * n.children[i].com[1];
+    			}
+    		}
+        }
+        if ( n.value != null ) {
+            n.mass += n.value.mass;
+            xcom += n.value.mass * n.value.location[0];
+            ycom += n.value.mass * n.value.location[1];
+        }
+        n.com[0] = xcom / n.mass;
+        n.com[1] = ycom / n.mass;
+	} //
 
-		while(var6.hasNext()) {
-			ForceItem var11 = (ForceItem)var6.next();
-			this.insert(var11);
-		}
-
-		this.calcMass(this.root);
-	}
-
-	public void insert(ForceItem var1) {
-		this.insert(var1, this.root, this.xMin, this.yMin, this.xMax, this.yMax);
-	}
-
-	private void insert(ForceItem var1, NBodyForce.QuadTreeNode var2, float var3, float var4, float var5, float var6) {
-		if (var2.hasChildren) {
-			this.insertHelper(var1, var2, var3, var4, var5, var6);
-		} else if (var2.value != null) {
-			if (isSameLocation(var2.value, var1)) {
-				this.insertHelper(var1, var2, var3, var4, var5, var6);
-			} else {
-				ForceItem var7 = var2.value;
-				var2.value = null;
-				this.insertHelper(var7, var2, var3, var4, var5, var6);
-				this.insertHelper(var1, var2, var3, var4, var5, var6);
-			}
-		} else {
-			var2.value = var1;
-		}
-
-	}
-
-	private static boolean isSameLocation(ForceItem var0, ForceItem var1) {
-		float var2 = Math.abs(var0.location[0] - var1.location[0]);
-		float var3 = Math.abs(var0.location[1] - var1.location[1]);
-		return (double)var2 < 0.01D && (double)var3 < 0.01D;
-	}
-
-	private void insertHelper(ForceItem var1, NBodyForce.QuadTreeNode var2, float var3, float var4, float var5, float var6) {
-		float var7 = var1.location[0];
-		float var8 = var1.location[1];
-		float var9 = var3 + (var5 - var3) / 2.0F;
-		float var10 = var4 + (var6 - var4) / 2.0F;
-		int var11 = (var7 >= var9 ? 1 : 0) + (var8 >= var10 ? 2 : 0);
-		if (var2.children[var11] == null) {
-			var2.children[var11] = this.factory.getQuadTreeNode();
-			var2.hasChildren = true;
-		}
-
-		if (var11 != 1 && var11 != 3) {
-			var5 = var9;
-		} else {
-			var3 = var9;
-		}
-
-		if (var11 > 1) {
-			var4 = var10;
-		} else {
-			var6 = var10;
-		}
-
-		this.insert(var1, var2.children[var11], var3, var4, var5, var6);
-	}
-
-	private void calcMass(NBodyForce.QuadTreeNode var1) {
-		float var2 = 0.0F;
-		float var3 = 0.0F;
-		var1.mass = 0.0F;
-		if (var1.hasChildren) {
-			for(int var4 = 0; var4 < var1.children.length; ++var4) {
-				if (var1.children[var4] != null) {
-					this.calcMass(var1.children[var4]);
-					var1.mass += var1.children[var4].mass;
-					var2 += var1.children[var4].mass * var1.children[var4].com[0];
-					var3 += var1.children[var4].mass * var1.children[var4].com[1];
+    /**
+     * Calculates the force vector acting on the given item.
+     * @param item the ForceItem for which to compute the force
+     */
+	public void getForce(ForceItem item) {
+	    try {
+	        forceHelper(item,root,xMin,yMin,xMax,yMax);
+	    } catch ( StackOverflowError e ) {
+	        e.printStackTrace();
+	    }
+	} //
+	
+	private void forceHelper(ForceItem item, QuadTreeNode n, 
+                             float x1, float y1, float x2, float y2)
+	{
+		float dx = n.com[0] - item.location[0];
+        float dy = n.com[1] - item.location[1];
+        float r  = (float)Math.sqrt(dx*dx+dy*dy);
+        boolean same = false;
+        if ( r == 0.0 ) {
+            // if items are in the exact same place, add some noise
+            dx = (rand.nextFloat()-0.5f) / 50.0f;
+            dy = (rand.nextFloat()-0.5f) / 50.0f;
+            r  = (float)Math.sqrt(dx*dx+dy*dy);
+            same = true;
+        }
+        boolean minDist = params[MIN_DISTANCE]>0f && r>params[MIN_DISTANCE];
+		
+		// the Barnes-Hut approximation criteria is if the ratio of the
+		// size of the quadtree box to the distance between the point and
+		// the box's center of mass is beneath some threshold theta.
+		if ( (!n.hasChildren && n.value != item) || 
+             (!same && (x2-x1)/r < params[BARNES_HUT_THETA]) ) 
+        {
+            if ( minDist ) return;
+			// either only 1 particle or we meet criteria
+			// for Barnes-Hut approximation, so calc force
+			float v = params[GRAVITATIONAL_CONST]*item.mass*n.mass 
+                        / (r*r*r);
+            item.force[0] += v*dx;
+            item.force[1] += v*dy;
+		} else if ( n.hasChildren ) {
+			// recurse for more accurate calculation
+			float splitx = x1 + ((x2-x1)/2);
+			float splity = y1 + ((y2-y1)/2);
+			for ( int i=0; i<n.children.length; i++ ) {
+				if ( n.children[i] != null ) {
+					forceHelper(item, n.children[i],
+						(i==1||i==3?splitx:x1), (i>1?splity:y1),
+						(i==1||i==3?x2:splitx), (i>1?y2:splity));
 				}
 			}
+            if ( minDist ) return;
+            if ( n.value != null && n.value != item ) {
+                float v = params[GRAVITATIONAL_CONST]*item.mass*n.value.mass
+                            / (r*r*r);
+                item.force[0] += v*dx;
+                item.force[1] += v*dy;
+            }
 		}
+	} //
 
-		if (var1.value != null) {
-			var1.mass += var1.value.mass;
-			var2 += var1.value.mass * var1.value.location[0];
-			var3 += var1.value.mass * var1.value.location[1];
-		}
+	/**
+	 * Represents a node in the quadtree.
+	 */
+	public final class QuadTreeNode {
+		public QuadTreeNode() {
+            com = new float[] {0.0f, 0.0f};
+			children = new QuadTreeNode[4];
+		} //
+		boolean hasChildren = false;
+		float mass; // total mass held by this node
+		float[] com; // center of mass of this node 
+		ForceItem value; // ForceItem in this node, null if node has children
+		QuadTreeNode[] children; // children nodes
+	} // end of inner class QuadTreeNode
 
-		var1.com[0] = var2 / var1.mass;
-		var1.com[1] = var3 / var1.mass;
-	}
-
-	public void getForce(ForceItem var1) {
-		this.forceHelper(var1, this.root, this.xMin, this.yMin, this.xMax, this.yMax);
-	}
-
-	private void forceHelper(ForceItem var1, NBodyForce.QuadTreeNode var2, float var3, float var4, float var5, float var6) {
-		float var7 = var2.com[0] - var1.location[0];
-		float var8 = var2.com[1] - var1.location[1];
-		float var9 = (float)Math.sqrt((double)(var7 * var7 + var8 * var8));
-		boolean var10 = false;
-		if ((double)var9 == 0.0D) {
-			var7 = ((float)Math.random() - 0.5F) / 50.0F;
-			var8 = ((float)Math.random() - 0.5F) / 50.0F;
-			var9 = (float)Math.sqrt((double)(var7 * var7 + var8 * var8));
-			var10 = true;
-		}
-
-		boolean var11 = this.params[1] > 0.0F && var9 > this.params[1];
-		float var12;
-		if ((var2.hasChildren || var2.value == var1) && (var10 || (var5 - var3) / var9 >= this.params[2])) {
-			if (var2.hasChildren) {
-				var12 = var3 + (var5 - var3) / 2.0F;
-				float var13 = var4 + (var6 - var4) / 2.0F;
-
-				for(int var14 = 0; var14 < var2.children.length; ++var14) {
-					if (var2.children[var14] != null) {
-						this.forceHelper(var1, var2.children[var14], var14 != 1 && var14 != 3 ? var3 : var12, var14 > 1 ? var13 : var4, var14 != 1 && var14 != 3 ? var12 : var5, var14 > 1 ? var6 : var13);
-					}
-				}
-
-				if (var11) {
-					return;
-				}
-
-				if (var2.value != null && var2.value != var1) {
-					float var15 = this.params[0] * var1.mass * var2.value.mass / (var9 * var9 * var9);
-					var1.force[0] += var15 * var7;
-					var1.force[1] += var15 * var8;
-				}
-			}
-		} else {
-			if (var11) {
-				return;
-			}
-
-			var12 = this.params[0] * var1.mass * var2.mass / (var9 * var9 * var9);
-			var1.force[0] += var12 * var7;
-			var1.force[1] += var12 * var8;
-		}
-
-	}
-
+	/**
+	 * Helper class to minimize number of object creations across multiple
+	 * uses of the quadtree.
+	 */
 	public final class QuadTreeNodeFactory {
 		private int maxNodes = 10000;
 		private ArrayList nodes = new ArrayList();
-
-		public QuadTreeNodeFactory() {
-		}
-
-		public NBodyForce.QuadTreeNode getQuadTreeNode() {
-			return this.nodes.size() > 0 ? (NBodyForce.QuadTreeNode)this.nodes.remove(this.nodes.size() - 1) : NBodyForce.this.new QuadTreeNode();
-		}
-
-		public void reclaim(NBodyForce.QuadTreeNode var1) {
-			var1.mass = 0.0F;
-			var1.com[0] = 0.0F;
-			var1.com[1] = 0.0F;
-			var1.value = null;
-			var1.hasChildren = false;
-			Arrays.fill(var1.children, (Object)null);
-			if (this.nodes.size() < this.maxNodes) {
-				this.nodes.add(var1);
+		
+		public QuadTreeNode getQuadTreeNode() {
+			if ( nodes.size() > 0 ) {
+				return (QuadTreeNode)nodes.remove(nodes.size()-1);
+			} else {
+				return new QuadTreeNode();
 			}
+		} //
+		public void reclaim(QuadTreeNode n) {
+			n.mass = 0;
+			n.com[0] = 0.0f; n.com[1] = 0.0f;
+			n.value = null;
+			n.hasChildren = false;
+			Arrays.fill(n.children, null);			
+			if ( nodes.size() < maxNodes )
+				nodes.add(n);
+		} //
+	} // end of inner class QuadTreeNodeFactory
 
-		}
-	}
-
-	public final class QuadTreeNode {
-		boolean hasChildren = false;
-		float mass;
-		float[] com = new float[]{0.0F, 0.0F};
-		ForceItem value;
-		NBodyForce.QuadTreeNode[] children = new NBodyForce.QuadTreeNode[4];
-
-		public QuadTreeNode() {
-		}
-	}
-}
+} // end of class NBodyForce

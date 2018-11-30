@@ -1,192 +1,201 @@
 package edu.berkeley.guir.prefusex.layout;
 
+import java.awt.geom.Point2D;
+import java.util.Iterator;
+
 import edu.berkeley.guir.prefuse.ItemRegistry;
 import edu.berkeley.guir.prefuse.NodeItem;
 import edu.berkeley.guir.prefuse.action.assignment.TreeLayout;
 
-import java.awt.geom.Point2D;
-import java.util.Iterator;
-
-public class BalloonTreeLayout
-		extends TreeLayout {
-	private ItemRegistry m_registry;
-	private int m_minRadius = 2;
-
-	public BalloonTreeLayout() {
-		this(2);
-	}
-
-	public BalloonTreeLayout(int paramInt) {
-	}
-
-	public void run(ItemRegistry paramItemRegistry, double paramDouble) {
-		this.m_registry = paramItemRegistry;
-		Point2D localPoint2D = getLayoutAnchor(paramItemRegistry);
-		NodeItem localNodeItem = getLayoutRoot(paramItemRegistry);
-		layout(localNodeItem, localPoint2D.getX(), localPoint2D.getY());
-	}
-
-	public int getMinRadius() {
-		return this.m_minRadius;
-	}
-
-	public void setMinRadius(int paramInt) {
-		this.m_minRadius = paramInt;
-	}
-
-	public void layout(NodeItem paramNodeItem, double paramDouble1, double paramDouble2) {
-		firstWalk(paramNodeItem);
-		secondWalk(paramNodeItem, null, paramDouble1, paramDouble2, 1.0D, 0.0D);
-	}
-
-	private void firstWalk(NodeItem paramNodeItem) {
-		ParamBlock localParamBlock1 = getParams(paramNodeItem);
-		localParamBlock1.d = 0;
-		double d = 0.0D;
-		Iterator localIterator = paramNodeItem.getChildren();
-		while (localIterator.hasNext()) {
-			NodeItem localNodeItem = (NodeItem) localIterator.next();
-			firstWalk(localNodeItem);
-			ParamBlock localParamBlock2 = getParams(localNodeItem);
-			localParamBlock1.d = Math.max(localParamBlock1.d, localParamBlock2.r);
-			localParamBlock2.a = Math.atan(localParamBlock2.r / (localParamBlock1.d + localParamBlock2.r));
-			d += localParamBlock2.a;
-		}
-		adjustChildren(localParamBlock1, d);
-		setRadius(localParamBlock1);
-	}
-
-	private void adjustChildren(ParamBlock paramParamBlock, double paramDouble) {
-		if (paramDouble > 3.141592653589793D) {
-			paramParamBlock.c = (3.141592653589793D / paramDouble);
-			paramParamBlock.f = 0.0D;
-		} else {
-			paramParamBlock.c = 1.0D;
-			paramParamBlock.f = (3.141592653589793D - paramDouble);
-		}
-	}
-
-	private void setRadius(ParamBlock paramParamBlock) {
-		paramParamBlock.r = (Math.max(paramParamBlock.d, this.m_minRadius) + 2 * paramParamBlock.d);
-	}
-
-	private void setRadius(NodeItem paramNodeItem, ParamBlock paramParamBlock) {
-		int i = paramNodeItem.getChildCount();
-		double d1 = 3.141592653589793D;
-		double d2 = i == 0 ? 0.0D : paramParamBlock.f / i;
-		double d3 = 0.0D;
-		double d4 = 0.0D;
-		double d5 = 0.0D;
-		Iterator localIterator = paramNodeItem.getChildren();
-		NodeItem localNodeItem;
-		ParamBlock localParamBlock;
-		while (localIterator.hasNext()) {
-			localNodeItem = (NodeItem) localIterator.next();
-			localParamBlock = getParams(localNodeItem);
-			d1 += d3 + localParamBlock.a + d2;
-			d4 += localParamBlock.r * Math.cos(d1);
-			d5 += localParamBlock.r * Math.sin(d1);
-			d3 = localParamBlock.a;
-		}
-		if (i != 0) {
-			d4 /= i;
-			d5 /= i;
-		}
-		paramParamBlock.rx = (-d4);
-		paramParamBlock.ry = (-d5);
-		d1 = 3.141592653589793D;
-		d3 = 0.0D;
-		paramParamBlock.r = 0;
-		localIterator = paramNodeItem.getChildren();
-		while (localIterator.hasNext()) {
-			localNodeItem = (NodeItem) localIterator.next();
-			localParamBlock = getParams(localNodeItem);
-			d1 += d3 + localParamBlock.a + d2;
-			double d6 = localParamBlock.r * Math.cos(d1) - d4;
-			double d7 = localParamBlock.r * Math.sin(d1) - d5;
-			double d8 = Math.sqrt(d6 * d6 + d7 * d7) + localParamBlock.r;
-			paramParamBlock.r = Math.max(paramParamBlock.r, (int) Math.round(d8));
-			d3 = localParamBlock.a;
-		}
-		if (paramParamBlock.r == 0) {
-			paramParamBlock.r = (this.m_minRadius + 2 * paramParamBlock.d);
-		}
-	}
-
-	private void secondWalk2(NodeItem paramNodeItem1, NodeItem paramNodeItem2, double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4) {
-		ParamBlock localParamBlock1 = getParams(paramNodeItem1);
-		double d1 = Math.cos(paramDouble4);
-		double d2 = Math.sin(paramDouble4);
-		double d3 = paramDouble1 + paramDouble3 * (localParamBlock1.rx * d1 - localParamBlock1.ry * d2);
-		double d4 = paramDouble2 + paramDouble3 * (localParamBlock1.rx * d2 + localParamBlock1.ry * d1);
-		setLocation(paramNodeItem1, paramNodeItem2, d3, d4);
-		double d5 = paramDouble3 * localParamBlock1.d;
-		double d6 = 3.141592653589793D;
-		double d7 = localParamBlock1.f / (paramNodeItem1.getChildCount() + 1);
-		double d8 = 0.0D;
-		Iterator localIterator = paramNodeItem1.getChildren();
-		while (localIterator.hasNext()) {
-			NodeItem localNodeItem = (NodeItem) localIterator.next();
-			ParamBlock localParamBlock2 = getParams(localNodeItem);
-			double d9 = localParamBlock1.c * localParamBlock2.a;
-			double d10 = localParamBlock1.d * Math.tan(d9) / (1.0D - Math.tan(d9));
-			d6 += d8 + d9 + d7;
-			double d11 = (paramDouble3 * d10 + d5) * Math.cos(d6) + localParamBlock1.rx;
-			double d12 = (paramDouble3 * d10 + d5) * Math.sin(d6) + localParamBlock1.ry;
-			double d13 = d11 * d1 - d12 * d2;
-			double d14 = d11 * d2 + d12 * d1;
-			d8 = d9;
-			secondWalk2(localNodeItem, paramNodeItem1, paramDouble1 + d13, paramDouble2 + d14, paramDouble3 * d10 / localParamBlock2.r, d6);
-		}
-	}
-
-	private void secondWalk(NodeItem paramNodeItem1, NodeItem paramNodeItem2, double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4) {
-		setLocation(paramNodeItem1, paramNodeItem2, paramDouble1, paramDouble2);
-		ParamBlock localParamBlock1 = getParams(paramNodeItem1);
-		int i = paramNodeItem1.getChildCount();
-		double d1 = paramDouble3 * localParamBlock1.d;
-		double d2 = paramDouble4 + 3.141592653589793D;
-		double d3 = i == 0 ? 0.0D : localParamBlock1.f / i;
-		double d4 = 0.0D;
-		Iterator localIterator = paramNodeItem1.getChildren();
-		while (localIterator.hasNext()) {
-			NodeItem localNodeItem = (NodeItem) localIterator.next();
-			ParamBlock localParamBlock2 = getParams(localNodeItem);
-			double d5 = localParamBlock1.c * localParamBlock2.a;
-			double d6 = localParamBlock1.d * Math.tan(d5) / (1.0D - Math.tan(d5));
-			d2 += d4 + d5 + d3;
-			double d7 = (paramDouble3 * d6 + d1) * Math.cos(d2);
-			double d8 = (paramDouble3 * d6 + d1) * Math.sin(d2);
-			d4 = d5;
-			secondWalk(localNodeItem, paramNodeItem1, paramDouble1 + d7, paramDouble2 + d8, paramDouble3 * localParamBlock1.c, d2);
-		}
-	}
-
-	private ParamBlock getParams(NodeItem paramNodeItem) {
-		ParamBlock localParamBlock = (ParamBlock) paramNodeItem.getVizAttribute("balloonParams");
-		if (localParamBlock == null) {
-			localParamBlock = new ParamBlock();
-			paramNodeItem.setVizAttribute("balloonParams", localParamBlock);
-		}
-		return localParamBlock;
-	}
-
-	public class ParamBlock {
-		public int d;
-		public int r;
-		public double rx;
-		public double ry;
-		public double a;
-		public double c;
-		public double f;
-
-		public ParamBlock() {
-		}
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefusex/layout/BalloonTreeLayout.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * <p>Calculates a BalloonTree layout of a tree. This layout places children
+ * nodes radially around their parents, and is equivalent to a 2D view of
+ * a ConeTree.</p>
+ * 
+ * <p>This is an implementation of the algorithm presented in G. Melançon and 
+ * I. Herman, Circular Drawings of Rooted Trees, Reports of the Centre for 
+ * Mathematics and Computer Sciences, Report Number INS–9817, 1998.
+ * </p>
+ *
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class BalloonTreeLayout extends TreeLayout {
+    
+    private ItemRegistry m_registry;
+    private int m_minRadius = 2;
+    
+    public BalloonTreeLayout() {
+        this(2);
+    } //
+    
+    public BalloonTreeLayout(int minRadius) {
+        m_minRadius = 2;
+    } //
+    
+    /**
+     * @see edu.berkeley.guir.prefuse.action.Action#run(edu.berkeley.guir.prefuse.ItemRegistry, double)
+     */
+    public void run(ItemRegistry registry, double frac) {
+        m_registry = registry;
+        Point2D anchor = getLayoutAnchor(registry);
+        NodeItem n = getLayoutRoot(registry);
+        layout(n,anchor.getX(),anchor.getY());
+    } //
+    
+    public int getMinRadius() {
+        return m_minRadius;
+    } //
+    
+    public void setMinRadius(int minRadius) {
+        m_minRadius = minRadius;
+    } //
+    
+    public void layout(NodeItem n, double x, double y) {
+        firstWalk(n);
+        secondWalk(n,null,x,y,1,0);
+    } //
+    
+    private void firstWalk(NodeItem n) {
+        ParamBlock np = getParams(n);
+        np.d = 0;
+        double s = 0;
+        Iterator childIter = n.getChildren();
+        while ( childIter.hasNext() ) {
+            NodeItem c = (NodeItem)childIter.next();
+            firstWalk(c);
+            ParamBlock cp = getParams(c);
+            np.d = Math.max(np.d,cp.r);
+            cp.a = Math.atan(((double)cp.r)/(np.d+cp.r));
+            s += cp.a;
+        }
+        adjustChildren(np, s);
+        setRadius(np);
+    } //
+    
+    private void adjustChildren(ParamBlock np, double s) {
+        if ( s > Math.PI ) {
+            np.c = Math.PI/s;
+            np.f = 0;
+        } else {
+            np.c = 1;
+            np.f = Math.PI - s;
+        }
+    } //
+    
+    private void setRadius(ParamBlock np) {
+        np.r = Math.max(np.d,m_minRadius) + 2*np.d;
+    } //
+    
+    private void setRadius(NodeItem n, ParamBlock np) {
+        int numChildren = n.getChildCount();
+        double p  = Math.PI;
+        double fs = (numChildren==0 ? 0 : np.f/numChildren);
+        double pr = 0;
+        double bx = 0, by = 0;
+        Iterator childIter = n.getChildren();
+        while ( childIter.hasNext() ) {
+            NodeItem c = (NodeItem)childIter.next();
+            ParamBlock cp = getParams(c);
+            p += pr + cp.a + fs;
+            bx += (cp.r)*Math.cos(p);
+            by += (cp.r)*Math.sin(p);
+            pr = cp.a;
+        }
+        if ( numChildren != 0 ) {
+            bx /= numChildren;
+            by /= numChildren;
+        }
+        np.rx = -bx;
+        np.ry = -by;
+        
+        p = Math.PI;
+        pr = 0;
+        np.r = 0;
+        childIter = n.getChildren();
+        while ( childIter.hasNext() ) {
+            NodeItem c = (NodeItem)childIter.next();
+            ParamBlock cp = getParams(c);
+            p += pr + cp.a + fs;
+            double x = cp.r*Math.cos(p)-bx;
+            double y = cp.r*Math.sin(p)-by;
+            double d = Math.sqrt(x*x+y*y) + cp.r;
+            np.r = Math.max(np.r, (int)Math.round(d));
+            pr = cp.a;
+        }
+        if ( np.r == 0 )
+            np.r = m_minRadius + 2*np.d;
+    } //
+    
+    private void secondWalk2(NodeItem n, NodeItem r, 
+            double x, double y, double l, double t)
+    {
+        ParamBlock np = getParams(n);
+        double cost = Math.cos(t);
+        double sint = Math.sin(t);
+        double nx = x + l*(np.rx*cost-np.ry*sint);
+        double ny = y + l*(np.rx*sint+np.ry*cost);
+        setLocation(n,r,nx,ny);
+        double dd = l*np.d;
+        double p  = Math.PI;
+        double fs = np.f / (n.getChildCount()+1);
+        double pr = 0;
+        Iterator childIter = n.getChildren();
+        while ( childIter.hasNext() ) {
+            NodeItem c = (NodeItem)childIter.next();
+            ParamBlock cp = getParams(c);
+            double aa = np.c * cp.a;
+            double rr = np.d * Math.tan(aa)/(1-Math.tan(aa));
+            p += pr + aa + fs;
+            double xx = (l*rr+dd)*Math.cos(p)+np.rx;
+            double yy = (l*rr+dd)*Math.sin(p)+np.ry;
+            double x2 = xx*cost - yy*sint;
+            double y2 = xx*sint + yy*cost;
+            pr = aa;
+            secondWalk2(c, n, x+x2, y+y2, l*rr/cp.r, p);
+        }
+    } //
+    
+    private void secondWalk(NodeItem n, NodeItem r,
+            double x, double y, double l, double t)
+    {
+        setLocation(n,r,x,y);
+        ParamBlock np = getParams(n);
+        int numChildren = n.getChildCount();
+        double dd = l*np.d;
+        double p  = t + Math.PI;
+        double fs = (numChildren==0 ? 0 : np.f/numChildren);
+        double pr = 0;
+        Iterator childIter = n.getChildren();
+        while ( childIter.hasNext() ) {
+            NodeItem c = (NodeItem)childIter.next();
+            ParamBlock cp = getParams(c);
+            double aa = np.c * cp.a;
+            double rr = np.d * Math.tan(aa)/(1-Math.tan(aa));
+            p += pr + aa + fs;
+            double xx = (l*rr+dd)*Math.cos(p);
+            double yy = (l*rr+dd)*Math.sin(p);
+            pr = aa;
+            secondWalk(c, n, x+xx, y+yy, l*np.c/*l*rr/cp.r*/, p);
+        }
+    } //
+    
+    private ParamBlock getParams(NodeItem n) {
+        ParamBlock np = (ParamBlock)n.getVizAttribute("balloonParams");
+        if ( np == null ) {
+            np = new ParamBlock();
+            n.setVizAttribute("balloonParams", np);
+        }
+        return np;
+    } //
+    
+    public class ParamBlock {
+        public int d;
+        public int r;
+        public double rx, ry;
+        public double a;
+        public double c;
+        public double f;
+    } //
+
+} // end of class BalloonTreeLayout

@@ -1,165 +1,166 @@
 package edu.berkeley.guir.prefuse.event;
 
-import edu.berkeley.guir.prefuse.VisualItem;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.EventListener;
 
-public class ControlEventMulticaster
-		extends EventMulticaster
-		implements ControlListener {
-	public static ControlListener add(ControlListener paramControlListener1, ControlListener paramControlListener2) {
-		return (ControlListener) addInternal(paramControlListener1, paramControlListener2);
-	}
+import edu.berkeley.guir.prefuse.VisualItem;
 
-	public static ControlListener remove(ControlListener paramControlListener1, ControlListener paramControlListener2) {
-		return (ControlListener) removeInternal(paramControlListener1, paramControlListener2);
-	}
-
-	public void itemDragged(VisualItem paramVisualItem, MouseEvent paramMouseEvent) {
-		((ControlListener) this.a).itemDragged(paramVisualItem, paramMouseEvent);
-		((ControlListener) this.b).itemDragged(paramVisualItem, paramMouseEvent);
-	}
-
-	public void itemMoved(VisualItem paramVisualItem, MouseEvent paramMouseEvent) {
-		((ControlListener) this.a).itemMoved(paramVisualItem, paramMouseEvent);
-		((ControlListener) this.b).itemMoved(paramVisualItem, paramMouseEvent);
-	}
-
-	public void itemWheelMoved(VisualItem paramVisualItem, MouseWheelEvent paramMouseWheelEvent) {
-		((ControlListener) this.a).itemWheelMoved(paramVisualItem, paramMouseWheelEvent);
-		((ControlListener) this.b).itemWheelMoved(paramVisualItem, paramMouseWheelEvent);
-	}
-
-	public void itemClicked(VisualItem paramVisualItem, MouseEvent paramMouseEvent) {
-		((ControlListener) this.a).itemClicked(paramVisualItem, paramMouseEvent);
-		((ControlListener) this.b).itemClicked(paramVisualItem, paramMouseEvent);
-	}
-
-	public void itemPressed(VisualItem paramVisualItem, MouseEvent paramMouseEvent) {
-		((ControlListener) this.a).itemPressed(paramVisualItem, paramMouseEvent);
-		((ControlListener) this.b).itemPressed(paramVisualItem, paramMouseEvent);
-	}
-
-	public void itemReleased(VisualItem paramVisualItem, MouseEvent paramMouseEvent) {
-		((ControlListener) this.a).itemReleased(paramVisualItem, paramMouseEvent);
-		((ControlListener) this.b).itemReleased(paramVisualItem, paramMouseEvent);
-	}
-
-	public void itemEntered(VisualItem paramVisualItem, MouseEvent paramMouseEvent) {
-		((ControlListener) this.a).itemEntered(paramVisualItem, paramMouseEvent);
-		((ControlListener) this.b).itemEntered(paramVisualItem, paramMouseEvent);
-	}
-
-	public void itemExited(VisualItem paramVisualItem, MouseEvent paramMouseEvent) {
-		((ControlListener) this.a).itemExited(paramVisualItem, paramMouseEvent);
-		((ControlListener) this.b).itemExited(paramVisualItem, paramMouseEvent);
-	}
-
-	public void itemKeyPressed(VisualItem paramVisualItem, KeyEvent paramKeyEvent) {
-		((ControlListener) this.a).itemKeyPressed(paramVisualItem, paramKeyEvent);
-		((ControlListener) this.b).itemKeyPressed(paramVisualItem, paramKeyEvent);
-	}
-
-	public void itemKeyReleased(VisualItem paramVisualItem, KeyEvent paramKeyEvent) {
-		((ControlListener) this.a).itemKeyReleased(paramVisualItem, paramKeyEvent);
-		((ControlListener) this.b).itemKeyReleased(paramVisualItem, paramKeyEvent);
-	}
-
-	public void itemKeyTyped(VisualItem paramVisualItem, KeyEvent paramKeyEvent) {
-		((ControlListener) this.a).itemKeyTyped(paramVisualItem, paramKeyEvent);
-		((ControlListener) this.b).itemKeyTyped(paramVisualItem, paramKeyEvent);
-	}
-
-	public void mouseEntered(MouseEvent paramMouseEvent) {
-		((ControlListener) this.a).mouseEntered(paramMouseEvent);
-		((ControlListener) this.b).mouseEntered(paramMouseEvent);
-	}
-
-	public void mouseExited(MouseEvent paramMouseEvent) {
-		((ControlListener) this.a).mouseExited(paramMouseEvent);
-		((ControlListener) this.b).mouseExited(paramMouseEvent);
-	}
-
-	public void mousePressed(MouseEvent paramMouseEvent) {
-		((ControlListener) this.a).mousePressed(paramMouseEvent);
-		((ControlListener) this.b).mousePressed(paramMouseEvent);
-	}
-
-	public void mouseReleased(MouseEvent paramMouseEvent) {
-		((ControlListener) this.a).mouseReleased(paramMouseEvent);
-		((ControlListener) this.b).mouseReleased(paramMouseEvent);
-	}
-
-	public void mouseClicked(MouseEvent paramMouseEvent) {
-		((ControlListener) this.a).mouseClicked(paramMouseEvent);
-		((ControlListener) this.b).mouseClicked(paramMouseEvent);
-	}
-
-	public void mouseDragged(MouseEvent paramMouseEvent) {
-		((ControlListener) this.a).mouseDragged(paramMouseEvent);
-		((ControlListener) this.b).mouseDragged(paramMouseEvent);
-	}
-
-	public void mouseMoved(MouseEvent paramMouseEvent) {
-		((ControlListener) this.a).mouseMoved(paramMouseEvent);
-		((ControlListener) this.b).mouseMoved(paramMouseEvent);
-	}
-
-	public void mouseWheelMoved(MouseWheelEvent paramMouseWheelEvent) {
-		((ControlListener) this.a).mouseWheelMoved(paramMouseWheelEvent);
-		((ControlListener) this.b).mouseWheelMoved(paramMouseWheelEvent);
-	}
-
-	public void keyPressed(KeyEvent paramKeyEvent) {
-		((ControlListener) this.a).keyPressed(paramKeyEvent);
-		((ControlListener) this.b).keyPressed(paramKeyEvent);
-	}
-
-	public void keyReleased(KeyEvent paramKeyEvent) {
-		((ControlListener) this.a).keyReleased(paramKeyEvent);
-		((ControlListener) this.b).keyReleased(paramKeyEvent);
-	}
-
-	public void keyTyped(KeyEvent paramKeyEvent) {
-		((ControlListener) this.a).keyTyped(paramKeyEvent);
-		((ControlListener) this.b).keyTyped(paramKeyEvent);
-	}
-
-	protected static EventListener addInternal(EventListener paramEventListener1, EventListener paramEventListener2) {
-		if (paramEventListener1 == null) {
-			return paramEventListener2;
-		}
-		if (paramEventListener2 == null) {
-			return paramEventListener1;
-		}
-		return new ControlEventMulticaster(paramEventListener1, paramEventListener2);
-	}
-
-	protected EventListener remove(EventListener paramEventListener) {
-		if (paramEventListener == this.a) {
-			return this.b;
-		}
-		if (paramEventListener == this.b) {
-			return this.a;
-		}
-		EventListener localEventListener1 = removeInternal(this.a, paramEventListener);
-		EventListener localEventListener2 = removeInternal(this.b, paramEventListener);
-		if ((localEventListener1 == this.a) && (localEventListener2 == this.b)) {
-			return this;
-		}
-		return addInternal(localEventListener1, localEventListener2);
-	}
-
-	protected ControlEventMulticaster(EventListener paramEventListener1, EventListener paramEventListener2) {
-		super(paramEventListener1, paramEventListener2);
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/event/ControlEventMulticaster.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Manages a list of listeners for prefuse control events.
+ * 
+ * @author newbergr
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class ControlEventMulticaster extends EventMulticaster
+    implements ControlListener
+{
+	public static ControlListener add(ControlListener a, ControlListener b) {
+		return (ControlListener) addInternal(a, b);
+	} //
+
+	public static ControlListener remove(
+		ControlListener l,
+		ControlListener oldl) {
+		return (ControlListener) removeInternal(l, oldl);
+	} //
+
+	public void itemDragged(VisualItem item, MouseEvent e) {
+		((ControlListener) a).itemDragged(item, e);
+		((ControlListener) b).itemDragged(item, e);
+	} //
+
+	public void itemMoved(VisualItem item, MouseEvent e) {
+		((ControlListener) a).itemMoved(item, e);
+		((ControlListener) b).itemMoved(item, e);
+	} //
+
+	public void itemWheelMoved(VisualItem item, MouseWheelEvent e) {
+		((ControlListener) a).itemWheelMoved(item, e);
+		((ControlListener) b).itemWheelMoved(item, e);
+	} //
+
+	public void itemClicked(VisualItem item, MouseEvent e) {
+		((ControlListener) a).itemClicked(item, e);
+		((ControlListener) b).itemClicked(item, e);
+	} //
+
+	public void itemPressed(VisualItem item, MouseEvent e) {
+		((ControlListener) a).itemPressed(item, e);
+		((ControlListener) b).itemPressed(item, e);
+	} //
+
+	public void itemReleased(VisualItem item, MouseEvent e) {
+		((ControlListener) a).itemReleased(item, e);
+		((ControlListener) b).itemReleased(item, e);
+	} //
+
+	public void itemEntered(VisualItem item, MouseEvent e) {
+		((ControlListener) a).itemEntered(item, e);
+		((ControlListener) b).itemEntered(item, e);
+	} //
+
+	public void itemExited(VisualItem item, MouseEvent e) {
+		((ControlListener) a).itemExited(item, e);
+		((ControlListener) b).itemExited(item, e);
+	} //
+
+	public void itemKeyPressed(VisualItem item, KeyEvent e) {
+		((ControlListener) a).itemKeyPressed(item, e);
+		((ControlListener) b).itemKeyPressed(item, e);
+	} //
+
+	public void itemKeyReleased(VisualItem item, KeyEvent e) {
+		((ControlListener) a).itemKeyReleased(item, e);
+		((ControlListener) b).itemKeyReleased(item, e);
+	} //
+
+	public void itemKeyTyped(VisualItem item, KeyEvent e) {
+		((ControlListener) a).itemKeyTyped(item, e);
+		((ControlListener) b).itemKeyTyped(item, e);
+	} //
+
+	public void mouseEntered(MouseEvent e) {
+		((ControlListener) a).mouseEntered(e);
+		((ControlListener) b).mouseEntered(e);
+	} //
+	
+	public void mouseExited(MouseEvent e) {
+		((ControlListener) a).mouseExited(e);
+		((ControlListener) b).mouseExited(e);
+	} //
+	
+	public void mousePressed(MouseEvent e) {
+		((ControlListener) a).mousePressed(e);
+		((ControlListener) b).mousePressed(e);
+	} //
+	
+	public void mouseReleased(MouseEvent e) {
+		((ControlListener) a).mouseReleased(e);
+		((ControlListener) b).mouseReleased(e);
+	} //
+	
+	public void mouseClicked(MouseEvent e) {
+		((ControlListener) a).mouseClicked(e);
+		((ControlListener) b).mouseClicked(e);
+	} //
+	
+	public void mouseDragged(MouseEvent e) {
+		((ControlListener) a).mouseDragged(e);
+		((ControlListener) b).mouseDragged(e);
+	} //
+	
+	public void mouseMoved(MouseEvent e) {
+		((ControlListener) a).mouseMoved(e);
+		((ControlListener) b).mouseMoved(e);
+	} //
+	
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		((ControlListener) a).mouseWheelMoved(e);
+		((ControlListener) b).mouseWheelMoved(e);
+	} //
+	
+	public void keyPressed(KeyEvent e) {
+		((ControlListener) a).keyPressed(e);
+		((ControlListener) b).keyPressed(e);
+	} //
+	
+	public void keyReleased(KeyEvent e) {
+		((ControlListener) a).keyReleased(e);
+		((ControlListener) b).keyReleased(e);
+	} //
+	
+	public void keyTyped(KeyEvent e) {
+		((ControlListener) a).keyTyped(e);
+		((ControlListener) b).keyTyped(e);
+	} //
+
+    protected static EventListener addInternal(
+            EventListener a, EventListener b)
+    {
+        if (a == null)
+            return b;
+        if (b == null)
+            return a;
+        return new ControlEventMulticaster(a, b);
+    } //
+    
+	protected EventListener remove(EventListener oldl) {
+		if (oldl == a)
+			return b;
+		if (oldl == b)
+			return a;
+		EventListener a2 = removeInternal(a, oldl);
+		EventListener b2 = removeInternal(b, oldl);
+		if (a2 == a && b2 == b) {
+			return this; // it's not here
+		}
+		return addInternal(a2, b2);
+	} //
+    
+	protected ControlEventMulticaster(EventListener a, EventListener b) {
+		super(a,b);
+	} //
+    
+} // end of class ControlEventMulticaster

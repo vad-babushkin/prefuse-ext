@@ -1,145 +1,225 @@
 package edu.berkeley.guir.prefusex.controls;
 
-import edu.berkeley.guir.prefuse.*;
+import java.awt.Cursor;
+import java.awt.event.MouseEvent;
+
+import javax.swing.SwingUtilities;
+
+import edu.berkeley.guir.prefuse.Display;
 import edu.berkeley.guir.prefuse.FocusManager;
+import edu.berkeley.guir.prefuse.ItemRegistry;
+import edu.berkeley.guir.prefuse.NodeItem;
+import edu.berkeley.guir.prefuse.VisualItem;
 import edu.berkeley.guir.prefuse.activity.Activity;
 import edu.berkeley.guir.prefuse.event.ControlAdapter;
 import edu.berkeley.guir.prefuse.focus.FocusSet;
 import edu.berkeley.guir.prefuse.graph.Entity;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-
-public class FocusControl
-		extends ControlAdapter {
-	private Object focusSetKey = "default";
-	protected int ccount;
-	protected Class[] itemTypes = {NodeItem.class};
-	protected Activity activity = null;
-	protected Entity curFocus = null;
-
-	public FocusControl() {
-		this(1);
-	}
-
-	public FocusControl(Activity paramActivity) {
-		this(1);
-		this.activity = paramActivity;
-	}
-
-	public FocusControl(int paramInt) {
-		this.ccount = paramInt;
-	}
-
-	public FocusControl(int paramInt, Activity paramActivity) {
-		this.ccount = paramInt;
-		this.activity = paramActivity;
-	}
-
-	public FocusControl(int paramInt, Class[] paramArrayOfClass) {
-		this.ccount = paramInt;
-		setFocusItemTypes(paramArrayOfClass);
-	}
-
-	public FocusControl(int paramInt, Object paramObject) {
-		this.ccount = paramInt;
-		this.focusSetKey = paramObject;
-	}
-
-	public FocusControl(int paramInt, Activity paramActivity, Object paramObject) {
-		this.ccount = paramInt;
-		this.activity = paramActivity;
-		this.focusSetKey = paramObject;
-	}
-
-	public FocusControl(int paramInt, Object paramObject, Class[] paramArrayOfClass) {
-		this.ccount = paramInt;
-		this.focusSetKey = paramObject;
-		setFocusItemTypes(paramArrayOfClass);
-	}
-
-	public void setFocusItemTypes(Class[] paramArrayOfClass) {
-		for (int i = 0; i < paramArrayOfClass.length; i++) {
-			if (!isVisualItem(paramArrayOfClass[i])) {
-				throw new IllegalArgumentException("All types must be of type VisualItem");
-			}
-		}
-		this.itemTypes = ((Class[]) paramArrayOfClass.clone());
-	}
-
-	protected boolean isVisualItem(Class paramClass) {
-		while ((paramClass != null) && (!VisualItem.class.equals(paramClass))) {
-			paramClass = paramClass.getSuperclass();
-		}
-		return paramClass != null;
-	}
-
-	protected boolean isAllowedType(VisualItem paramVisualItem) {
-		for (int i = 0; i < this.itemTypes.length; i++) {
-			if (this.itemTypes[i].isInstance(paramVisualItem)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public void itemEntered(VisualItem paramVisualItem, MouseEvent paramMouseEvent) {
-		if (isAllowedType(paramVisualItem)) {
-			Display localDisplay = (Display) paramMouseEvent.getSource();
-			localDisplay.setCursor(Cursor.getPredefinedCursor(12));
-			if (this.ccount == 0) {
-				this.curFocus = paramVisualItem.getEntity();
-				ItemRegistry localItemRegistry = paramVisualItem.getItemRegistry();
-				FocusManager localFocusManager = localItemRegistry.getFocusManager();
-				FocusSet localFocusSet = localFocusManager.getFocusSet(this.focusSetKey);
-				localFocusSet.set(paramVisualItem.getEntity());
-				localItemRegistry.touch(paramVisualItem.getItemClass());
-				runActivity();
-			}
-		}
-	}
-
-	public void itemExited(VisualItem paramVisualItem, MouseEvent paramMouseEvent) {
-		if (isAllowedType(paramVisualItem)) {
-			Display localDisplay = (Display) paramMouseEvent.getSource();
-			localDisplay.setCursor(Cursor.getDefaultCursor());
-			if (this.ccount == 0) {
-				this.curFocus = null;
-				ItemRegistry localItemRegistry = paramVisualItem.getItemRegistry();
-				FocusManager localFocusManager = localItemRegistry.getFocusManager();
-				FocusSet localFocusSet = localFocusManager.getFocusSet(this.focusSetKey);
-				localFocusSet.remove(paramVisualItem.getEntity());
-				localItemRegistry.touch(paramVisualItem.getItemClass());
-				runActivity();
-			}
-		}
-	}
-
-	public void itemClicked(VisualItem paramVisualItem, MouseEvent paramMouseEvent) {
-		if ((isAllowedType(paramVisualItem)) && (this.ccount > 0) && (SwingUtilities.isLeftMouseButton(paramMouseEvent)) && (paramMouseEvent.getClickCount() == this.ccount)) {
-			Entity localEntity = paramVisualItem.getEntity();
-			if (localEntity != this.curFocus) {
-				this.curFocus = localEntity;
-				ItemRegistry localItemRegistry = paramVisualItem.getItemRegistry();
-				FocusManager localFocusManager = localItemRegistry.getFocusManager();
-				FocusSet localFocusSet = localFocusManager.getFocusSet(this.focusSetKey);
-				localFocusSet.set(paramVisualItem.getEntity());
-				localItemRegistry.touch(paramVisualItem.getItemClass());
-				runActivity();
-			}
-		}
-	}
-
-	private void runActivity() {
-		if (this.activity != null) {
-			this.activity.runNow();
-		}
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefusex/controls/FocusControl.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Sets the current focus (according to the ItemRegistry's default focus
+ * set) in response to mouse actions. This does not necessarily cause the
+ * display to change. For this functionality, use a 
+ * {@link edu.berkeley.guir.prefuse.event.FocusListener FocusListener} 
+ * to drive display updates when the focus changes.
+ *
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class FocusControl extends ControlAdapter {
+
+    private Object focusSetKey = FocusManager.DEFAULT_KEY;
+    protected int ccount;
+    protected Class[] itemTypes = new Class[] { NodeItem.class };
+    protected Activity activity = null;
+    protected Entity curFocus = null;
+    
+    /**
+     * Creates a new FocusControl that changes the focus to another item
+     * when that item is clicked once.
+     */
+    public FocusControl() {
+        this(1);
+    } //
+    
+    /**
+     * Creates a new FocusControl that changes the focus to another item
+     * when that item is clicked once.
+     * @param act an activity run to upon focus change 
+     */
+    public FocusControl(Activity act) {
+        this(1);
+        activity = act;
+    } //
+    
+    /**
+     * Creates a new FocusControl that changes the focus when an item is 
+     * clicked the specified number of times. A click value of zero indicates
+     * that the focus should be changed in response to mouse-over events.
+     * @param clicks the number of clicks needed to switch the focus.
+     */
+    public FocusControl(int clicks) {
+        ccount = clicks;
+    } //
+    
+    /**
+     * Creates a new FocusControl that changes the focus when an item is 
+     * clicked the specified number of times. A click value of zero indicates
+     * that the focus should be changed in response to mouse-over events.
+     * @param clicks the number of clicks needed to switch the focus.
+     * @param act an activity run to upon focus change 
+     */
+    public FocusControl(int clicks, Activity act) {
+        ccount = clicks;
+        activity = act;
+    } //
+    
+    /**
+     * Creates a new FocusControl that changes the focus when an item is 
+     * clicked the specified number of times. A click value of zero indicates
+     * that the focus should be changed in response to mouse-over events.
+     * @param clicks the number of clicks needed to switch the focus.
+     * @param types the VisualItem classes that eligible for focus status
+     */
+    public FocusControl(int clicks, Class[] types) {
+        ccount = clicks;
+        setFocusItemTypes(types);
+    } //
+    
+    /**
+     * Creates a new FocusControl that changes the focus when an item is 
+     * clicked the specified number of times. A click value of zero indicates
+     * that the focus should be changed in response to mouse-over events.
+     * @param clicks the number of clicks needed to switch the focus.
+     * @param focusSetKey the key corresponding to the focus set to use
+     */
+    public FocusControl(int clicks, Object focusSetKey) {
+        ccount = clicks;
+        this.focusSetKey = focusSetKey;
+    } //
+    
+    /**
+     * Creates a new FocusControl that changes the focus when an item is 
+     * clicked the specified number of times. A click value of zero indicates
+     * that the focus should be changed in response to mouse-over events.
+     * @param clicks the number of clicks needed to switch the focus.
+     * @param act an activity run to upon focus change 
+     * @param focusSetKey the key corresponding to the focus set to use
+     */
+    public FocusControl(int clicks, Activity act, Object focusSetKey) {
+        ccount = clicks;
+        activity = act;
+        this.focusSetKey = focusSetKey;
+    } //
+    
+    /**
+     * Creates a new FocusControl that changes the focus when an item is 
+     * clicked the specified number of times. A click value of zero indicates
+     * that the focus should be changed in response to mouse-over events.
+     * @param clicks the number of clicks needed to switch the focus.
+     * @param focusSetKey the key corresponding to the focus set to use
+     * @param types the VisualItem classes that eligible for focus status
+     */
+    public FocusControl(int clicks, Object focusSetKey, Class[] types) {
+        ccount = clicks;
+        this.focusSetKey = focusSetKey;
+        setFocusItemTypes(types);
+    } //
+    
+    public void setFocusItemTypes(Class[] types) {
+        for ( int i=0; i<types.length; i++ ) {
+            if ( !isVisualItem(types[i]) ) {
+                throw new IllegalArgumentException("All types must be of type VisualItem");
+            }
+        }
+        itemTypes = (Class[])types.clone();
+    } //
+    
+    protected boolean isVisualItem(Class c) {
+        while ( c != null && !VisualItem.class.equals(c) ) {
+            c = c.getSuperclass();
+        }
+        return (c != null);
+    } //
+    
+    protected boolean isAllowedType(VisualItem item) {
+        for ( int i=0; i<itemTypes.length; i++ ) {
+            if ( itemTypes[i].isInstance(item) ) {
+                return true;
+            }
+        }
+        return false;
+    } //
+    
+    public void itemEntered(VisualItem item, MouseEvent e) {
+        if ( isAllowedType(item) ) {
+            Display d = (Display)e.getSource();
+            d.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            if ( ccount == 0 ) {
+        		curFocus = item.getEntity();
+        		ItemRegistry registry = item.getItemRegistry();
+        		synchronized ( registry ) {
+	        		FocusManager fm = registry.getFocusManager();
+	        		FocusSet fs = fm.getFocusSet(focusSetKey);
+	        		fs.set(item.getEntity());
+	        		registry.touch(item.getItemClass());
+        		}
+        		runActivity();
+            }
+        }
+    } //
+    
+    public void itemExited(VisualItem item, MouseEvent e) {
+        if ( isAllowedType(item) ) {
+            Display d = (Display)e.getSource();
+            d.setCursor(Cursor.getDefaultCursor());
+            if ( ccount == 0 ) {
+            	curFocus = null;
+                ItemRegistry registry = item.getItemRegistry();
+                if ( registry != null ) {
+                    synchronized ( registry ) {
+	                    FocusManager fm = registry.getFocusManager();
+	                    FocusSet fs = fm.getFocusSet(focusSetKey);
+	                    fs.remove(item.getEntity());
+	                    registry.touch(item.getItemClass());
+                    }
+                }
+                runActivity();
+            }
+        }
+    } //
+    
+    public void itemClicked(VisualItem item, MouseEvent e) {
+        if ( isAllowedType(item) && ccount > 0 && 
+             SwingUtilities.isLeftMouseButton(e)    && 
+             e.getClickCount() == ccount )
+        {
+        	Entity focus = item.getEntity();
+        	if ( focus != curFocus ) {
+	            ItemRegistry registry = item.getItemRegistry();
+	            synchronized ( registry ) {
+		            FocusManager fm = registry.getFocusManager();
+		            FocusSet fs = fm.getFocusSet(focusSetKey);
+		            
+		            boolean ctrl = e.isControlDown();
+		            if ( !ctrl ) {
+		                curFocus = focus;
+		                fs.set(focus);
+		            } else if ( fs.contains(focus) ) {
+		                fs.remove(focus);
+		            } else {
+		                fs.add(focus);
+		            }
+		            registry.touch(item.getItemClass());
+	            }
+	            runActivity();
+        	}
+        }
+    } //
+    
+    private void runActivity() {
+        if ( activity != null ) {
+            activity.runNow();
+        }
+    } //
+    
+} // end of class FocusControl

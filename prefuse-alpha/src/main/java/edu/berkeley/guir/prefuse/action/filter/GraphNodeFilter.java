@@ -1,28 +1,35 @@
 package edu.berkeley.guir.prefuse.action.filter;
 
+import java.util.Iterator;
+
 import edu.berkeley.guir.prefuse.ItemRegistry;
 import edu.berkeley.guir.prefuse.NodeItem;
 import edu.berkeley.guir.prefuse.graph.Node;
 
-import java.util.Iterator;
-
-public class GraphNodeFilter
-		extends Filter {
-	public GraphNodeFilter() {
-		super("node", true);
-	}
-
-	public void run(ItemRegistry paramItemRegistry, double paramDouble) {
-		Iterator localIterator = paramItemRegistry.getGraph().getNodes();
-		while (localIterator.hasNext()) {
-			NodeItem localNodeItem = paramItemRegistry.getNodeItem((Node) localIterator.next(), true);
-		}
-		super.run(paramItemRegistry, paramDouble);
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/action/filter/GraphNodeFilter.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Filters graph nodes, allowing all nodes in the graph to be visualized. By
+ * default, garbage collection on node items is performed.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class GraphNodeFilter extends Filter {
+
+    /**
+     * Constructor.
+     */
+    public GraphNodeFilter() {
+        super(ItemRegistry.DEFAULT_NODE_CLASS, true);
+    } //
+    
+	public void run(ItemRegistry registry, double frac) {
+		Iterator nodeIter = registry.getGraph().getNodes();
+		while ( nodeIter.hasNext() ) {
+			NodeItem item = registry.getNodeItem((Node)nodeIter.next(), true, true);
+        }
+        
+		// optional garbage collection
+        super.run(registry, frac);
+	} //
+
+} // end of class GraphNodeFilter

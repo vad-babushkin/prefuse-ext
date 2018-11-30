@@ -1,151 +1,146 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
 package edu.berkeley.guir.prefuse.graph.external;
 
-import edu.berkeley.guir.prefuse.ItemRegistry;
-import edu.berkeley.guir.prefuse.graph.Edge;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import edu.berkeley.guir.prefuse.ItemRegistry;
+
+/**
+ * Abstract class containing functionality for loading graph elements from
+ * a SQL database.
+ *
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
 public abstract class DatabaseLoader extends GraphLoader {
-	private final String[] m_columns;
-	protected String m_neighborQuery;
-	protected String m_childrenQuery;
-	protected String m_parentQuery;
-	private Connection m_db;
-	private PreparedStatement m_ns;
-	private PreparedStatement m_cs;
-	private PreparedStatement m_ps;
 
-	public DatabaseLoader(ItemRegistry var1, String[] var2) {
-		super(var1, var2[0]);
-		this.m_columns = var2;
-	}
+    private final String m_columns[];
+    
+    protected String m_neighborQuery;
+    protected String m_childrenQuery;
+    protected String m_parentQuery;
+    
+    private Connection m_db;
+    private PreparedStatement m_ns, m_cs, m_ps;
+    
+    public DatabaseLoader(ItemRegistry registry, String columns[])  {
+        super(registry, columns[0]);
+        m_columns = columns;
+    } //
+    
+    public String[] getColumns() {
+        return m_columns;
+    } //
+    
+    public void connect(String driver, String url, String user, String password)
+        throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException
+    {
+            Class.forName(driver).newInstance();
+            m_db = DriverManager.getConnection(url, user, password);
+            if ( m_neighborQuery != null )
+                m_ns = prepare(m_neighborQuery);
+            if ( m_childrenQuery != null )
+                m_cs = prepare(m_childrenQuery);
+            if ( m_parentQuery != null )
+                m_ps = prepare(m_parentQuery);
+    } //
+    
+    public Connection getConnection() {
+        return m_db;
+    } //
+    
+    private PreparedStatement prepare(String query) throws SQLException {
+        if ( query == null )
+            throw new IllegalArgumentException("Input query must be non-null");
+        if ( m_db == null )
+            throw new IllegalStateException("Connection to database not yet"
+                + " established! Make sure connect() is called first.");
+           
+        return m_db.prepareStatement(query);
+    }
+    
+    public void setNeighborQuery(String query) throws SQLException {
+        if ( m_db != null )
+            m_ns = prepare(query);
+        m_neighborQuery = query;
+    } //
+    
+    public String getNeighborQuery() {
+        return m_neighborQuery;
+    } //
+    
+    public void setChildrenQuery(String query) throws SQLException {
+        if ( m_db != null )
+            m_cs = prepare(query);
+        m_childrenQuery = query;
+    } //
+    
+    public String getChildrenQuery() {
+        return m_childrenQuery;
+    } //
+    
+    public void setParentQuery(String query) throws SQLException {
+        if ( m_db != null )
+            m_ps = prepare(query);
+        m_parentQuery = query;
+    } //
+    
+    public String getParentQuery() {
+        return m_parentQuery;
+    } //
+    
+    protected abstract void prepareNeighborQuery(PreparedStatement s, ExternalNode n);
+    protected abstract void prepareChildrenQuery(PreparedStatement s, ExternalTreeNode n);
+    protected abstract void prepareParentQuery(PreparedStatement s, ExternalTreeNode n);     
+    
+    /**
+     * @see edu.berkeley.guir.prefuse.graph.external.GraphLoader#getNeighbors(edu.berkeley.guir.prefuse.graph.external.ExternalNode)
+     */
+    protected void getNeighbors(ExternalNode n) {
+        prepareNeighborQuery(m_ns, n);
+        loadNodes(LOAD_NEIGHBORS, m_ns, n);
+    } //
 
-	public String[] getColumns() {
-		return this.m_columns;
-	}
+    /**
+     * @see edu.berkeley.guir.prefuse.graph.external.GraphLoader#getChildren(edu.berkeley.guir.prefuse.graph.external.ExternalTreeNode)
+     */
+    protected void getChildren(ExternalTreeNode n) {
+        prepareChildrenQuery(m_cs, n);
+        loadNodes(LOAD_CHILDREN, m_cs, n);
+    } //
+    
+    /**
+     * @see edu.berkeley.guir.prefuse.graph.external.GraphLoader#getParent(edu.berkeley.guir.prefuse.graph.external.ExternalTreeNode)
+     */
+    protected void getParent(ExternalTreeNode n) {
+        prepareParentQuery(m_ps, n);
+        loadNodes(LOAD_PARENT, m_ps, n);
+    } //
+    
+    private void loadNodes(int type, PreparedStatement s, ExternalEntity src) {
+        try {
+            ResultSet rs = s.executeQuery();
+            while ( rs.next() )
+                loadNode(type, rs, src);
+        } catch ( SQLException e ) {
+            e.printStackTrace();
+        }
+    } //
 
-	public void connect(String var1, String var2, String var3, String var4) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-		Class.forName(var1).newInstance();
-		this.m_db = DriverManager.getConnection(var2, var3, var4);
-		if (this.m_neighborQuery != null) {
-			this.m_ns = this.prepare(this.m_neighborQuery);
-		}
-
-		if (this.m_childrenQuery != null) {
-			this.m_cs = this.prepare(this.m_childrenQuery);
-		}
-
-		if (this.m_parentQuery != null) {
-			this.m_ps = this.prepare(this.m_parentQuery);
-		}
-
-	}
-
-	public Connection getConnection() {
-		return this.m_db;
-	}
-
-	private PreparedStatement prepare(String var1) throws SQLException {
-		if (var1 == null) {
-			throw new IllegalArgumentException("Input query must be non-null");
-		} else if (this.m_db == null) {
-			throw new IllegalStateException("Connection to database not yet established! Make sure connect() is called first.");
-		} else {
-			return this.m_db.prepareStatement(var1);
-		}
-	}
-
-	public void setNeighborQuery(String var1) throws SQLException {
-		if (this.m_db != null) {
-			this.m_ns = this.prepare(var1);
-		}
-
-		this.m_neighborQuery = var1;
-	}
-
-	public String getNeighborQuery() {
-		return this.m_neighborQuery;
-	}
-
-	public void setChildrenQuery(String var1) throws SQLException {
-		if (this.m_db != null) {
-			this.m_cs = this.prepare(var1);
-		}
-
-		this.m_childrenQuery = var1;
-	}
-
-	public String getChildrenQuery() {
-		return this.m_childrenQuery;
-	}
-
-	public void setParentQuery(String var1) throws SQLException {
-		if (this.m_db != null) {
-			this.m_ps = this.prepare(var1);
-		}
-
-		this.m_parentQuery = var1;
-	}
-
-	public String getParentQuery() {
-		return this.m_parentQuery;
-	}
-
-	protected abstract void prepareNeighborQuery(PreparedStatement var1, ExternalNode var2);
-
-	protected abstract void prepareChildrenQuery(PreparedStatement var1, ExternalTreeNode var2);
-
-	protected abstract void prepareParentQuery(PreparedStatement var1, ExternalTreeNode var2);
-
-	protected void getNeighbors(ExternalNode var1) {
-		this.prepareNeighborQuery(this.m_ns, var1);
-		this.loadNodes(0, this.m_ns, var1);
-	}
-
-	protected void getChildren(ExternalTreeNode var1) {
-		this.prepareChildrenQuery(this.m_cs, var1);
-		this.loadNodes(1, this.m_cs, var1);
-	}
-
-	protected void getParent(ExternalTreeNode var1) {
-		this.prepareParentQuery(this.m_ps, var1);
-		this.loadNodes(2, this.m_ps, var1);
-	}
-
-	private void loadNodes(int var1, PreparedStatement var2, ExternalEntity var3) {
-		try {
-			ResultSet var4 = var2.executeQuery();
-
-			while(var4.next()) {
-				this.loadNode(var1, var4, var3);
-			}
-		} catch (SQLException var5) {
-			var5.printStackTrace();
-		}
-
-	}
-
-	public ExternalEntity loadNode(int var1, ResultSet var2, ExternalEntity var3) throws SQLException {
-		Object var4 = var1 == 0 ? new ExternalNode() : new ExternalTreeNode();
-
-		for(int var5 = 0; var5 < this.m_columns.length; ++var5) {
-			String var6 = var2.getString(this.m_columns[var5]);
-			if (var6 != null) {
-				var6 = var6.replaceAll("\r", "");
-			}
-
-			((ExternalEntity)var4).setAttribute(this.m_columns[var5], var6);
-		}
-
-		super.foundNode(var1, var3, (ExternalEntity)var4, (Edge)null);
-		return (ExternalEntity)var4;
-	}
-}
+    public ExternalEntity loadNode(int type, ResultSet rs, ExternalEntity src) throws SQLException {
+        ExternalEntity node = (type==LOAD_NEIGHBORS ? 
+            (ExternalEntity) new ExternalNode() : new ExternalTreeNode());
+        for ( int i=0; i<m_columns.length; i++ ) {
+            String value = rs.getString(m_columns[i]);
+            if ( value != null )
+                value = value.replaceAll("\r","");
+            node.setAttribute(m_columns[i], value);
+        }
+        super.foundNode(type, src, node, null);
+        return node;
+    } //
+    
+} // end of class DatabaseQuery

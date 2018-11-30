@@ -1,5 +1,7 @@
 package edu.berkeley.guir.prefuse.action.filter;
 
+import java.util.Iterator;
+
 import edu.berkeley.guir.prefuse.EdgeItem;
 import edu.berkeley.guir.prefuse.ItemRegistry;
 import edu.berkeley.guir.prefuse.NodeItem;
@@ -8,62 +10,74 @@ import edu.berkeley.guir.prefuse.graph.Edge;
 import edu.berkeley.guir.prefuse.graph.Graph;
 import edu.berkeley.guir.prefuse.graph.Node;
 
-import java.util.Iterator;
-
-public class GraphFilter
-		extends Filter {
-	public static final String[] ITEM_CLASSES = {"node", "edge"};
-	protected boolean m_edgesVisible;
-
-	public GraphFilter() {
-		this(true, true);
-	}
-
-	public GraphFilter(boolean paramBoolean) {
-		this(paramBoolean, true);
-	}
-
-	public GraphFilter(boolean paramBoolean1, boolean paramBoolean2) {
-		super(ITEM_CLASSES, paramBoolean2);
-		this.m_edgesVisible = paramBoolean1;
-	}
-
-	public void run(ItemRegistry paramItemRegistry, double paramDouble) {
-		Graph localGraph = paramItemRegistry.getGraph();
-		Object localObject = paramItemRegistry.getFilteredGraph();
-		if ((localObject instanceof DefaultGraph)) {
-			((DefaultGraph) localObject).reinit(localGraph.isDirected());
-		} else {
-			localObject = new DefaultGraph(localGraph.isDirected());
-		}
-		Iterator localIterator1 = localGraph.getNodes();
-		NodeItem localNodeItem;
-		while (localIterator1.hasNext()) {
-			localNodeItem = paramItemRegistry.getNodeItem((Node) localIterator1.next(), true);
-			((Graph) localObject).addNode(localNodeItem);
-		}
-		localIterator1 = ((Graph) localObject).getNodes();
-		while (localIterator1.hasNext()) {
-			localNodeItem = (NodeItem) localIterator1.next();
-			Node localNode1 = (Node) localNodeItem.getEntity();
-			Iterator localIterator2 = localNode1.getEdges();
-			while (localIterator2.hasNext()) {
-				Edge localEdge = (Edge) localIterator2.next();
-				Node localNode2 = localEdge.getAdjacentNode(localNode1);
-				EdgeItem localEdgeItem = paramItemRegistry.getEdgeItem(localEdge, true);
-				((Graph) localObject).addEdge(localEdgeItem);
-				if (!this.m_edgesVisible) {
-					localEdgeItem.setVisible(false);
-				}
-			}
-		}
-		paramItemRegistry.setFilteredGraph((Graph) localObject);
-		super.run(paramItemRegistry, paramDouble);
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/action/filter/GraphFilter.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Filters a graph in it's entirety.
+ * By default, garbage collection on node and edge items is performed.
+ *
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class GraphFilter extends Filter {
+
+    public static final String[] ITEM_CLASSES = 
+        {ItemRegistry.DEFAULT_NODE_CLASS, ItemRegistry.DEFAULT_EDGE_CLASS};
+    
+    // determines if filtered edges are visible by default
+    protected boolean m_edgesVisible; 
+    
+    /**
+     * Creates a new GraphFilter.
+     */
+    public GraphFilter() {
+        this(true,true);
+    } //
+    
+    public GraphFilter(boolean edgesVisible) {
+        this(edgesVisible, true);
+    } //
+    
+    public GraphFilter(boolean edgesVisible, boolean garbageCollect) {
+        super(ITEM_CLASSES, garbageCollect);
+        m_edgesVisible = edgesVisible;
+    } //
+    
+    public void run(ItemRegistry registry, double frac) {
+        Graph graph = registry.getGraph();
+        // initialize filtered graph
+        Graph fgraph = registry.getFilteredGraph();
+        if ( fgraph instanceof DefaultGraph )
+            ((DefaultGraph)fgraph).reinit(graph.isDirected());
+        else
+            fgraph = new DefaultGraph(graph.isDirected());
+        
+        // filter the nodes
+        Iterator nodeIter = graph.getNodes();
+        while ( nodeIter.hasNext() ) {
+            NodeItem item = registry.getNodeItem((Node)nodeIter.next(), true, true);
+            fgraph.addNode(item);
+        }
+        
+        // process each node's edges
+        nodeIter = fgraph.getNodes();
+        while ( nodeIter.hasNext() ) {
+            NodeItem item = (NodeItem)nodeIter.next();
+            Node     node = (Node)item.getEntity();
+            Iterator edgeIter = node.getEdges();
+            while ( edgeIter.hasNext() ) {
+                Edge edge = (Edge)edgeIter.next();
+                Node n = edge.getAdjacentNode(node);
+                // filter the edge
+                EdgeItem eitem = registry.getEdgeItem(edge, true);
+                fgraph.addEdge(eitem);
+                if ( !m_edgesVisible ) eitem.setVisible(false);
+            }
+        }
+        
+        // update the registry's filtered graph
+        registry.setFilteredGraph(fgraph);
+        
+        // optional garbage collection
+        super.run(registry, frac);
+    } //
+    
+} // end of class GraphFilter

@@ -1,59 +1,74 @@
 package edu.berkeley.guir.prefusex.force;
 
-public abstract class AbstractForce
-		implements Force {
-	protected float[] params;
-
-	public void init(ForceSimulator paramForceSimulator) {
-	}
-
-	public int getParameterCount() {
-		return this.params == null ? 0 : this.params.length;
-	}
-
-	public float getParameter(int paramInt) {
-		if ((paramInt < 0) || (this.params == null) || (paramInt >= this.params.length)) {
-			throw new IndexOutOfBoundsException();
-		}
-		return this.params[paramInt];
-	}
-
-	public String getParameterName(int paramInt) {
-		String[] arrayOfString = getParameterNames();
-		if ((paramInt < 0) || (arrayOfString == null) || (paramInt >= arrayOfString.length)) {
-			throw new IndexOutOfBoundsException();
-		}
-		return arrayOfString[paramInt];
-	}
-
-	public void setParameter(int paramInt, float paramFloat) {
-		if ((paramInt < 0) || (this.params == null) || (paramInt >= this.params.length)) {
-			throw new IndexOutOfBoundsException();
-		}
-		this.params[paramInt] = paramFloat;
-	}
-
-	protected abstract String[] getParameterNames();
-
-	public boolean isItemForce() {
-		return false;
-	}
-
-	public boolean isSpringForce() {
-		return false;
-	}
-
-	public void getForce(ForceItem paramForceItem) {
-		throw new UnsupportedOperationException("This class does not support this operation");
-	}
-
-	public void getForce(Spring paramSpring) {
-		throw new UnsupportedOperationException("This class does not support this operation");
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefusex/force/AbstractForce.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Abstract implementation of force functions in a force simulation. This
+ * skeletal version provides support for storing and retrieving float-valued
+ * parameters of the force function. Subclasses should use the protected
+ * field <code>params</code> to store parameter values.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefusex(AT)jheer.org
  */
+public abstract class AbstractForce implements Force {
+
+    protected float[] params;
+
+    /**
+     * Initialize this force function. This default implementation does nothing.
+     * Subclasses should override this method with any needed initialization.
+     * @param fsim the encompassing ForceSimulator
+     */
+    public void init(ForceSimulator fsim) {
+        // do nothing.
+    } //
+
+    public int getParameterCount() {
+        return ( params == null ? 0 : params.length );
+    } //
+
+    public float getParameter(int i) {
+        if ( i < 0 || params == null || i >= params.length ) {
+            throw new IndexOutOfBoundsException();
+        } else {
+            return params[i];
+        }
+    } //
+    
+    public String getParameterName(int i) {
+        String[] pnames = getParameterNames();
+        if ( i < 0 || pnames == null || i >= pnames.length ) {
+            throw new IndexOutOfBoundsException();
+        } else {
+            return pnames[i];
+        }
+    } //
+
+    public void setParameter(int i, float val) {
+        if ( i < 0 || params == null || i >= params.length ) {
+            throw new IndexOutOfBoundsException();
+        } else {
+            params[i] = val;
+        }
+    } //
+    
+    protected abstract String[] getParameterNames();
+    
+    public boolean isItemForce() {
+        return false;
+    } //
+    
+    public boolean isSpringForce() {
+        return false;
+    } //
+    
+    public void getForce(ForceItem item) {
+        throw new UnsupportedOperationException(
+            "This class does not support this operation");
+    } //
+    
+    public void getForce(Spring spring) {
+        throw new UnsupportedOperationException(
+        "This class does not support this operation");
+    } //
+    
+} // end of abstract class AbstractForce

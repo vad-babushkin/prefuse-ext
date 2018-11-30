@@ -1,64 +1,80 @@
 package edu.berkeley.guir.prefuse.graph.event;
 
+import java.util.EventListener;
+
 import edu.berkeley.guir.prefuse.event.EventMulticaster;
 import edu.berkeley.guir.prefuse.graph.Entity;
 import edu.berkeley.guir.prefuse.graph.external.GraphLoader;
 
-import java.util.EventListener;
-
-public class GraphLoaderMulticaster
-		extends EventMulticaster
-		implements GraphLoaderListener {
-	public void entityLoaded(GraphLoader paramGraphLoader, Entity paramEntity) {
-		((GraphLoaderListener) this.a).entityLoaded(paramGraphLoader, paramEntity);
-		((GraphLoaderListener) this.b).entityLoaded(paramGraphLoader, paramEntity);
-	}
-
-	public void entityUnloaded(GraphLoader paramGraphLoader, Entity paramEntity) {
-		((GraphLoaderListener) this.a).entityUnloaded(paramGraphLoader, paramEntity);
-		((GraphLoaderListener) this.b).entityUnloaded(paramGraphLoader, paramEntity);
-	}
-
-	public static GraphLoaderListener add(GraphLoaderListener paramGraphLoaderListener1, GraphLoaderListener paramGraphLoaderListener2) {
-		return (GraphLoaderListener) addInternal(paramGraphLoaderListener1, paramGraphLoaderListener2);
-	}
-
-	public static GraphLoaderListener remove(GraphLoaderListener paramGraphLoaderListener1, GraphLoaderListener paramGraphLoaderListener2) {
-		return (GraphLoaderListener) removeInternal(paramGraphLoaderListener1, paramGraphLoaderListener2);
-	}
-
-	protected static EventListener addInternal(EventListener paramEventListener1, EventListener paramEventListener2) {
-		if (paramEventListener1 == null) {
-			return paramEventListener2;
-		}
-		if (paramEventListener2 == null) {
-			return paramEventListener1;
-		}
-		return new GraphLoaderMulticaster(paramEventListener1, paramEventListener2);
-	}
-
-	protected EventListener remove(EventListener paramEventListener) {
-		if (paramEventListener == this.a) {
-			return this.b;
-		}
-		if (paramEventListener == this.b) {
-			return this.a;
-		}
-		EventListener localEventListener1 = removeInternal(this.a, paramEventListener);
-		EventListener localEventListener2 = removeInternal(this.b, paramEventListener);
-		if ((localEventListener1 == this.a) && (localEventListener2 == this.b)) {
-			return this;
-		}
-		return addInternal(localEventListener1, localEventListener2);
-	}
-
-	protected GraphLoaderMulticaster(EventListener paramEventListener1, EventListener paramEventListener2) {
-		super(paramEventListener1, paramEventListener2);
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/graph/event/GraphLoaderMulticaster.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Manages listeners for graph data loading and unloading events.
+ * 
+ * @author newbergr
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class GraphLoaderMulticaster extends EventMulticaster 
+    implements GraphLoaderListener
+{
+
+    /**
+     * @see edu.berkeley.guir.prefuse.graph.event.GraphLoaderListener#entityLoaded(edu.berkeley.guir.prefuse.graph.external.GraphLoader, edu.berkeley.guir.prefuse.graph.Entity)
+     */
+	public void entityLoaded(GraphLoader loader, Entity e) {
+	    ((GraphLoaderListener)a).entityLoaded(loader, e);
+        ((GraphLoaderListener)b).entityLoaded(loader, e);
+    } //
+    
+    /**
+     * @see edu.berkeley.guir.prefuse.graph.event.GraphLoaderListener#entityUnloaded(edu.berkeley.guir.prefuse.graph.external.GraphLoader, edu.berkeley.guir.prefuse.graph.Entity)
+     */
+    public void entityUnloaded(GraphLoader loader, Entity e) {
+        ((GraphLoaderListener)a).entityUnloaded(loader, e);
+        ((GraphLoaderListener)b).entityUnloaded(loader, e);
+    } //
+
+	public static GraphLoaderListener add(GraphLoaderListener a, GraphLoaderListener b) {
+		return (GraphLoaderListener) addInternal(a, b);
+	} //
+
+	public static GraphLoaderListener remove(GraphLoaderListener a, GraphLoaderListener b) {
+		return (GraphLoaderListener) removeInternal(a, b);
+	} //
+
+	/** 
+	 * Returns the resulting multicast listener from adding listener-a
+	 * and listener-b together.  
+	 * If listener-a is null, it returns listener-b;  
+	 * If listener-b is null, it returns listener-a
+	 * If neither are null, then it creates and returns
+	 * a new AWTEventMulticaster instance which chains a with b.
+	 * @param a event listener-a
+	 * @param b event listener-b
+	 */
+	protected static EventListener addInternal(
+		EventListener a,
+		EventListener b) {
+		if (a == null)
+			return b;
+		if (b == null)
+			return a;
+		return new GraphLoaderMulticaster(a, b);
+	} //
+
+	protected EventListener remove(EventListener oldl) {
+		if (oldl == a)
+			return b;
+		if (oldl == b)
+			return a;
+		EventListener a2 = removeInternal(a, oldl);
+		EventListener b2 = removeInternal(b, oldl);
+		if (a2 == a && b2 == b) {
+			return this; // it's not here
+		}
+		return addInternal(a2, b2);
+	} //
+	
+	protected GraphLoaderMulticaster(EventListener a, EventListener b) {
+		super(a,b);
+	} //
+
+} // end of class PrefuseEventMulticaster

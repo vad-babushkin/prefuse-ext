@@ -1,54 +1,62 @@
 package edu.berkeley.guir.prefuse.util;
 
-import java.awt.*;
+import java.awt.Font;
 import java.util.HashMap;
 
-public class FontLib {
-	private static final HashMap fontMap = new HashMap();
-	private static int misses = 0;
-	private static int lookups = 0;
-
-	public static Font getFont(String paramString, int paramInt1, int paramInt2) {
-		Integer localInteger = new Integer((paramString.hashCode() << 8) + (paramInt2 << 2) + paramInt1);
-		Font localFont = null;
-		if ((localFont = (Font) fontMap.get(localInteger)) == null) {
-			localFont = new Font(paramString, paramInt1, paramInt2);
-			fontMap.put(localInteger, localFont);
-			misses += 1;
-		}
-		lookups += 1;
-		return localFont;
-	}
-
-	public static int getCacheMissCount() {
-		return misses;
-	}
-
-	public static int getCacheLookupCount() {
-		return lookups;
-	}
-
-	public static void clearCache() {
-		fontMap.clear();
-	}
-
-	public static Font getIntermediateFont(Font paramFont1, Font paramFont2, double paramDouble) {
-		String str;
-		int j;
-		if (paramDouble < 0.5D) {
-			str = paramFont1.getName();
-			j = paramFont1.getStyle();
-		} else {
-			str = paramFont2.getName();
-			j = paramFont2.getStyle();
-		}
-		int i = (int) Math.round(paramDouble * paramFont2.getSize() + (1.0D - paramDouble) * paramFont1.getSize());
-		return getFont(str, j, i);
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/util/FontLib.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Maintains a cache of fonts and other useful font computation
+ * routines.
+ *
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class FontLib {
+
+    private static final HashMap fontMap = new HashMap();
+    private static int misses = 0;
+    private static int lookups = 0;
+    
+    public static Font getFont(String name, int style, double size) {
+        int isize = (int)Math.floor(size);
+        return getFont(name, style, isize);
+    } //
+    
+    public static Font getFont(String name, int style, int size) {
+        Integer key = new Integer((name.hashCode()<<8)+(size<<2)+style);
+        Font f = null;
+        if ( (f=(Font)fontMap.get(key)) == null ) {
+            f = new Font(name, style, size);
+            fontMap.put(key, f);
+            misses++;
+        }
+        lookups++;
+        return f;
+    } //
+    
+    public static int getCacheMissCount() {
+        return misses;
+    } //
+    
+    public static int getCacheLookupCount() {
+        return lookups;
+    } //
+    
+    public static void clearCache() {
+        fontMap.clear();
+    } //
+    
+    public static Font getIntermediateFont(Font f1, Font f2, double frac) {
+        String name;
+        int size, style;
+        if ( frac < 0.5 ) {
+            name  = f1.getName();
+            style = f1.getStyle();
+        } else {
+            name  = f2.getName();
+            style = f2.getStyle();
+        }
+        size = (int)Math.round(frac*f2.getSize()+(1-frac)*f1.getSize());
+        return getFont(name,style,size);
+    } //
+    
+} // end of class FontLib

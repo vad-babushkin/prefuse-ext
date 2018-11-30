@@ -1,64 +1,80 @@
 package edu.berkeley.guir.prefuse.collections;
 
-import edu.berkeley.guir.prefuse.graph.Edge;
-import edu.berkeley.guir.prefuse.graph.TreeNode;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class TreeEdgeIterator
-		implements Iterator {
+import edu.berkeley.guir.prefuse.graph.Edge;
+import edu.berkeley.guir.prefuse.graph.TreeNode;
+
+/**
+ * Provided an iterator over nodes, this class will iterate over all
+ * adjacent edges. Each adjacent edge is returned exactly once in the
+ * iteration.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
+public class TreeEdgeIterator implements Iterator {
+
 	private Iterator m_nodeIterator;
 	private Iterator m_edgeIterator;
 	private TreeNode m_curNode;
-	private Edge m_next;
+	private Edge     m_next;
 
-	public TreeEdgeIterator(Iterator paramIterator) {
-		this.m_nodeIterator = paramIterator;
-		if (paramIterator.hasNext()) {
-			this.m_curNode = ((TreeNode) paramIterator.next());
-			this.m_edgeIterator = this.m_curNode.getChildEdges();
+	/**
+	 * Constructor.
+	 * @param nodeIterator an iterator over nodes
+	 */
+	public TreeEdgeIterator(Iterator nodeIterator) {
+        m_nodeIterator = nodeIterator;
+		if ( nodeIterator.hasNext() ) {
+			m_curNode = (TreeNode)nodeIterator.next();
+			m_edgeIterator = m_curNode.getChildEdges(); 
 		}
-		this.m_next = findNext();
-	}
+		m_next = findNext();
+	} //
 
+	/**
+	 * Not currently supported. 
+	 * TODO: Support in future versions?
+	 * @see java.util.Iterator#remove()
+	 */
 	public void remove() {
 		throw new UnsupportedOperationException();
-	}
+	} //
 
+	/**
+	 * @see java.util.Iterator#hasNext()
+	 */
 	public boolean hasNext() {
-		return this.m_next != null;
-	}
+		return (m_next != null);
+	} //
 
+	/**
+	 * @see java.util.Iterator#next()
+	 */
 	public Object next() {
-		if (this.m_next == null) {
+		if ( m_next == null )
 			throw new NoSuchElementException("No next item in iterator");
-		}
-		Edge localEdge = this.m_next;
-		this.m_next = findNext();
-		return localEdge;
-	}
-
+		Edge retval = m_next;
+		m_next = findNext();
+		return retval;
+	} //
+	
 	private Edge findNext() {
-		for (; ; ) {
-			if ((this.m_edgeIterator != null) && (this.m_edgeIterator.hasNext())) {
-				return (Edge) this.m_edgeIterator.next();
+		while ( true ) {
+			if ( m_edgeIterator != null && m_edgeIterator.hasNext() ) {
+				return (Edge)m_edgeIterator.next();
+			} else if ( m_nodeIterator.hasNext() ) {
+				m_curNode = (TreeNode)m_nodeIterator.next();
+				m_edgeIterator = m_curNode.getChildEdges();
+			} else {
+				m_curNode = null;
+				m_nodeIterator = null;
+				m_edgeIterator = null;
+				return null;
 			}
-			if (!this.m_nodeIterator.hasNext()) {
-				break;
-			}
-			this.m_curNode = ((TreeNode) this.m_nodeIterator.next());
-			this.m_edgeIterator = this.m_curNode.getChildEdges();
 		}
-		this.m_curNode = null;
-		this.m_nodeIterator = null;
-		this.m_edgeIterator = null;
-		return null;
-	}
-}
+	} //
 
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/collections/TreeEdgeIterator.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
- */
+} // end of class TreeEdgeIterator

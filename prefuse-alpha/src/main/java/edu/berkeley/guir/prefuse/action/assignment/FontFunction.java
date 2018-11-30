@@ -1,30 +1,55 @@
 package edu.berkeley.guir.prefuse.action.assignment;
 
-import edu.berkeley.guir.prefuse.ItemRegistry;
-import edu.berkeley.guir.prefuse.VisualItem;
-import edu.berkeley.guir.prefuse.action.AbstractAction;
-
-import java.awt.*;
+import java.awt.Font;
 import java.util.Iterator;
 
-public class FontFunction
-		extends AbstractAction {
-	public void run(ItemRegistry paramItemRegistry, double paramDouble) {
-		Iterator localIterator = paramItemRegistry.getItems();
-		while (localIterator.hasNext()) {
-			VisualItem localVisualItem = (VisualItem) localIterator.next();
-			Font localFont = getFont(localVisualItem);
-			localVisualItem.setFont(localFont);
-		}
-	}
+import edu.berkeley.guir.prefuse.VisualItem;
+import edu.berkeley.guir.prefuse.ItemRegistry;
+import edu.berkeley.guir.prefuse.action.AbstractAction;
+import edu.berkeley.guir.prefuse.util.FontLib;
 
-	public Font getFont(VisualItem paramVisualItem) {
-		return null;
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/action/assignment/FontFunction.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Simple <code>FontFunction</code> that blindly returns a null 
+ * <code>Font</code> for all items. Subclasses should override the 
+ * <code>getFont()</code> method to provide custom Font assignment
+ * for VisualItems.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class FontFunction extends AbstractAction {
+
+    protected Font defaultFont = FontLib.getFont("SansSerif",Font.PLAIN,10);
+    
+    public FontFunction() {
+        // do nothing
+    } //
+    
+    public FontFunction(Font defaultFont) {
+        this.defaultFont = defaultFont;
+    } //
+    
+	public void run(ItemRegistry registry, double frac) {
+		Iterator itemIter = registry.getItems();
+		while ( itemIter.hasNext() ) {
+			VisualItem item = (VisualItem)itemIter.next();
+			Font font = getFont(item);
+			item.setFont(font);
+		}
+	} //
+	
+	public void setDefaultFont(Font f) {
+	    defaultFont = f;
+	} //
+	
+	/**
+	 * Returns the Font to use for a given VisualItem. Subclasses should
+	 * override this method to perform customized font assignment.
+	 * @param item the VisualItem for which to get the Font
+	 * @return the Font for the given item
+	 */
+	public Font getFont(VisualItem item) {
+		return defaultFont;
+	} //
+
+} // end of class FontFunction

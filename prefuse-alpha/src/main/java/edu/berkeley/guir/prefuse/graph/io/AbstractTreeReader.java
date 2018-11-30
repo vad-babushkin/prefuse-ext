@@ -1,33 +1,48 @@
 package edu.berkeley.guir.prefuse.graph.io;
 
-import edu.berkeley.guir.prefuse.graph.Tree;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
-public abstract class AbstractTreeReader
-		implements TreeReader {
-	public Tree loadTree(String paramString)
-			throws FileNotFoundException, IOException {
-		return loadTree(new FileInputStream(paramString));
-	}
+import edu.berkeley.guir.prefuse.graph.Tree;
 
-	public Tree loadTree(URL paramURL)
-			throws IOException {
-		return loadTree(paramURL.openStream());
-	}
-
-	public Tree loadTree(File paramFile)
-			throws FileNotFoundException, IOException {
-		return loadTree(new FileInputStream(paramFile));
-	}
-
-	public abstract Tree loadTree(InputStream paramInputStream)
-			throws IOException;
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/graph/io/AbstractTreeReader.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Abstract class supporting TreeReader implementations.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public abstract class AbstractTreeReader implements TreeReader {
+
+	/**
+	 * @see edu.berkeley.guir.prefuse.graph.io.TreeReader#loadTree(java.lang.String)
+	 */
+	public Tree loadTree(String filename) 
+		throws FileNotFoundException, IOException
+	{
+		return loadTree(new FileInputStream(filename));		
+	} //
+
+	/**
+	 * @see edu.berkeley.guir.prefuse.graph.io.TreeReader#loadTree(java.net.URL)
+	 */
+	public Tree loadTree(URL url) throws IOException {
+		return loadTree(url.openStream());
+	}
+
+	/**
+	 * @see edu.berkeley.guir.prefuse.graph.io.TreeReader#loadTree(java.io.File)
+	 */
+	public Tree loadTree(File f) throws FileNotFoundException, IOException {
+		return loadTree(new FileInputStream(f));
+	}
+	
+	/**
+	 * @see edu.berkeley.guir.prefuse.graph.io.TreeReader#loadTree(InputStream)
+	 */
+	public abstract Tree loadTree(InputStream is) throws IOException;
+
+} // end of class AbstractTreeReader

@@ -3,57 +3,60 @@ package edu.berkeley.guir.prefuse.graph;
 import edu.berkeley.guir.prefuse.graph.event.GraphEventListener;
 import edu.berkeley.guir.prefuse.graph.event.GraphEventMulticaster;
 
-public abstract class AbstractGraph
-		implements Graph {
-	protected GraphEventListener m_graphListener = null;
-
-	public void addGraphEventListener(GraphEventListener paramGraphEventListener) {
-		this.m_graphListener = GraphEventMulticaster.add(this.m_graphListener, paramGraphEventListener);
-	}
-
-	public void removeGraphEventListener(GraphEventListener paramGraphEventListener) {
-		this.m_graphListener = GraphEventMulticaster.remove(this.m_graphListener, paramGraphEventListener);
-	}
-
-	protected void fireNodeAdded(Node paramNode) {
-		if (this.m_graphListener != null) {
-			this.m_graphListener.nodeAdded(this, paramNode);
-		}
-	}
-
-	protected void fireNodeRemoved(Node paramNode) {
-		if (this.m_graphListener != null) {
-			this.m_graphListener.nodeRemoved(this, paramNode);
-		}
-	}
-
-	protected void fireNodeReplaced(Node paramNode1, Node paramNode2) {
-		if (this.m_graphListener != null) {
-			this.m_graphListener.nodeReplaced(this, paramNode1, paramNode2);
-		}
-	}
-
-	protected void fireEdgeAdded(Edge paramEdge) {
-		if (this.m_graphListener != null) {
-			this.m_graphListener.edgeAdded(this, paramEdge);
-		}
-	}
-
-	protected void fireEdgeRemoved(Edge paramEdge) {
-		if (this.m_graphListener != null) {
-			this.m_graphListener.edgeRemoved(this, paramEdge);
-		}
-	}
-
-	protected void fireEdgeReplaced(Edge paramEdge1, Edge paramEdge2) {
-		if (this.m_graphListener != null) {
-			this.m_graphListener.edgeReplaced(this, paramEdge1, paramEdge2);
-		}
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/graph/AbstractGraph.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Skeletal graph implementation handling graph listener methods. 
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public abstract class AbstractGraph implements Graph {
+
+	protected GraphEventListener m_graphListener = null;
+	
+	/**
+	 * Add a graph event listener.
+	 * @param gl the listener to add.
+	 */
+	public void addGraphEventListener(GraphEventListener gl) {
+		m_graphListener = GraphEventMulticaster.add(m_graphListener, gl);
+	} //
+  	
+	/**
+	 * Remove a focus listener.
+	 * @param gl the listener to remove.
+	 */
+	public void removeGraphEventListener(GraphEventListener gl) {
+		m_graphListener = GraphEventMulticaster.remove(m_graphListener, gl);
+	} //
+	
+	protected void fireNodeAdded(Node n) {
+		if ( m_graphListener != null )
+			m_graphListener.nodeAdded(this, n);
+	} //
+
+	protected void fireNodeRemoved(Node n) {
+		if ( m_graphListener != null )
+			m_graphListener.nodeRemoved(this, n);
+	} //
+	
+	protected void fireNodeReplaced(Node o, Node n) {
+		if ( m_graphListener != null )
+			m_graphListener.nodeReplaced(this,o,n);
+	} //
+	
+	protected void fireEdgeAdded(Edge e) {
+		if ( m_graphListener != null )
+			m_graphListener.edgeAdded(this, e);
+	} //
+	
+	protected void fireEdgeRemoved(Edge e) {
+		if ( m_graphListener != null )
+			m_graphListener.edgeRemoved(this, e);
+	} //
+	
+	protected void fireEdgeReplaced(Edge o, Edge n) {
+		if ( m_graphListener != null )
+			m_graphListener.edgeReplaced(this, o,n);
+	} //
+
+} // end of class AbstractGraph

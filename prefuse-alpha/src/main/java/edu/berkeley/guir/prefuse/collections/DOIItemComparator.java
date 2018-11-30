@@ -1,66 +1,69 @@
 package edu.berkeley.guir.prefuse.collections;
 
-import edu.berkeley.guir.prefuse.AggregateItem;
-import edu.berkeley.guir.prefuse.EdgeItem;
-import edu.berkeley.guir.prefuse.NodeItem;
-import edu.berkeley.guir.prefuse.VisualItem;
-
 import java.util.Comparator;
 
-public class DOIItemComparator
-		implements Comparator {
-	public int compare(Object paramObject1, Object paramObject2) {
-		if ((!(paramObject1 instanceof VisualItem)) || (!(paramObject2 instanceof VisualItem))) {
+import edu.berkeley.guir.prefuse.AggregateItem;
+import edu.berkeley.guir.prefuse.EdgeItem;
+import edu.berkeley.guir.prefuse.VisualItem;
+import edu.berkeley.guir.prefuse.NodeItem;
+
+/**
+ * Compares items based upon computed degree-of-interest (DOI) values.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
+public class DOIItemComparator implements Comparator {
+
+	/**
+	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+	 */
+	public int compare(Object o1, Object o2) {
+		if ( !(o1 instanceof VisualItem && o2 instanceof VisualItem) ) {
 			throw new IllegalArgumentException();
 		}
-		VisualItem localVisualItem1 = (VisualItem) paramObject1;
-		VisualItem localVisualItem2 = (VisualItem) paramObject2;
-		double d3;
-		if ((localVisualItem1 instanceof NodeItem)) {
-			if ((localVisualItem2 instanceof NodeItem)) {
-				double d1 = ((NodeItem) localVisualItem1).getDOI();
-				d3 = ((NodeItem) localVisualItem2).getDOI();
-				return d1 == d3 ? 0 : d1 > d3 ? 1 : -1;
+		
+		VisualItem item1 = (VisualItem)o1;
+		VisualItem item2 = (VisualItem)o2;
+		
+		if ( item1 instanceof NodeItem ) {
+			if ( item2 instanceof NodeItem ) {
+				double doi1 = ((NodeItem)item1).getDOI();
+				double doi2 = ((NodeItem)item2).getDOI();				
+				return ( doi1 > doi2 ? 1 : ( doi1 == doi2 ? 0 : -1 ) );				
+			} else {
+				return 1;
 			}
-			return 1;
-		}
-		if ((localVisualItem2 instanceof NodeItem)) {
+		} else if ( item2 instanceof NodeItem ) {
 			return -1;
-		}
-		if ((localVisualItem1 instanceof EdgeItem)) {
-			if ((localVisualItem2 instanceof EdgeItem)) {
-				EdgeItem localEdgeItem1 = (EdgeItem) localVisualItem1;
-				EdgeItem localEdgeItem2 = (EdgeItem) localVisualItem2;
-				d3 = ((NodeItem) localEdgeItem1.getFirstNode()).getDOI();
-				double d4 = ((NodeItem) localEdgeItem2.getFirstNode()).getDOI();
-				double d5 = ((NodeItem) localEdgeItem1.getSecondNode()).getDOI();
-				double d6 = ((NodeItem) localEdgeItem2.getSecondNode()).getDOI();
-				double d7 = Math.max(d3, d5);
-				double d8 = Math.max(d4, d6);
-				return d7 == d8 ? 0 : d7 > d8 ? 1 : -1;
+		} else if ( item1 instanceof EdgeItem ) {
+			if ( item2 instanceof EdgeItem ) {
+                EdgeItem e1 = (EdgeItem)item1, e2 = (EdgeItem)item2;
+				double doi1a = ((NodeItem)e1.getFirstNode()).getDOI();
+				double doi2a = ((NodeItem)e2.getFirstNode()).getDOI();
+				double doi1b = ((NodeItem)e1.getSecondNode()).getDOI();
+				double doi2b = ((NodeItem)e2.getSecondNode()).getDOI();
+				double doi1 = Math.max(doi1a, doi1b);
+				double doi2 = Math.max(doi2a, doi2b);				
+				return ( doi1 > doi2 ? 1 : ( doi1 == doi2 ? 0 : -1 ) );
+			} else {
+				return 1;
 			}
-			return 1;
-		}
-		if ((localVisualItem2 instanceof EdgeItem)) {
+		} else if ( item2 instanceof EdgeItem ) {
 			return -1;
-		}
-		if ((localVisualItem1 instanceof AggregateItem)) {
-			if ((localVisualItem2 instanceof AggregateItem)) {
-				double d2 = ((AggregateItem) localVisualItem1).getNodeItem().getDOI();
-				d3 = ((AggregateItem) localVisualItem2).getNodeItem().getDOI();
-				return d2 == d3 ? 0 : d2 > d3 ? 1 : -1;
+		} else if ( item1 instanceof AggregateItem ) {
+			if ( item2 instanceof AggregateItem ) {
+				double doi1 = ((AggregateItem)item1).getNodeItem().getDOI();
+				double doi2 = ((AggregateItem)item2).getNodeItem().getDOI();				
+				return ( doi1 > doi2 ? 1 : ( doi1 == doi2 ? 0 : -1 ) );
+			} else {
+				return 1;
 			}
-			return 1;
-		}
-		if ((localVisualItem2 instanceof AggregateItem)) {
+		} else if ( item2 instanceof AggregateItem ) {
 			return -1;
+		} else {
+			return 0;
 		}
-		return 0;
-	}
-}
+	} //
 
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/collections/DOIItemComparator.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
- */
+} // end of class DefaultItemComparator

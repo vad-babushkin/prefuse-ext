@@ -1,43 +1,55 @@
 package edu.berkeley.guir.prefuse.collections;
 
-import edu.berkeley.guir.prefuse.graph.TreeNode;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
-public class BreadthFirstTreeIterator
-		implements Iterator {
-	private LinkedList m_queue = new LinkedList();
+import edu.berkeley.guir.prefuse.graph.TreeNode;
 
-	public BreadthFirstTreeIterator(TreeNode paramTreeNode) {
-		this.m_queue.add(paramTreeNode);
-	}
 
+/**
+ * Iterates over tree nodes in a breadth-first manner.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
+public class BreadthFirstTreeIterator implements Iterator {
+
+	private LinkedList m_queue  = new LinkedList();
+
+	public BreadthFirstTreeIterator(TreeNode n) {
+		 m_queue.add(n);
+	} //
+
+	/**
+	 * @see java.util.Iterator#remove()
+	 */
 	public void remove() {
 		throw new UnsupportedOperationException();
-	}
+	} //
 
+	/**
+	 * @see java.util.Iterator#hasNext()
+	 */
 	public boolean hasNext() {
-		return !this.m_queue.isEmpty();
-	}
+		return !m_queue.isEmpty();
+	} //
 
+	/**
+	 * @see java.util.Iterator#next()
+	 */
 	public Object next() {
-		if (this.m_queue.isEmpty()) {
+		if ( m_queue.isEmpty() ) {
 			throw new NoSuchElementException();
 		}
-		TreeNode localTreeNode1 = (TreeNode) this.m_queue.removeFirst();
-		Iterator localIterator = localTreeNode1.getChildren();
-		while (localIterator.hasNext()) {
-			TreeNode localTreeNode2 = (TreeNode) localIterator.next();
-			this.m_queue.add(localTreeNode2);
+		
+		TreeNode n = (TreeNode)m_queue.removeFirst();
+		Iterator iter = n.getChildren();
+		while ( iter.hasNext() ) {
+			TreeNode c = (TreeNode)iter.next();
+			m_queue.add(c);
 		}
-		return localTreeNode1;
-	}
-}
+		return n;
+	} //
 
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/collections/BreadthFirstTreeIterator.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
- */
+} // end of class BreadthFirstTreeIterator

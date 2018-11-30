@@ -1,177 +1,289 @@
 package edu.berkeley.guir.prefuse.render;
 
-import edu.berkeley.guir.prefuse.VisualItem;
-import edu.berkeley.guir.prefuse.util.FontLib;
-import edu.berkeley.guir.prefuse.util.StringAbbreviator;
-
-import java.awt.*;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.awt.geom.RoundRectangle2D;
 
-public class TextItemRenderer
-		extends ShapeRenderer {
-	public static final int ALIGNMENT_LEFT = 0;
-	public static final int ALIGNMENT_RIGHT = 1;
+import edu.berkeley.guir.prefuse.VisualItem;
+import edu.berkeley.guir.prefuse.util.FontLib;
+import edu.berkeley.guir.prefuse.util.StringAbbreviator;
+
+/**
+ * Renders an item as a text string. The text string used by default is the
+ * value of the "label" attribute. To use a different attribute, use the
+ * <code>setTextAttributeName</code> method. To perform custom String
+ * selection, simply subclass this Renderer and override the 
+ * <code>getText</code> method.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
+public class TextItemRenderer extends ShapeRenderer {
+
+	public static final int ALIGNMENT_LEFT   = 0;
+	public static final int ALIGNMENT_RIGHT  = 1;
 	public static final int ALIGNMENT_CENTER = 2;
 	public static final int ALIGNMENT_BOTTOM = 1;
-	public static final int ALIGNMENT_TOP = 0;
+	public static final int ALIGNMENT_TOP    = 0;
+
 	protected String m_labelName = "label";
-	protected int m_xAlign = 2;
-	protected int m_yAlign = 2;
+	protected int m_xAlign = ALIGNMENT_CENTER;
+	protected int m_yAlign = ALIGNMENT_CENTER;
 	protected int m_horizBorder = 3;
 	protected int m_vertBorder = 0;
+
 	protected int m_maxTextWidth = -1;
-	protected int m_abbrevType = 3;
+	protected int m_abbrevType = StringAbbreviator.TRUNCATE;
 	protected StringAbbreviator m_abbrev = StringAbbreviator.getInstance();
-	protected RectangularShape m_textBox = new Rectangle2D.Float();
-	protected Font m_font = new Font("SansSerif", 0, 10);
-	protected Point2D m_tmpPoint = new Point2D.Float();
+	
+	protected RectangularShape m_textBox  = new Rectangle2D.Float();
+	protected Font m_font = FontLib.getFont("SansSerif", Font.PLAIN, 10);
+    
+	protected Point2D     m_tmpPoint = new Point2D.Float();
 
-	public void setFont(Font paramFont) {
-		this.m_font = paramFont;
-	}
+	public TextItemRenderer() {
+	} //
 
-	public void setRoundedCorner(int paramInt1, int paramInt2) {
-		if (((paramInt1 == 0) || (paramInt2 == 0)) && (!(this.m_textBox instanceof Rectangle2D))) {
-			this.m_textBox = new Rectangle2D.Float();
-		} else {
-			if (!(this.m_textBox instanceof RoundRectangle2D)) {
-				this.m_textBox = new RoundRectangle2D.Float();
-			}
-			((RoundRectangle2D) this.m_textBox).setRoundRect(0.0D, 0.0D, 10.0D, 10.0D, paramInt1, paramInt2);
-		}
-	}
+    /**
+     * Sets the default font used by this Renderer. If calling getFont() on
+     * a VisualItem returns a non-null value, the returned Font will be used
+     * instead of this default one.
+     * @param f the default font to use. Note that this will ONLY be used when
+     * if a VisualItem's getFont() method returns null.
+     */
+	public void setFont(Font f) {
+		m_font = f;
+	} //
+    
+    /**
+     * Rounds the corners of the bounding rectangle in which the text
+     * string is rendered.
+     * @param arcWidth the width of the curved corner
+     * @param arcHeight the height of the curved corner
+     */
+    public void setRoundedCorner(int arcWidth, int arcHeight) {
+        if ( (arcWidth == 0 || arcHeight == 0) && 
+            !(m_textBox instanceof Rectangle2D) ) {
+            m_textBox = new Rectangle2D.Float();
+        } else {
+            if ( !(m_textBox instanceof RoundRectangle2D) )
+                m_textBox = new RoundRectangle2D.Float();
+            ((RoundRectangle2D)m_textBox)
+                .setRoundRect(0,0,10,10,arcWidth,arcHeight);                    
+        }
+    } //
 
+	/**
+	 * Get the attribute name of the text to draw.
+	 * @return the text tattribute name
+	 */
 	public String getTextAttributeName() {
-		return this.m_labelName;
-	}
+		return m_labelName;
+	} //
+	
+	/**
+	 * Set the attribute name for the text to draw.
+	 * @param name the text attribute name
+	 */
+	public void setTextAttributeName(String name) {
+		m_labelName = name;
+	} //
 
-	public void setTextAttributeName(String paramString) {
-		this.m_labelName = paramString;
-	}
-
-	public void setMaxTextWidth(int paramInt) {
-		this.m_maxTextWidth = paramInt;
-	}
-
-	public void setAbbrevType(int paramInt) {
-		this.m_abbrevType = paramInt;
-	}
-
-	protected String getText(VisualItem paramVisualItem) {
-		String str = paramVisualItem.getAttribute(this.m_labelName);
-		if (this.m_maxTextWidth > -1) {
-			Font localFont = paramVisualItem.getFont();
-			if (localFont == null) {
-				localFont = this.m_font;
-			}
-			FontMetrics localFontMetrics = Renderer.DEFAULT_GRAPHICS.getFontMetrics(localFont);
-			if (localFontMetrics.stringWidth(str) > this.m_maxTextWidth) {
-				str = this.m_abbrev.abbreviate(str, this.m_abbrevType, localFontMetrics, this.m_maxTextWidth);
-			}
+	/**
+	 * Sets the maximum width that should be allowed of the text label.
+	 * A value of -1 specifies no limit (this is the default).
+	 * @param maxWidth the maximum width of the text or -1 for no limit
+	 */
+	public void setMaxTextWidth(int maxWidth) {
+	    m_maxTextWidth = maxWidth;
+	} //
+	
+	/**
+	 * Sets the type of abbreviation to be used if a text label is longer
+	 * than the maximum text width. The value should be one of the constants
+	 * provided by the {@link edu.berkeley.guir.prefuse.util.StringAbbreviator
+	 * StringAbbreviator} class. To enable abbreviation, you must first set
+	 * the maximum text width using the {@link #setMaxTextWidth(int) 
+	 * setMaxTextWidth} method.
+	 * @param abbrevType the abbreviation type to use. Should be one of the
+	 * constants provided by the 
+	 * {@link edu.berkeley.guir.prefuse.util.StringAbbreviator
+	 * StringAbbreviator} class (e.g. StringAbbreviator.TRUNCATE or 
+	 * StringAbbreviator.NAME).
+	 */
+	public void setAbbrevType(int abbrevType) {
+	    m_abbrevType = abbrevType;
+	} //
+	
+	/**
+	 * Returns the text to draw. Subclasses can override this class to
+	 * perform custom text rendering.
+	 * @param item the item to represent as a <code>String</code>
+	 * @return a <code>String</code> to draw
+	 */
+	protected String getText(VisualItem item) {
+		String s =  (String)item.getAttribute(m_labelName);
+		if ( m_maxTextWidth > -1 ) {
+		    Font font = item.getFont();
+		    if ( font == null ) { font = m_font; }
+		    FontMetrics fm = DEFAULT_GRAPHICS.getFontMetrics(font);
+		    if ( fm.stringWidth(s) > m_maxTextWidth ) {
+		        s = m_abbrev.abbreviate(s, m_abbrevType, fm, m_maxTextWidth);			
+		    }
 		}
-		return str;
-	}
+		return s;
+	} //
+	
+	protected boolean isHyperlink(VisualItem item) {
+		Boolean b = (Boolean)item.getVizAttribute(m_labelName + "_LINK");
+		return ( b != null && Boolean.TRUE.equals(b) );
+	} //
 
-	protected boolean isHyperlink(VisualItem paramVisualItem) {
-		Boolean localBoolean = (Boolean) paramVisualItem.getVizAttribute(this.m_labelName + "_LINK");
-		return (localBoolean != null) && (Boolean.TRUE.equals(localBoolean));
-	}
+	/**
+	 * @see edu.berkeley.guir.prefuse.render.ShapeRenderer#getRawShape(edu.berkeley.guir.prefuse.VisualItem)
+	 */
+	protected Shape getRawShape(VisualItem item) {
+		String s = getText(item);
+		if ( s == null ) { s = ""; }
+        m_font = item.getFont();
+        
+        // make renderer size-aware
+        double size = item.getSize();
+        if ( size != 1 )
+            m_font = FontLib.getFont(m_font.getName(), m_font.getStyle(),
+                    size*m_font.getSize());
+        
+		FontMetrics fm = DEFAULT_GRAPHICS.getFontMetrics(m_font);
+		double h = fm.getHeight() + size*2*m_vertBorder;
+		double w = fm.stringWidth(s) + size*2*m_horizBorder;
+		getAlignedPoint(m_tmpPoint, item, w, h, m_xAlign, m_yAlign);
+		m_textBox.setFrame(m_tmpPoint.getX(),m_tmpPoint.getY(),w,h);
+		return m_textBox;
+	} //
+	
+	/**
+	 * Helper method, which calculates the top-left co-ordinate of a node
+	 * given the node's alignment.
+	 */
+	protected static void getAlignedPoint(Point2D p, VisualItem item, 
+            double w, double h, int xAlign, int yAlign)
+    {
+		double x = item.getX(), y = item.getY();
+		if ( xAlign == ALIGNMENT_CENTER ) {
+			x = x-(w/2);
+		} else if ( xAlign == ALIGNMENT_RIGHT ) {
+			x = x-w;
+		}
+		if ( yAlign == ALIGNMENT_CENTER ) {
+			y = y-(h/2);
+		} else if ( yAlign == ALIGNMENT_BOTTOM ) {
+			y = y-h;
+		}
+		p.setLocation(x,y);
+	} //
 
-	protected Shape getRawShape(VisualItem paramVisualItem) {
-		String str = getText(paramVisualItem);
-		if (str == null) {
-			str = "";
-		}
-		this.m_font = paramVisualItem.getFont();
-		double d1 = paramVisualItem.getSize();
-		if (d1 != 1.0D) {
-			this.m_font = FontLib.getFont(this.m_font.getName(), this.m_font.getStyle(), (int) Math.round(d1 * this.m_font.getSize()));
-		}
-		FontMetrics localFontMetrics = Renderer.DEFAULT_GRAPHICS.getFontMetrics(this.m_font);
-		double d2 = localFontMetrics.getHeight() + d1 * 2.0D * this.m_vertBorder;
-		double d3 = localFontMetrics.stringWidth(str) + d1 * 2.0D * this.m_horizBorder;
-		getAlignedPoint(this.m_tmpPoint, paramVisualItem, d3, d2, this.m_xAlign, this.m_yAlign);
-		this.m_textBox.setFrame(this.m_tmpPoint.getX(), this.m_tmpPoint.getY(), d3, d2);
-		return this.m_textBox;
-	}
-
-	protected static void getAlignedPoint(Point2D paramPoint2D, VisualItem paramVisualItem, double paramDouble1, double paramDouble2, int paramInt1, int paramInt2) {
-		double d1 = paramVisualItem.getX();
-		double d2 = paramVisualItem.getY();
-		if (paramInt1 == 2) {
-			d1 -= paramDouble1 / 2.0D;
-		} else if (paramInt1 == 1) {
-			d1 -= paramDouble1;
-		}
-		if (paramInt2 == 2) {
-			d2 -= paramDouble2 / 2.0D;
-		} else if (paramInt2 == 1) {
-			d2 -= paramDouble2;
-		}
-		paramPoint2D.setLocation(d1, d2);
-	}
-
-	public void render(Graphics2D paramGraphics2D, VisualItem paramVisualItem) {
-		Shape localShape = getShape(paramVisualItem);
-		if (localShape != null) {
-			super.drawShape(paramGraphics2D, paramVisualItem, localShape);
-			String str = getText(paramVisualItem);
-			if (str != null) {
-				Rectangle2D localRectangle2D = localShape.getBounds2D();
-				paramGraphics2D.setPaint(paramVisualItem.getColor());
-				paramGraphics2D.setFont(this.m_font);
-				FontMetrics localFontMetrics = paramGraphics2D.getFontMetrics();
-				double d1 = paramVisualItem.getSize();
-				double d2 = localRectangle2D.getX() + d1 * this.m_horizBorder;
-				double d3 = localRectangle2D.getY() + d1 * this.m_vertBorder;
-				paramGraphics2D.drawString(str, (float) d2, (float) d3 + localFontMetrics.getAscent());
-				if (isHyperlink(paramVisualItem)) {
-					int i = (int) Math.round(d2);
-					int j = (int) Math.round(d3);
-					paramGraphics2D.drawLine(i, j, i + localFontMetrics.stringWidth(str), j + localFontMetrics.getHeight() - 1);
+	/**
+	 * @see edu.berkeley.guir.prefuse.render.Renderer#render(java.awt.Graphics2D, edu.berkeley.guir.prefuse.VisualItem)
+	 */
+	public void render(Graphics2D g, VisualItem item) {
+        Shape shape = getShape(item);
+        if ( shape != null ) {
+            super.drawShape(g, item, shape);
+        
+            // now render the text
+			String s = getText(item);
+			if ( s != null ) {			
+				Rectangle2D r = shape.getBounds2D();
+				g.setPaint(item.getColor());
+				g.setFont(m_font);
+				FontMetrics fm = g.getFontMetrics();
+                double size = item.getSize();
+                double x = r.getX() + size*m_horizBorder;
+                double y = r.getY() + size*m_vertBorder;
+				g.drawString(s, (float)x, (float)y+fm.getAscent());
+				if ( isHyperlink(item) ) {
+                    int lx = (int)Math.round(x), ly = (int)Math.round(y);
+					g.drawLine(lx,ly,lx+fm.stringWidth(s),ly+fm.getHeight()-1);
 				}
 			}
 		}
-	}
-
+	} //
+	
+	/**
+	 * Get the horizontal alignment of this node with respect to it's
+	 * location co-ordinate.
+	 * @return the horizontal alignment
+	 */
 	public int getHorizontalAlignment() {
-		return this.m_xAlign;
-	}
-
+		return m_xAlign;
+	} //
+	
+	/**
+	 * Get the vertical alignment of this node with respect to it's
+	 * location co-ordinate.
+	 * @return the vertical alignment
+	 */
 	public int getVerticalAlignment() {
-		return this.m_yAlign;
-	}
-
-	public void setHorizontalAlignment(int paramInt) {
-		this.m_xAlign = paramInt;
-	}
-
-	public void setVerticalAlignment(int paramInt) {
-		this.m_yAlign = paramInt;
-	}
-
-	public int getHorizontalPadding() {
-		return this.m_horizBorder;
-	}
-
-	public void setHorizontalPadding(int paramInt) {
-		this.m_horizBorder = paramInt;
-	}
-
-	public int getVerticalPadding() {
-		return this.m_vertBorder;
-	}
-
-	public void setVerticalPadding(int paramInt) {
-		this.m_vertBorder = paramInt;
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/render/TextItemRenderer.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
- */
+		return m_yAlign;
+	} //
+	
+	/**
+	 * Set the horizontal alignment of this node with respect to it's
+	 * location co-ordinate.
+	 * @param align the horizontal alignment
+	 */	
+	public void setHorizontalAlignment(int align) {
+		m_xAlign = align;
+	} //
+	
+	/**
+	 * Set the vertical alignment of this node with respect to it's
+	 * location co-ordinate.
+	 * @param align the vertical alignment
+	 */	
+	public void setVerticalAlignment(int align) {
+		m_yAlign = align;
+	} //
+	
+    /**
+     * Returns the amount of padding in pixels between text 
+     * and the border of this item along the horizontal dimension.
+     * @return the horizontal padding
+     */
+    public int getHorizontalPadding() {
+        return m_horizBorder;
+    } //
+    
+    /**
+     * Sets the amount of padding in pixels between text 
+     * and the border of this item along the horizontal dimension.
+     * @param xpad the horizontal padding to set
+     */
+    public void setHorizontalPadding(int xpad) {
+        m_horizBorder = xpad;
+    } //
+    
+    /**
+     * Returns the amount of padding in pixels between text 
+     * and the border of this item along the vertical dimension.
+     * @return the vertical padding
+     */
+    public int getVerticalPadding() {
+        return m_vertBorder;
+    } //
+    
+    /**
+     * Sets the amount of padding in pixels between text 
+     * and the border of this item along the vertical dimension.
+     * @param ypad the vertical padding
+     */
+    public void setVerticalPadding(int ypad) {
+        m_vertBorder = ypad;
+    } //
+    
+} // end of class TextItemRenderer

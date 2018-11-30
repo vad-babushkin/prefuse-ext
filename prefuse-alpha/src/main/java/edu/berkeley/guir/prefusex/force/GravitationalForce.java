@@ -1,43 +1,45 @@
 package edu.berkeley.guir.prefusex.force;
 
-public class GravitationalForce
-		extends AbstractForce {
-	private static final String[] pnames = {"GravitationalConstant", "Direction"};
-	public static final int GRAVITATIONAL_CONST = 0;
-	public static final int DIRECTION = 1;
-	public static final float DEFAULT_FORCE_CONSTANT = 1.0E-4F;
-	public static final float DEFAULT_DIRECTION = -90.0F;
-
-	public GravitationalForce(float paramFloat1, float paramFloat2) {
-		this.params = new float[]{paramFloat1, paramFloat2};
-	}
-
-	public GravitationalForce() {
-		this(1.0E-4F, -90.0F);
-	}
-
-	public boolean isItemForce() {
-		return true;
-	}
-
-	protected String[] getParameterNames() {
-		return pnames;
-	}
-
-	public void getForce(ForceItem paramForceItem) {
-		float f1 = (float) Math.toRadians(-this.params[1]);
-		float f2 = this.params[0] * paramForceItem.mass;
-		int tmp30_29 = 0;
-		float[] tmp30_26 = paramForceItem.force;
-		tmp30_26[tmp30_29] = ((float) (tmp30_26[tmp30_29] + Math.cos(f1) * f2));
-		int tmp49_48 = 1;
-		float[] tmp49_45 = paramForceItem.force;
-		tmp49_45[tmp49_48] = ((float) (tmp49_45[tmp49_48] + Math.sin(f1) * f2));
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefusex/force/GravitationalForce.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Represents a constant gravitational force, like the pull of gravity
+ * for an object on the Earth (F = mg). The force experienced by a
+ * given item is calculated as the product of a GravitationalConstant 
+ * parameter and the mass of the item.
+ *
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class GravitationalForce extends AbstractForce {
+
+    private static final String[] pnames
+        = { "GravitationalConstant", "Direction" };
+    public static final int GRAVITATIONAL_CONST = 0;
+    public static final int DIRECTION = 1;
+    public static final float DEFAULT_FORCE_CONSTANT = 1E-4f;
+    public static final float DEFAULT_DIRECTION = -90;
+    
+    public GravitationalForce(float forceConstant, float direction) {
+        params = new float[] { forceConstant, direction };
+    } //
+    
+    public GravitationalForce() {
+        this(DEFAULT_FORCE_CONSTANT, DEFAULT_DIRECTION);
+    } //
+    
+    public boolean isItemForce() {
+        return true;
+    } //
+
+    protected String[] getParameterNames() {
+        return pnames;
+    } //
+    
+    public void getForce(ForceItem item) {
+        float theta = (float)Math.toRadians(-params[DIRECTION]);
+        float coeff = params[GRAVITATIONAL_CONST]*item.mass;
+        
+        item.force[0] += Math.cos(theta)*coeff;
+        item.force[1] += Math.sin(theta)*coeff;
+    } //
+
+} // end of class GravitationalForce

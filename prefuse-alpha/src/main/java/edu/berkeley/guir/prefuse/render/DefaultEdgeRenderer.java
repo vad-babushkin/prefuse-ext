@@ -1,272 +1,415 @@
 package edu.berkeley.guir.prefuse.render;
 
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.CubicCurve2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+
 import edu.berkeley.guir.prefuse.EdgeItem;
 import edu.berkeley.guir.prefuse.VisualItem;
 import edu.berkeley.guir.prefuse.util.GeometryLib;
 
-import java.awt.*;
-import java.awt.geom.*;
-
-public class DefaultEdgeRenderer
-		extends ShapeRenderer {
+/**
+ * Default edge renderer that draws edges as lines connecting nodes. Both
+ * straight and curved (Bezier) lines are supported.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
+public class DefaultEdgeRenderer extends ShapeRenderer {
+	
 	public static final String EDGE_TYPE = "edgeType";
-	protected static final double HALF_PI = 1.5707963267948966D;
-	protected static final Polygon DEFAULT_ARROW_HEAD = new Polygon(new int[]{0, -4, 4, 0}, new int[]{0, -12, -12, 0}, 4);
-	public static final int EDGE_TYPE_LINE = 0;
+	
+	protected static final double HALF_PI = Math.PI / 2;
+	protected static final Polygon DEFAULT_ARROW_HEAD =
+		new Polygon(new int[] {0,-4,4,0}, new int[] {0,-12,-12,0}, 4);
+	
+	public static final int EDGE_TYPE_LINE  = 0;
 	public static final int EDGE_TYPE_CURVE = 1;
-	public static final int WEIGHT_TYPE_NONE = 0;
+	
+	public static final int WEIGHT_TYPE_NONE   = 0;
 	public static final int WEIGHT_TYPE_LINEAR = 1;
-	public static final int WEIGHT_TYPE_LOG = 2;
-	public static final int ALIGNMENT_LEFT = 0;
-	public static final int ALIGNMENT_RIGHT = 1;
+	public static final int WEIGHT_TYPE_LOG    = 2;
+	
+	public static final int ALIGNMENT_LEFT   = 0;
+	public static final int ALIGNMENT_RIGHT  = 1;
 	public static final int ALIGNMENT_CENTER = 2;
 	public static final int ALIGNMENT_BOTTOM = 1;
-	public static final int ALIGNMENT_TOP = 0;
-	protected Line2D m_line = new Line2D.Float();
+	public static final int ALIGNMENT_TOP    = 0;
+	
+	protected Line2D       m_line  = new Line2D.Float();
 	protected CubicCurve2D m_cubic = new CubicCurve2D.Float();
-	protected int m_edgeType = 0;
-	protected int m_weightType = 1;
-	protected int m_xAlign1 = 2;
-	protected int m_yAlign1 = 2;
-	protected int m_xAlign2 = 2;
-	protected int m_yAlign2 = 2;
-	protected int m_width = 1;
-	protected int m_curWidth = 1;
-	protected Point2D[] m_tmpPoints = new Point2D[2];
-	protected Point2D[] m_ctrlPoints = new Point2D[2];
-	protected Point2D[] m_isctPoints = new Point2D[2];
-	protected String m_weightLabel = "weight";
+
+	protected int     m_edgeType = EDGE_TYPE_LINE;
+	protected int     m_weightType = WEIGHT_TYPE_LINEAR;
+	protected int     m_xAlign1  = ALIGNMENT_CENTER;
+	protected int     m_yAlign1  = ALIGNMENT_CENTER;
+	protected int     m_xAlign2  = ALIGNMENT_CENTER;
+	protected int     m_yAlign2  = ALIGNMENT_CENTER;
+	protected int     m_width    = 1;
+	protected int     m_curWidth = 1;
+	protected Point2D m_tmpPoints[]  = new Point2D[2];
+	protected Point2D m_ctrlPoints[] = new Point2D[2];
+	protected Point2D m_isctPoints[] = new Point2D[2];
+	
+	protected String  m_weightLabel = "weight";
+	
 	protected boolean m_directed = false;
 	protected Polygon m_arrowHead = DEFAULT_ARROW_HEAD;
 	protected AffineTransform m_arrowTrans = new AffineTransform();
 
+	/**
+	 * Constructor.
+	 */
 	public DefaultEdgeRenderer() {
-		this.m_tmpPoints[0] = new Point2D.Float();
-		this.m_tmpPoints[1] = new Point2D.Float();
-		this.m_ctrlPoints[0] = new Point2D.Float();
-		this.m_ctrlPoints[1] = new Point2D.Float();
-		this.m_isctPoints[0] = new Point2D.Float();
-		this.m_isctPoints[1] = new Point2D.Float();
-	}
+		m_tmpPoints[0]  = new Point2D.Float();
+		m_tmpPoints[1]  = new Point2D.Float();
+		m_ctrlPoints[0] = new Point2D.Float();
+		m_ctrlPoints[1] = new Point2D.Float();		
+		m_isctPoints[0] = new Point2D.Float();
+		m_isctPoints[1] = new Point2D.Float();		
+	} //
 
+	/**
+	 * Returns the attribute to use for the edge weight
+	 * @return the attribute to use for the edge weight
+	 */
 	public String getWeightAttributeName() {
-		return this.m_weightLabel;
-	}
-
-	public void setWeightAttributeName(String paramString) {
-		this.m_weightLabel = paramString;
-	}
-
+	    return m_weightLabel;
+	} //
+	
+	/**
+	 * Sets the attribute to use for the edge weight
+	 * @param attrName the name of the attribute to use for the edge weight
+	 */
+	public void setWeightAttributeName(String attrName) {
+	    m_weightLabel = attrName;
+	} //
+	
+	/**
+	 * Returns the weight type for this edge renderer, one of WEIGHT_TYPE_NONE,
+	 * WEIGHT_TYPE_LINEAR, or WEIGHT_TYPE_LOG.
+	 * @return an int signifiying the weight type
+	 */
 	public int getWeightType() {
-		return this.m_weightType;
-	}
-
-	public void setWeightType(int paramInt) {
-		this.m_weightType = paramInt;
-	}
-
+	    return m_weightType;
+	} //
+	
+	/**
+	 * Sets the weight type for this edge renderer, one of WEIGHT_TYPE_NONE,
+	 * WEIGHT_TYPE_LINEAR, or WEIGHT_TYPE_LOG.
+	 * @param type an int signifiying the weight type
+	 */
+	public void setWeightType(int type) {
+	    m_weightType = type;
+	} //
+	
+	/**
+	 * @see edu.berkeley.guir.prefuse.render.ShapeRenderer#getRenderType()
+	 */
 	public int getRenderType() {
-		if (this.m_directed) {
-			return 3;
-		}
-		return 1;
-	}
-
-	protected Shape getRawShape(VisualItem paramVisualItem) {
-		EdgeItem localEdgeItem = (EdgeItem) paramVisualItem;
-		VisualItem localVisualItem1 = (VisualItem) localEdgeItem.getFirstNode();
-		VisualItem localVisualItem2 = (VisualItem) localEdgeItem.getSecondNode();
-		String str = (String) localEdgeItem.getVizAttribute("edgeType");
-		int i = this.m_edgeType;
-		if (str != null) {
+		if ( m_directed ) {
+			return RENDER_TYPE_DRAW_AND_FILL;
+		} else {
+			return RENDER_TYPE_DRAW;
+		} 
+	} //
+  	
+  	/**
+  	 * @see edu.berkeley.guir.prefuse.render.ShapeRenderer#getRawShape(edu.berkeley.guir.prefuse.VisualItem)
+  	 */
+	protected Shape getRawShape(VisualItem item) {
+		EdgeItem   edge = (EdgeItem)item;
+		VisualItem item1 = (VisualItem)edge.getFirstNode();
+		VisualItem item2 = (VisualItem)edge.getSecondNode();
+		
+		String stype = (String)edge.getVizAttribute(EDGE_TYPE);
+		int type = m_edgeType;
+		if ( stype != null ) {
 			try {
-				i = Integer.parseInt(str);
-			} catch (Exception localException) {
-			}
+				type = Integer.parseInt(stype);
+			} catch ( Exception e ) {}
 		}
-		getAlignedPoint(this.m_tmpPoints[0], localVisualItem1.getRenderer().getBoundsRef(localVisualItem1), this.m_xAlign1, this.m_yAlign1);
-		getAlignedPoint(this.m_tmpPoints[1], localVisualItem2.getRenderer().getBoundsRef(localVisualItem2), this.m_xAlign2, this.m_yAlign2);
-		double d1 = this.m_tmpPoints[0].getX();
-		double d2 = this.m_tmpPoints[0].getY();
-		double d3 = this.m_tmpPoints[1].getX();
-		double d4 = this.m_tmpPoints[1].getY();
-		this.m_curWidth = getLineWidth(paramVisualItem);
-		switch (i) {
-			case 0:
-				this.m_line.setLine(d1, d2, d3, d4);
-				return this.m_line;
-			case 1:
-				getCurveControlPoints(localEdgeItem, this.m_ctrlPoints, d1, d2, d3, d4);
-				this.m_cubic.setCurve(d1, d2, this.m_ctrlPoints[0].getX(), this.m_ctrlPoints[0].getY(), this.m_ctrlPoints[1].getX(), this.m_ctrlPoints[1].getY(), d3, d4);
-				return this.m_cubic;
-		}
-		throw new IllegalStateException("Unknown edge type");
-	}
+		
+		getAlignedPoint(m_tmpPoints[0], item1.getRenderer().getBoundsRef(item1),
+						m_xAlign1, m_yAlign1);
+		getAlignedPoint(m_tmpPoints[1], item2.getRenderer().getBoundsRef(item2),
+						m_xAlign2, m_yAlign2);
+		double n1x = m_tmpPoints[0].getX();
+		double n1y = m_tmpPoints[0].getY();
+		double n2x = m_tmpPoints[1].getX();
+		double n2y = m_tmpPoints[1].getY();
+		m_curWidth = getLineWidth(item);
+		
+		switch ( type ) {
+			case EDGE_TYPE_LINE:			
+				m_line.setLine(n1x, n1y, n2x, n2y);
+				return m_line;
+			case EDGE_TYPE_CURVE:
+				getCurveControlPoints(edge, m_ctrlPoints,n1x,n1y,n2x,n2y);
+				m_cubic.setCurve(n1x, n1y,
+								m_ctrlPoints[0].getX(), m_ctrlPoints[0].getY(),
+								m_ctrlPoints[1].getX(), m_ctrlPoints[1].getY(),
+								n2x,n2y);
+				return m_cubic;
+			default:
+				throw new IllegalStateException("Unknown edge type");
+		}	
+	} //
 
-	public void render(Graphics2D paramGraphics2D, VisualItem paramVisualItem) {
-		super.render(paramGraphics2D, paramVisualItem);
-		EdgeItem localEdgeItem = (EdgeItem) paramVisualItem;
-		if (localEdgeItem.isDirected()) {
-			Point2D localPoint2D1 = null;
-			Point2D localPoint2D2 = null;
-			String str = (String) paramVisualItem.getVizAttribute("edgeType");
-			int j = this.m_edgeType;
-			if (str != null) {
+	/**
+	 * @see edu.berkeley.guir.prefuse.render.Renderer#render(java.awt.Graphics2D, edu.berkeley.guir.prefuse.VisualItem)
+	 */
+	public void render(Graphics2D g, VisualItem item) {
+		super.render(g, item);
+        EdgeItem e = (EdgeItem)item;
+		if ( e.isDirected() ) {
+			Point2D start = null, end = null;
+			int width;
+			
+			String stype = (String)item.getVizAttribute(EDGE_TYPE);
+			int type = m_edgeType;
+			if ( stype != null ) {
 				try {
-					j = Integer.parseInt(str);
-				} catch (Exception localException) {
-				}
+					type = Integer.parseInt(stype);
+				} catch ( Exception ex ) {}
 			}
-			int i;
-			switch (j) {
-				case 0:
-					localPoint2D1 = this.m_tmpPoints[0];
-					localPoint2D2 = this.m_tmpPoints[1];
-					i = this.m_width;
+			switch ( type ) {
+				case EDGE_TYPE_LINE:
+					start = m_tmpPoints[0];
+					end   = m_tmpPoints[1];
+					width = m_width;
 					break;
-				case 1:
-					localPoint2D1 = this.m_ctrlPoints[1];
-					localPoint2D2 = this.m_tmpPoints[1];
-					i = 1;
+				case EDGE_TYPE_CURVE:
+					start = m_ctrlPoints[1];
+					end   = m_tmpPoints[1];
+					width = 1;
 					break;
 				default:
 					throw new IllegalStateException("Unknown edge type.");
 			}
-			VisualItem localVisualItem = (VisualItem) localEdgeItem.getSecondNode();
-			Rectangle2D localRectangle2D = localVisualItem.getBounds();
-			int k = GeometryLib.intersectLineRectangle(localPoint2D1, localPoint2D2, localRectangle2D, this.m_isctPoints);
-			if (k > 0) {
-				localPoint2D2 = this.m_isctPoints[0];
-			}
-			AffineTransform localAffineTransform = getArrowTrans(localPoint2D1, localPoint2D2, i);
-			Shape localShape = localAffineTransform.createTransformedShape(this.m_arrowHead);
-			paramGraphics2D.setPaint(paramVisualItem.getFillColor());
-			paramGraphics2D.fill(localShape);
+			VisualItem item2 = (VisualItem)e.getSecondNode();
+			Rectangle2D r = item2.getBounds();
+			int i = GeometryLib.intersectLineRectangle(start, end, r, m_isctPoints);
+			if ( i > 0 )
+				end = m_isctPoints[0];
+			AffineTransform at = getArrowTrans(start, end, width);
+            Shape arrowHead = at.createTransformedShape(m_arrowHead);
+			g.setPaint(item.getFillColor());
+			g.fill(arrowHead);
 		}
-	}
+	} //
 
-	protected AffineTransform getArrowTrans(Point2D paramPoint2D1, Point2D paramPoint2D2, int paramInt) {
-		this.m_arrowTrans.setToTranslation(paramPoint2D2.getX(), paramPoint2D2.getY());
-		this.m_arrowTrans.rotate(-1.5707963267948966D + Math.atan2(paramPoint2D2.getY() - paramPoint2D1.getY(), paramPoint2D2.getX() - paramPoint2D1.getX()));
-		if (paramInt > 1) {
-			double d = 2.0D * (paramInt - 1) / 4.0D + 1.0D;
-			this.m_arrowTrans.scale(d, d);
+	/**
+	 * Returns an affine transformation that maps the arrowhead shape
+	 * to the position and orientation specified by the provided
+	 * line segment end points.
+	 */
+	protected AffineTransform getArrowTrans(Point2D p1, Point2D p2, int width) {
+		m_arrowTrans.setToTranslation(p2.getX(), p2.getY());
+		m_arrowTrans.rotate(-HALF_PI + 
+			Math.atan2(p2.getY()-p1.getY(), p2.getX()-p1.getX()));
+		if ( width > 1 ) {
+			double scalar = (2.0*(width-1))/4+1;
+			m_arrowTrans.scale(scalar, scalar);
 		}
-		return this.m_arrowTrans;
-	}
+		return m_arrowTrans;
+	} //
 
-	protected AffineTransform getTransform(VisualItem paramVisualItem) {
+	/**
+	 * @see edu.berkeley.guir.prefuse.render.ShapeRenderer#getTransform(edu.berkeley.guir.prefuse.VisualItem)
+	 */
+	protected AffineTransform getTransform(VisualItem item) {
 		return null;
-	}
+	} //
+    
+    /**
+     * @see edu.berkeley.guir.prefuse.render.Renderer#locatePoint(java.awt.geom.Point2D, edu.berkeley.guir.prefuse.VisualItem)
+     */
+    public boolean locatePoint(Point2D p, VisualItem item) {
+        Shape s = getShape(item);
+        if ( s == null ) {
+            return false;
+        } else {
+            double width = Math.max(2, getLineWidth(item));
+            double halfWidth = width/2.0;
+            return s.intersects(p.getX()-halfWidth,
+                                p.getY()-halfWidth,
+                                width,width);
+        }
+    } //
 
-	public boolean locatePoint(Point2D paramPoint2D, VisualItem paramVisualItem) {
-		Shape localShape = getShape(paramVisualItem);
-		if (localShape == null) {
-			return false;
+	/**
+	 * Returns the line width to be used for this VisualItem. By default,
+	 * returns the value set using the <code>setWidth</code> method.
+	 * Subclasses should override this method to perform custom line
+	 * width determination.
+	 * @param item the VisualItem for which to determine the line width
+	 * @return the desired line width, in pixels
+	 */
+	protected int getLineWidth(VisualItem item) {
+	    if ( m_weightType == WEIGHT_TYPE_NONE ) {
+	        return m_width;
+	    } else {
+	        String wstr = item.getAttribute(m_weightLabel);
+	        if ( wstr != null ) {
+	            try {
+	                double w = Double.parseDouble(wstr);
+	                if ( m_weightType == WEIGHT_TYPE_LINEAR ) {
+	                    return (int)Math.round(w);
+	                } else if ( m_weightType == WEIGHT_TYPE_LOG ) {
+	                    return Math.max(1,1+(int)Math.round(Math.log(w)));
+	                }
+	            } catch ( Exception e ) {
+	                System.err.println("Weight value is not a valid number!");
+	                e.printStackTrace();
+	            }
+	        }
+	        return m_width;
+	    }
+	} //
+    
+    /**
+     * @see edu.berkeley.guir.prefuse.render.ShapeRenderer#getStroke(edu.berkeley.guir.prefuse.VisualItem)
+     */
+    protected BasicStroke getStroke(VisualItem item) {
+        return (m_curWidth == 1 ? null : new BasicStroke(m_curWidth));
+    } //
+
+	/**
+	 * Determines the control points to use for cubic (Bezier) curve edges. 
+	 * Override this method to provide custom curve specifications.
+	 * To reduce object initialization, the entries of the Point2D array are
+	 * already initialized, so use the <tt>Point2D.setLocation()</tt> method rather than
+	 * <tt>new Point2D.Double()</tt> to more efficiently set custom control points.
+     * @param eitem the EdgeItem we are determining the control points for
+	 * @param cp array of Point2D's (length >= 2) in which to return the control points
+	 * @param x1 the x co-ordinate of the first node this edge connects to
+	 * @param y1 the y co-ordinate of the first node this edge connects to
+	 * @param x2 the x co-ordinate of the second node this edge connects to
+	 * @param y2 the y co-ordinate of the second node this edge connects to
+	 */
+	protected void getCurveControlPoints(EdgeItem eitem, Point2D[] cp, 
+					double x1, double y1, double x2, double y2) 
+	{
+		double dx = x2-x1, dy = y2-y1;		
+		cp[0].setLocation(x1+2*dx/3,y1);
+		cp[1].setLocation(x2-dx/8,y2-dy/8);
+	} //
+
+	/**
+	 * Helper method, which calculates the top-left co-ordinate of a rectangle
+	 * given the rectangle's alignment.
+	 */
+	protected static void getAlignedPoint(Point2D p, Rectangle2D r, int xAlign, int yAlign) {
+		double x = r.getX(), y = r.getY(), w = r.getWidth(), h = r.getHeight();
+		if ( xAlign == ALIGNMENT_CENTER ) {
+			x = x+(w/2);
+		} else if ( xAlign == ALIGNMENT_RIGHT ) {
+			x = x+w;
 		}
-		double d1 = Math.max(2, getLineWidth(paramVisualItem));
-		double d2 = d1 / 2.0D;
-		return localShape.intersects(paramPoint2D.getX() - d2, paramPoint2D.getY() - d2, d1, d1);
-	}
-
-	protected int getLineWidth(VisualItem paramVisualItem) {
-		if (this.m_weightType == 0) {
-			return this.m_width;
+		if ( yAlign == ALIGNMENT_CENTER ) {
+			y = y+(h/2);
+		} else if ( yAlign == ALIGNMENT_BOTTOM ) {
+			y = y+h;
 		}
-		String str = paramVisualItem.getAttribute(this.m_weightLabel);
-		if (str != null) {
-			try {
-				double d = Double.parseDouble(str);
-				if (this.m_weightType == 1) {
-					return (int) Math.round(d);
-				}
-				if (this.m_weightType == 2) {
-					return Math.max(1, 1 + (int) Math.round(Math.log(d)));
-				}
-			} catch (Exception localException) {
-				System.err.println("Weight value is not a valid number!");
-				localException.printStackTrace();
-			}
-		}
-		return this.m_width;
-	}
+		p.setLocation(x,y);
+	} //
 
-	protected BasicStroke getStroke(VisualItem paramVisualItem) {
-		return this.m_curWidth == 1 ? null : new BasicStroke(this.m_curWidth);
-	}
-
-	protected void getCurveControlPoints(EdgeItem paramEdgeItem, Point2D[] paramArrayOfPoint2D, double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4) {
-		double d1 = paramDouble3 - paramDouble1;
-		double d2 = paramDouble4 - paramDouble2;
-		paramArrayOfPoint2D[0].setLocation(paramDouble1 + 2.0D * d1 / 3.0D, paramDouble2);
-		paramArrayOfPoint2D[1].setLocation(paramDouble3 - d1 / 8.0D, paramDouble4 - d2 / 8.0D);
-	}
-
-	protected static void getAlignedPoint(Point2D paramPoint2D, Rectangle2D paramRectangle2D, int paramInt1, int paramInt2) {
-		double d1 = paramRectangle2D.getX();
-		double d2 = paramRectangle2D.getY();
-		double d3 = paramRectangle2D.getWidth();
-		double d4 = paramRectangle2D.getHeight();
-		if (paramInt1 == 2) {
-			d1 += d3 / 2.0D;
-		} else if (paramInt1 == 1) {
-			d1 += d3;
-		}
-		if (paramInt2 == 2) {
-			d2 += d4 / 2.0D;
-		} else if (paramInt2 == 1) {
-			d2 += d4;
-		}
-		paramPoint2D.setLocation(d1, d2);
-	}
-
+	/**
+	 * Returns the type of the drawn edge. This is either EDGE_TYPE_LINE or
+	 * EDGE_TYPE_CURVE.
+	 * @return the edge type
+	 */
 	public int getEdgeType() {
-		return this.m_edgeType;
-	}
-
-	public void setEdgeType(int paramInt) {
-		this.m_edgeType = paramInt;
-	}
-
+		return m_edgeType;
+	} //
+  	
+	/**
+	 * Sets the type of the drawn edge. This is either EDGE_TYPE_LINE or
+	 * EDGE_TYPE_CURVE.
+	 * @param type the new edge type
+	 */
+	public void setEdgeType(int type) {
+		m_edgeType = type;
+	} //
+  	
+  	/**
+  	 * Get the horizontal aligment of the edge mount point with the first node.
+  	 * @return the horizontal alignment
+  	 */
 	public int getHorizontalAlignment1() {
-		return this.m_xAlign1;
-	}
-
+		return m_xAlign1;
+	} //
+	
+	/**
+	 * Get the vertical aligment of the edge mount point with the first node.
+	 * @return the vertical alignment
+	 */
 	public int getVerticalAlignment1() {
-		return this.m_yAlign1;
-	}
+		return m_yAlign1;
+	} //
 
+	/**
+	 * Get the horizontal aligment of the edge mount point with the second node.
+	 * @return the horizontal alignment
+	 */
 	public int getHorizontalAlignment2() {
-		return this.m_xAlign2;
-	}
-
+		return m_xAlign2;
+	} //
+	
+	/**
+	 * Get the vertical aligment of the edge mount point with the second node.
+	 * @return the vertical alignment
+	 */
 	public int getVerticalAlignment2() {
-		return this.m_yAlign2;
-	}
+		return m_yAlign2;
+	} //
+	
+	/**
+	 * Set the horizontal aligment of the edge mount point with the first node.
+	 * @param align the horizontal alignment
+	 */
+	public void setHorizontalAlignment1(int align) {
+		m_xAlign1 = align;
+	} //
+	
+	/**
+	 * Set the vertical aligment of the edge mount point with the first node.
+	 * @param align the vertical alignment
+	 */
+	public void setVerticalAlignment1(int align) {
+		m_yAlign1 = align;
+	} //
 
-	public void setHorizontalAlignment1(int paramInt) {
-		this.m_xAlign1 = paramInt;
-	}
+	/**
+	 * Set the horizontal aligment of the edge mount point with the second node.
+	 * @param align the horizontal alignment
+	 */
+	public void setHorizontalAlignment2(int align) {
+		m_xAlign2 = align;
+	} //
+	
+	/**
+	 * Set the vertical aligment of the edge mount point with the second node.
+	 * @param align the vertical alignment
+	 */
+	public void setVerticalAlignment2(int align) {
+		m_yAlign2 = align;
+	} //
+	
+	/**
+	 * Sets the desired width of lines. Currently only supported by edges
+	 * of type EDGE_TYPE_LINE.
+	 * @param w the desired line width, in pixels
+	 */
+	public void setWidth(int w) {
+		m_width = w;
+	} //
 
-	public void setVerticalAlignment1(int paramInt) {
-		this.m_yAlign1 = paramInt;
-	}
-
-	public void setHorizontalAlignment2(int paramInt) {
-		this.m_xAlign2 = paramInt;
-	}
-
-	public void setVerticalAlignment2(int paramInt) {
-		this.m_yAlign2 = paramInt;
-	}
-
-	public void setWidth(int paramInt) {
-		this.m_width = paramInt;
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/render/DefaultEdgeRenderer.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
- */
+} // end of class DefaultEdgeRenderer

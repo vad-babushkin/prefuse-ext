@@ -1,163 +1,254 @@
 package edu.berkeley.guir.prefuse.render;
 
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.Toolkit;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+
 import edu.berkeley.guir.prefuse.VisualItem;
 import edu.berkeley.guir.prefuse.graph.Entity;
 
-import java.awt.*;
-import java.net.URL;
-import java.util.*;
-
+/**
+ * <p>Controls loading and management of images. Includes a size-configurable
+ * LRU cache for managing loaded images. Also supports optional image scaling
+ * of loaded images to cut down on memory and visualization operation costs.
+ * </p>
+ * 
+ * <p>By default images are loaded upon first request. Use the
+ * <code>preloadImages()</code> method to load images before they are
+ * requested.</p>
+ * 
+ * @author newbergr
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
 public class ImageFactory {
-	private int m_imageCacheSize = 500;
-	private int m_maxImageWidth = 100;
+	
+	private int m_imageCacheSize = 3000;
+	private int m_maxImageWidth  = 100;
 	private int m_maxImageHeight = 100;
-	private boolean m_asynch = true;
-	private Map imageCache = new LinkedHashMap((int) (this.m_imageCacheSize + 1.3333334F), 0.75F, true) {
-		public boolean removeEldestEntry(Map.Entry paramAnonymousEntry) {
-			return size() > ImageFactory.this.m_imageCacheSize;
-		}
-	};
+    private boolean m_asynch = true;
+	
+	//a nice LRU cache courtesy of java 1.4
+	private Map imageCache =
+		new LinkedHashMap((int) (m_imageCacheSize + 1 / .75F), .75F, true) {
+			public boolean removeEldestEntry(Map.Entry eldest) {
+				return size() > m_imageCacheSize;
+			}
+		};
 	private Map loadMap = new HashMap(50);
-	private Map loadingMap = new HashMap(50);
-	private Set loadingSet = new HashSet(50);
-	private final Component component = new Component() {
-	};
-	private final MediaTracker tracker = new MediaTracker(this.component);
+    private Map loadingMap = new HashMap(50);
+    private Set loadingSet = new HashSet(50);
+
+	private final Component component = new Component() {};
+	private final MediaTracker tracker = new MediaTracker(component);
 	private int nextTrackerID = 0;
 
+	/**
+	 * Constructor. Assumes no scaling of loaded images.
+	 */
 	public ImageFactory() {
-		this(-1, -1);
-	}
+		this(-1,-1);
+	} //
+	
+	/**
+	 * Constructor. This instance will scale loaded images if they exceed the
+	 * threshold arguments.
+	 * @param maxImageWidth the maximum width of input images (-1 means no limit)
+	 * @param maxImageHeight the maximum height of input images (-1 means no limit)
+	 */
+	public ImageFactory(int maxImageWidth, int maxImageHeight) {
+		setMaxImageDimensions(maxImageWidth, maxImageHeight);
+	} //
 
-	public ImageFactory(int paramInt1, int paramInt2) {
-		setMaxImageDimensions(paramInt1, paramInt2);
-	}
+	/**
+	 * Sets the maximum image dimensions of loaded images, images larger than
+	 * these limits will be scaled to fit within bounds.
+	 * @param width the maximum width of input images (-1 means no limit)
+	 * @param height the maximum height of input images (-1 means no limit)
+	 */
+	public void setMaxImageDimensions(int width, int height) {
+		m_maxImageWidth  = width;
+		m_maxImageHeight = height;
+	} //
 
-	public void setMaxImageDimensions(int paramInt1, int paramInt2) {
-		this.m_maxImageWidth = paramInt1;
-		this.m_maxImageHeight = paramInt2;
-	}
+	/**
+	 * Sets the capacity of this factory's image cache
+	 * @param size the new size of the image cache
+	 */
+	public void setImageCacheSize(int size) {
+		m_imageCacheSize = size;
+	} //
 
-	public void setImageCacheSize(int paramInt) {
-		this.m_imageCacheSize = paramInt;
-	}
-
-	public Image getImage(String paramString) {
-		Image localImage = (Image) this.imageCache.get(paramString);
-		Object localObject;
-		if ((localImage == null) && (!this.loadMap.containsKey(paramString))) {
-			localObject = getImageURL(paramString);
-			if (localObject == null) {
-				System.err.println("Null image: " + paramString);
+	/**
+	 * Get the image associated with the given location string. If the image
+	 * has already been loaded, it simply will return the image, otherwise it
+	 * will load it from the specified location.
+	 * 
+	 * The imageLocation argument must be a valid resource string.
+	 * 
+	 * @param imageLocation the image location as a resource string.
+	 * @return the corresponding image, if available
+	 */
+	public Image getImage(String imageLocation) {
+		Image image = (Image) imageCache.get(imageLocation);
+		if (image == null && !loadMap.containsKey(imageLocation)) {
+			URL imageURL = getImageURL(imageLocation);
+			if ( imageURL == null ) {
+			    System.err.println("Null image: " + imageLocation);
 				return null;
 			}
-			localImage = Toolkit.getDefaultToolkit().createImage((URL) localObject);
-			if (!this.m_asynch) {
-				waitForImage(localImage);
-				addImage(paramString, localImage);
-			} else {
-				int i = ++this.nextTrackerID;
-				this.tracker.addImage(localImage, i);
-				this.loadMap.put(paramString, new LoadMapEntry(i, localImage));
-			}
-		} else if ((localImage == null) && (this.loadMap.containsKey(paramString))) {
-			localObject = (LoadMapEntry) this.loadMap.get(paramString);
-			if (this.tracker.checkID(((LoadMapEntry) localObject).id, true)) {
-				addImage(paramString, ((LoadMapEntry) localObject).image);
-				this.loadMap.remove(paramString);
-				this.tracker.removeImage(((LoadMapEntry) localObject).image, ((LoadMapEntry) localObject).id);
-			}
-		} else {
-			return localImage;
-		}
-		return (Image) this.imageCache.get(paramString);
-	}
-
-	public Image addImage(String paramString, Image paramImage) {
-		if ((this.m_maxImageWidth > -1) || (this.m_maxImageHeight > -1)) {
-			paramImage = getScaledImage(paramImage);
-			paramImage.getWidth(null);
-		}
-		this.imageCache.put(paramString, paramImage);
-		return paramImage;
-	}
-
-	protected void waitForImage(Image paramImage) {
-		int i = ++this.nextTrackerID;
-		this.tracker.addImage(paramImage, i);
+			image = Toolkit.getDefaultToolkit().createImage(imageURL);
+			
+			// if set for synchronous mode, block for image to load.
+            if ( !m_asynch ) {
+                waitForImage(image);
+                addImage(imageLocation, image);
+            } else {
+                int id = ++nextTrackerID;
+                tracker.addImage(image, id);
+                loadMap.put(imageLocation, new LoadMapEntry(id,image));    
+            }
+		} else if ( image == null && loadMap.containsKey(imageLocation) ) {
+            LoadMapEntry entry = (LoadMapEntry)loadMap.get(imageLocation);
+            if ( tracker.checkID(entry.id, true) ) {
+                addImage(imageLocation, entry.image);
+                loadMap.remove(imageLocation);
+                tracker.removeImage(entry.image, entry.id);
+            }
+        } else {
+            return image;
+        }
+		return (Image) imageCache.get(imageLocation);
+	} //
+	
+    /**
+     * Adds an image associated with a locaiton string to this factory's cache.
+     * The image will be scaled as dictated by this factory's setting.
+     * 
+     * @param location
+     *            the location string uniquely identifying the image
+     * @param image
+     *            the actual image
+     * @return the final image added to the cache. This may be a scaled version
+     *         of the original input image.
+     */
+    public Image addImage(String location, Image image) {
+        if ( m_maxImageWidth > -1 || m_maxImageHeight > -1 ) {
+            image = getScaledImage(image);
+            image.getWidth(null); // trigger image load
+        }
+        imageCache.put(location, image);
+        return image;
+    } //
+    
+	/**
+	 * Wait for an image to load.
+	 * @param image the image to wait for
+	 */
+	protected void waitForImage(Image image) {
+		int id = ++nextTrackerID;
+		tracker.addImage(image, id);
 		try {
-			this.tracker.waitForID(i, 0L);
-		} catch (InterruptedException localInterruptedException) {
-			localInterruptedException.printStackTrace();
+			tracker.waitForID(id, 0);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-		this.tracker.removeImage(paramImage, i);
-	}
+		tracker.removeImage(image, id);
+	} //
 
-	protected URL getImageURL(String paramString) {
-		URL localURL = null;
-		if ((paramString.startsWith("http:/")) || (paramString.startsWith("ftp:/")) || (paramString.startsWith("file:/"))) {
-			try {
-				localURL = new URL(paramString);
-			} catch (Exception localException) {
-				localException.printStackTrace();
-			}
+	/**
+	 * Returns the URL for a location specified as a resource string.
+	 * @param location the resource location string
+	 * @return the corresponding URL
+	 */
+	protected URL getImageURL(String location) {
+        URL url = null;
+        if ( location.startsWith("http:/") ||
+             location.startsWith("ftp:/")  ||
+             location.startsWith("file:/") ) {
+            try {
+                url = new URL(location);
+            } catch ( Exception e ) {
+                e.printStackTrace();
+            }
+        } else {
+            url = ImageFactory.class.getResource(location);
+            if ( url==null && !location.startsWith("/") )
+                url = ImageFactory.class.getResource("/"+location);
+        }
+        return url;
+	} //
+    
+	/**
+	 * Scales an image to fit within the current size thresholds.
+	 * @param img the image to scale
+	 * @return the scaled image
+	 */
+	protected Image getScaledImage(Image img) {		
+		// resize image, if necessary, to conserve memory
+		//  and reduce future scaling time
+		int w = img.getWidth(null) - m_maxImageWidth;
+		int h = img.getHeight(null) - m_maxImageHeight;
+
+		if ( w > h && w > 0 && m_maxImageWidth > -1 ) {
+			Image scaled = img.getScaledInstance(m_maxImageWidth, -1, Image.SCALE_SMOOTH);
+			img.flush(); //waitForImage(scaled);
+			return scaled;
+		} else if ( h > 0 && m_maxImageHeight > -1 ) {
+			Image scaled = img.getScaledInstance(-1, m_maxImageHeight, Image.SCALE_SMOOTH);
+			img.flush(); //waitForImage(scaled);				
+			return scaled;
 		} else {
-			localURL = ImageFactory.class.getResource(paramString);
-			if ((localURL == null) && (!paramString.startsWith("/"))) {
-				localURL = ImageFactory.class.getResource("/" + paramString);
+			return img;
+		}
+	} //
+	
+	/**
+	 * Preloads images for use in a visualization. Images to load are
+	 * determined by taking objects from the given iterator and retrieving
+	 * the attribute of the specified value. The items in the iterator must
+	 * be instances of either <code>Entity</code> or <code>VisualItem</code>.
+	 * Images are loaded in the order specified by the iterator until the
+	 * the iterator is empty or the maximum image cache size is met. Thus
+	 * higher priority images should appear sooner in the iteration.
+	 * @param iter an Iterator of <code>Entity</code> and/or 
+	 *  <code>VisualItem</code> instances
+	 * @param attr the attribute that contains the image location
+	 */
+	public void preloadImages(Iterator iter, String attr) {
+        boolean synch = m_asynch;
+        m_asynch = false;
+        
+		String loc = null;
+		while ( iter.hasNext() && imageCache.size() <= m_imageCacheSize ) {
+			// get the string describing the image location
+			Object o = iter.next();
+			if ( o instanceof Entity ) {
+				loc = ((Entity)o).getAttribute(attr);
+			} else if ( o instanceof VisualItem ) {
+				loc = ((VisualItem)o).getAttribute(attr);
+			}
+			if ( loc != null ) {
+				getImage(loc);
 			}
 		}
-		return localURL;
-	}
-
-	protected Image getScaledImage(Image paramImage) {
-		int i = paramImage.getWidth(null) - this.m_maxImageWidth;
-		int j = paramImage.getHeight(null) - this.m_maxImageHeight;
-		Image localImage;
-		if ((i > j) && (i > 0) && (this.m_maxImageWidth > -1)) {
-			localImage = paramImage.getScaledInstance(this.m_maxImageWidth, -1, 4);
-			paramImage.flush();
-			return localImage;
-		}
-		if ((j > 0) && (this.m_maxImageHeight > -1)) {
-			localImage = paramImage.getScaledInstance(-1, this.m_maxImageHeight, 4);
-			paramImage.flush();
-			return localImage;
-		}
-		return paramImage;
-	}
-
-	public void preloadImages(Iterator paramIterator, String paramString) {
-		boolean bool = this.m_asynch;
-		this.m_asynch = false;
-		String str = null;
-		while ((paramIterator.hasNext()) && (this.imageCache.size() <= this.m_imageCacheSize)) {
-			Object localObject = paramIterator.next();
-			if ((localObject instanceof Entity)) {
-				str = ((Entity) localObject).getAttribute(paramString);
-			} else if ((localObject instanceof VisualItem)) {
-				str = ((VisualItem) localObject).getAttribute(paramString);
-			}
-			if (str != null) {
-				getImage(str);
-			}
-		}
-		this.m_asynch = bool;
-	}
-
-	private class LoadMapEntry {
-		public int id;
-		public Image image;
-
-		public LoadMapEntry(int paramInt, Image paramImage) {
-			this.id = paramInt;
-			this.image = paramImage;
-		}
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/render/ImageFactory.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
- */
+        m_asynch = synch;
+	} //
+	
+    private class LoadMapEntry {
+        public int id;
+        public Image image;
+        public LoadMapEntry(int id, Image image) {
+            this.id = id;
+            this.image = image;
+        }
+    } //
+    
+} // end of class ImageFactory

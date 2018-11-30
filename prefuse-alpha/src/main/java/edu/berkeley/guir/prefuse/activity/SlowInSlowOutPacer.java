@@ -1,19 +1,34 @@
 package edu.berkeley.guir.prefuse.activity;
 
-public class SlowInSlowOutPacer
-		implements Pacer {
-	public double pace(double paramDouble) {
-		return (paramDouble == 0.0D) || (paramDouble == 1.0D) ? paramDouble : sigmoid(paramDouble);
-	}
-
-	private double sigmoid(double paramDouble) {
-		paramDouble = 12.0D * paramDouble - 6.0D;
-		return 1.0D / (1.0D + Math.exp(-1.0D * paramDouble));
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/activity/SlowInSlowOutPacer.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * A pacing function that provides slow-in, slow-out animation, where the
+ * animation begins at a slower rate, speeds up through the middle of the
+ * animation, and then slows down again before stopping.
+ * 
+ * This is calculated by using an appropriately phased sigmoid function of
+ * the form 1/(1+exp(-x)).
+ *
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ * @see edu.berkeley.guir.prefuse.activity.Pacer
  */
+public class SlowInSlowOutPacer implements Pacer {
+    
+    /**
+     * Pacing function providing slow-in, slow-out animation
+     * @see edu.berkeley.guir.prefuse.activity.Pacer#pace(double)
+     */
+    public double pace(double f) {
+        return ( f == 0.0 || f == 1.0 ? f : sigmoid(f) );
+    } //
+    
+    /**
+     * Computes a normalized sigmoid
+     * @param x input value in the interval [0,1]
+     */
+    private double sigmoid(double x) {
+        x = 12.0*x - 6.0;
+        return (1.0 / (1.0 + Math.exp(-1.0 * x)));
+    } //
+
+} // end of class SlowInSlowOutPacer

@@ -1,146 +1,184 @@
 package edu.berkeley.guir.prefuse.action.filter;
 
-import edu.berkeley.guir.prefuse.EdgeItem;
-import edu.berkeley.guir.prefuse.ItemRegistry;
-import edu.berkeley.guir.prefuse.NodeItem;
-import edu.berkeley.guir.prefuse.graph.*;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class WindowedTreeFilter
-		extends Filter {
-	public static final String[] ITEM_CLASSES = {"node", "edge"};
-	public static final int DEFAULT_MIN_DOI = -2;
-	private boolean m_edgesVisible;
-	private boolean m_useFocusAsRoot;
-	private int m_minDOI;
-	private Node m_root;
-	private List m_queue = new LinkedList();
+import edu.berkeley.guir.prefuse.EdgeItem;
+import edu.berkeley.guir.prefuse.ItemRegistry;
+import edu.berkeley.guir.prefuse.NodeItem;
+import edu.berkeley.guir.prefuse.graph.DefaultTree;
+import edu.berkeley.guir.prefuse.graph.Edge;
+import edu.berkeley.guir.prefuse.graph.Graph;
+import edu.berkeley.guir.prefuse.graph.Node;
+import edu.berkeley.guir.prefuse.graph.Tree;
 
-	public WindowedTreeFilter() {
-		this(-2);
-	}
-
-	public WindowedTreeFilter(int paramInt) {
-		this(paramInt, false);
-	}
-
-	public WindowedTreeFilter(int paramInt, boolean paramBoolean) {
-		this(paramInt, paramBoolean, true);
-	}
-
-	public WindowedTreeFilter(int paramInt, boolean paramBoolean1, boolean paramBoolean2) {
-		this(paramInt, paramBoolean1, paramBoolean2, true);
-	}
-
-	public WindowedTreeFilter(int paramInt, boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3) {
-		super(ITEM_CLASSES, paramBoolean3);
-		this.m_minDOI = paramInt;
-		this.m_useFocusAsRoot = paramBoolean1;
-		this.m_edgesVisible = paramBoolean2;
-	}
-
-	public void setTreeRoot(Node paramNode) {
-		this.m_root = paramNode;
-	}
-
-	public void run(ItemRegistry paramItemRegistry, double paramDouble) {
-		Graph localGraph = paramItemRegistry.getGraph();
-		boolean bool = localGraph instanceof Tree;
-		Object localObject1 = paramItemRegistry.getFilteredGraph();
-		DefaultTree localDefaultTree = null;
-		if ((bool) && ((localObject1 instanceof DefaultTree))) {
-			localDefaultTree = (DefaultTree) localObject1;
-			localDefaultTree.setRoot(null);
-		} else {
-			localObject1 = localDefaultTree = new DefaultTree();
-		}
-		Object localObject2 = null;
-		Iterator localIterator1 = paramItemRegistry.getDefaultFocusSet().iterator();
-		NodeItem localNodeItem1 = null;
-		if (localIterator1.hasNext()) {
-			localNodeItem1 = paramItemRegistry.getNodeItem((Node) localIterator1.next(), true);
-		}
-		Object localObject3;
-		if (this.m_root != null) {
-			localObject3 = (this.m_root instanceof NodeItem) ? this.m_root : paramItemRegistry.getNodeItem(this.m_root, true);
-			localObject2 = (NodeItem) localObject3;
-		} else if ((localNodeItem1 != null) && (this.m_useFocusAsRoot)) {
-			localObject2 = localNodeItem1;
-		} else if (bool) {
-			localObject2 = paramItemRegistry.getNodeItem(((Tree) localGraph).getRoot(), true);
-		} else {
-			localObject3 = localGraph.getNodes();
-			if (((Iterator) localObject3).hasNext()) {
-				localObject2 = paramItemRegistry.getNodeItem((Node) ((Iterator) localObject3).next(), true);
-			}
-		}
-		if (localObject2 == null) {
-			throw new IllegalStateException("No root for the filtered tree has been specified.");
-		}
-		localDefaultTree.setRoot((TreeNode) localObject2);
-		((NodeItem) localObject2).setDOI(0.0D);
-		this.m_queue.add(localObject2);
-		while (!this.m_queue.isEmpty()) {
-			localObject3 = (NodeItem) this.m_queue.remove(0);
-			Node localNode1 = (Node) ((NodeItem) localObject3).getEntity();
-			double d = ((NodeItem) localObject3).getDOI() - 1.0D;
-			if (d >= this.m_minDOI) {
-				Iterator localIterator2 = localNode1.getEdges();
-				int i = 0;
-				while (localIterator2.hasNext()) {
-					Edge localEdge = (Edge) localIterator2.next();
-					Node localNode2 = localEdge.getAdjacentNode(localNode1);
-					NodeItem localNodeItem2 = paramItemRegistry.getNodeItem(localNode2);
-					int j = (localNodeItem2 == null) || (localNodeItem2.getDirty() > 0) ? 1 : 0;
-					if (j != 0) {
-						localNodeItem2 = paramItemRegistry.getNodeItem(localNode2, true);
-					}
-					EdgeItem localEdgeItem = paramItemRegistry.getEdgeItem(localEdge, true);
-					if (j != 0) {
-						((NodeItem) localObject3).addChild(localEdgeItem);
-						localNodeItem2.setDOI(d);
-						this.m_queue.add(localNodeItem2);
-					} else {
-						localEdgeItem.getFirstNode().addEdge(localEdgeItem);
-						localEdgeItem.getSecondNode().addEdge(localEdgeItem);
-					}
-				}
-			}
-		}
-		paramItemRegistry.setFilteredGraph(localDefaultTree);
-		super.run(paramItemRegistry, paramDouble);
-	}
-
-	public boolean isEdgesVisible() {
-		return this.m_edgesVisible;
-	}
-
-	public void setEdgesVisible(boolean paramBoolean) {
-		this.m_edgesVisible = paramBoolean;
-	}
-
-	public int getMinDOI() {
-		return this.m_minDOI;
-	}
-
-	public void setMinDOI(int paramInt) {
-		this.m_minDOI = paramInt;
-	}
-
-	public boolean isUseFocusAsRoot() {
-		return this.m_useFocusAsRoot;
-	}
-
-	public void setUseFocusAsRoot(boolean paramBoolean) {
-		this.m_useFocusAsRoot = paramBoolean;
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/action/filter/WindowedTreeFilter.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * 
+ * Mar 24, 2004 - jheer - Created class
+ *
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class WindowedTreeFilter extends Filter {
+
+    public static final String[] ITEM_CLASSES = 
+        {ItemRegistry.DEFAULT_NODE_CLASS, ItemRegistry.DEFAULT_EDGE_CLASS};
+    
+    public static final int DEFAULT_MIN_DOI = -2;
+    
+    // determines if filtered edges are visible by default
+    private boolean m_edgesVisible;
+    private boolean m_useFocusAsRoot;
+    private int m_minDOI;
+    private Node m_root;
+    private List m_queue = new LinkedList();
+    
+    // ========================================================================
+    // == CONSTRUCTORS ========================================================
+    
+    public WindowedTreeFilter() {
+        this(DEFAULT_MIN_DOI);
+    } //
+    
+    public WindowedTreeFilter(int minDOI) {
+        this(minDOI, false);
+    } //
+    
+    public WindowedTreeFilter(int minDOI, boolean useFocusAsRoot) {
+        this(minDOI, useFocusAsRoot, true);
+    } //
+    
+    public WindowedTreeFilter(int minDOI, boolean useFocusAsRoot, boolean edgesVisible) {
+        this(minDOI, useFocusAsRoot, edgesVisible, true);
+    } //
+    
+    public WindowedTreeFilter(int minDOI, boolean useFocusAsRoot, boolean edgesVisible, boolean gc) {
+        super(ITEM_CLASSES, gc);
+        m_minDOI = minDOI;
+        m_useFocusAsRoot = useFocusAsRoot;
+        m_edgesVisible = edgesVisible;
+    } //
+    
+    // ========================================================================
+    // == FILTER METHODS ======================================================
+    
+    public void setTreeRoot(Node r) {
+        m_root = r;
+    } //
+    
+    public void run(ItemRegistry registry, double frac) {
+        Graph graph = registry.getGraph();
+        boolean isTree = (graph instanceof Tree);
+        
+        // initialize filtered graph
+        Graph fgraph = registry.getFilteredGraph();
+        Tree  ftree = null;
+        if ( isTree && fgraph instanceof DefaultTree ) {
+            ftree = (DefaultTree)fgraph;
+            ftree.setRoot(null);
+        } else {
+            fgraph = ftree = new DefaultTree();
+        }
+        
+        NodeItem froot = null;
+        
+        // get the current focus node, if there is one
+        Iterator fiter = registry.getDefaultFocusSet().iterator();
+        NodeItem focus = null;
+        if ( fiter.hasNext() ) {
+            focus = registry.getNodeItem((Node)fiter.next(), true, true);
+        }
+        
+        // determine root node for filtered tree
+        if ( m_root != null ) {
+            // someone has set a root for us to use
+            Node r = (m_root instanceof NodeItem ? m_root : 
+                registry.getNodeItem(m_root,true,true));
+            froot = (NodeItem)r;
+        } else if ( focus != null && m_useFocusAsRoot ) {
+            // use the current focus as the root
+            froot = focus;
+        } else if ( isTree ) {
+            // the backing graph is a tree, so use its root
+            froot = registry.getNodeItem(((Tree)graph).getRoot(),true,true);
+        } else {
+            // no root is specified so let's just use the first thing we find
+            Iterator iter = graph.getNodes();
+            if ( iter.hasNext() )
+                froot = registry.getNodeItem((Node)iter.next(),true,true);
+        }
+        
+        if (froot == null) {
+            // couldn't find any nodes, so bail!
+            throw new IllegalStateException("No root for the filtered tree "
+                + "has been specified.");
+        }
+        ftree.setRoot(froot);
+        
+        // do a breadth first crawl from the root
+        froot.setDOI(0);
+        m_queue.add(froot);
+        while ( !m_queue.isEmpty() ) {
+            NodeItem ni = (NodeItem)m_queue.remove(0);
+            Node n = (Node)ni.getEntity();
+            
+            double doi = ni.getDOI()-1;
+            if ( doi >= m_minDOI ) {                    
+                Iterator iter = n.getEdges();
+                int i = 0;
+                while ( iter.hasNext() ) {
+                    Edge ne = (Edge)iter.next();
+                    Node nn = (Node)ne.getAdjacentNode(n);
+                    NodeItem nni = registry.getNodeItem(nn);
+                    
+                    boolean recurse = (nni==null || nni.getDirty()>0);
+                    if ( recurse )
+                        nni = registry.getNodeItem(nn, true, true);
+                    
+                    EdgeItem nne = registry.getEdgeItem(ne,true);
+                    
+                    if ( recurse ) {
+                        ni.addChild(nne);
+                        nni.setDOI(doi);
+                        m_queue.add(nni);
+                    } else {
+                        nne.getFirstNode().addEdge(nne);
+                        nne.getSecondNode().addEdge(nne);
+                    }
+                }
+            }
+        } // elihw
+        
+        // update the registry's filtered graph
+        registry.setFilteredGraph(ftree);
+        
+        // optional garbage collection
+        super.run(registry, frac);
+    } //
+    
+	public boolean isEdgesVisible() {
+		return m_edgesVisible;
+	} //
+	
+	public void setEdgesVisible(boolean visible) {
+		m_edgesVisible = visible;
+	} //
+	
+	public int getMinDOI() {
+		return m_minDOI;
+	} //
+	
+	public void setMinDOI(int minDOI) {
+		m_minDOI = minDOI;
+	} //
+	
+	public boolean isUseFocusAsRoot() {
+		return m_useFocusAsRoot;
+	} //
+	
+	public void setUseFocusAsRoot(boolean focusAsRoot) {
+		m_useFocusAsRoot = focusAsRoot;
+	} //
+	
+} // end of class WindowedTreeFilter

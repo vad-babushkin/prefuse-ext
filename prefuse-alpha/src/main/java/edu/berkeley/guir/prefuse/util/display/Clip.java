@@ -3,132 +3,120 @@ package edu.berkeley.guir.prefuse.util.display;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
-public class Clip {
-	private double[] clip = new double[8];
-	private double[] tmp = new double[8];
-
-	public void setClip(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4) {
-		this.clip[0] = paramDouble1;
-		this.clip[1] = paramDouble2;
-		this.clip[2] = paramDouble1;
-		this.clip[3] = paramDouble4;
-		this.clip[4] = paramDouble3;
-		this.clip[5] = paramDouble2;
-		this.clip[6] = paramDouble3;
-		this.clip[7] = paramDouble4;
-	}
-
-	public void setClip(Clip paramClip) {
-		System.arraycopy(paramClip.clip, 0, this.clip, 0, 4);
-	}
-
-	public void setClip(Rectangle2D paramRectangle2D) {
-		this.clip[0] = paramRectangle2D.getX();
-		this.clip[1] = paramRectangle2D.getY();
-		this.clip[6] = (this.clip[0] + paramRectangle2D.getWidth());
-		this.clip[7] = (this.clip[1] + paramRectangle2D.getHeight());
-		this.clip[2] = this.clip[0];
-		this.clip[3] = this.clip[7];
-		this.clip[4] = this.clip[6];
-		this.clip[5] = this.clip[1];
-	}
-
-	public void transform(AffineTransform paramAffineTransform) {
-		paramAffineTransform.transform(this.clip, 0, this.tmp, 0, 4);
-		double[] arrayOfDouble = this.tmp;
-		this.tmp = this.clip;
-		this.clip = arrayOfDouble;
-		double d1 = this.clip[0];
-		double d2 = this.clip[1];
-		double d3 = this.clip[6];
-		double d4 = this.clip[7];
-		for (int i = 0; i < 7; i += 2) {
-			if (this.clip[i] < d1) {
-				d1 = this.clip[i];
-			}
-			if (this.clip[i] > d3) {
-				d3 = this.clip[i];
-			}
-			if (this.clip[(i + 1)] < d2) {
-				d2 = this.clip[(i + 1)];
-			}
-			if (this.clip[(i + 1)] > d4) {
-				d4 = this.clip[(i + 1)];
-			}
-		}
-		this.clip[0] = d1;
-		this.clip[1] = d2;
-		this.clip[2] = d1;
-		this.clip[3] = d4;
-		this.clip[4] = d3;
-		this.clip[5] = d2;
-		this.clip[6] = d3;
-		this.clip[7] = d4;
-	}
-
-	public void limit(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4) {
-		this.clip[0] = Math.max(this.clip[0], paramDouble1);
-		this.clip[1] = Math.max(this.clip[1], paramDouble2);
-		this.clip[6] = Math.min(this.clip[6], paramDouble3);
-		this.clip[7] = Math.min(this.clip[7], paramDouble4);
-		this.clip[2] = this.clip[0];
-		this.clip[3] = this.clip[7];
-		this.clip[4] = this.clip[6];
-		this.clip[5] = this.clip[1];
-	}
-
-	public boolean intersects(Rectangle2D paramRectangle2D) {
-		double d1 = this.clip[6] - this.clip[0];
-		double d2 = this.clip[7] - this.clip[1];
-		double d3 = paramRectangle2D.getWidth();
-		double d4 = paramRectangle2D.getHeight();
-		if ((d3 < 0.0D) || (d4 < 0.0D) || (d1 < 0.0D) || (d2 < 0.0D)) {
-			return false;
-		}
-		double d5 = this.clip[0];
-		double d6 = this.clip[1];
-		double d7 = paramRectangle2D.getX();
-		double d8 = paramRectangle2D.getY();
-		d3 += d7;
-		d4 += d8;
-		d1 += d5;
-		d2 += d6;
-		return ((d3 < d7) || (d3 > d5)) && ((d4 < d8) || (d4 > d6)) && ((d1 < d5) || (d1 > d7)) && ((d2 < d6) || (d2 > d8));
-	}
-
-	public void union(Clip paramClip) {
-		this.clip[0] = Math.min(this.clip[0], paramClip.clip[0]);
-		this.clip[1] = Math.min(this.clip[1], paramClip.clip[1]);
-		this.clip[2] = Math.max(this.clip[6], paramClip.clip[6]);
-		this.clip[3] = Math.max(this.clip[7], paramClip.clip[7]);
-	}
-
-	public void union(Rectangle2D paramRectangle2D) {
-		this.clip[0] = Math.min(this.clip[0], paramRectangle2D.getX() - 1.0D);
-		this.clip[1] = Math.min(this.clip[1], paramRectangle2D.getY() - 1.0D);
-		this.clip[2] = Math.max(this.clip[6], paramRectangle2D.getX() + paramRectangle2D.getWidth() + 1.0D);
-		this.clip[3] = Math.max(this.clip[7], paramRectangle2D.getX() + paramRectangle2D.getHeight() + 1.0D);
-	}
-
-	public double getX() {
-		return this.clip[0];
-	}
-
-	public double getY() {
-		return this.clip[1];
-	}
-
-	public double getWidth() {
-		return this.clip[6] - this.clip[0];
-	}
-
-	public double getHeight() {
-		return this.clip[7] - this.clip[1];
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/util/display/Clip.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Represents a clipping rectangle in a prefuse <code>Display</code>.
+ *
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class Clip {
+    
+    private double[] clip = new double[8];
+    private double[] tmp  = new double[8];
+    
+    public void setClip(double x1, double y1, double x2, double y2) {
+        clip[0] = x1; clip[1] = y1;
+        clip[2] = x1; clip[3] = y2;
+        clip[4] = x2; clip[5] = y1;
+        clip[6] = x2; clip[7] = y2;
+    } //
+    
+    public void setClip(Clip c) {
+        System.arraycopy(c.clip, 0, clip, 0, 4);
+    } //
+    
+    public void setClip(Rectangle2D r) {
+        clip[0] = r.getX(); clip[1] = r.getY();
+        clip[6] = clip[0]+r.getWidth();
+        clip[7] = clip[1]+r.getHeight();
+        clip[2] = clip[0]; clip[3] = clip[7];
+        clip[4] = clip[6]; clip[5] = clip[1];
+    } //
+    
+    public void transform(AffineTransform at) {
+        at.transform(clip,0,tmp,0,4);
+        double[] s = tmp;
+        tmp = clip;
+        clip = s;
+        // make safe against rotation
+        double xmin = clip[0], ymin = clip[1];
+        double xmax = clip[6], ymax = clip[7];
+        for ( int i=0; i<7; i+=2 ) {
+            if ( clip[i] < xmin )
+                xmin = clip[i];
+            if ( clip[i] > xmax )
+                xmax = clip[i];
+            if ( clip[i+1] < ymin )
+                ymin = clip[i+1];
+            if ( clip[i+1] > ymax )
+                ymax = clip[i+1];
+        }
+        clip[0] = xmin; clip[1] = ymin;
+        clip[2] = xmin; clip[3] = ymax;
+        clip[4] = xmax; clip[5] = ymin;
+        clip[6] = xmax; clip[7] = ymax;
+    } //
+    
+    public void limit(double x, double y, double w, double h) {
+        clip[0] = Math.max(clip[0],x);
+        clip[1] = Math.max(clip[1],y);
+        clip[6] = Math.min(clip[6],w);
+        clip[7] = Math.min(clip[7],h);
+        clip[2] = clip[0]; clip[3] = clip[7];
+        clip[4] = clip[6]; clip[5] = clip[1];
+    } //
+    
+    public boolean intersects(Rectangle2D r) {
+        double tw = clip[6]-clip[0];
+        double th = clip[7]-clip[1];
+        double rw = r.getWidth();
+        double rh = r.getHeight();
+        if (rw < 0 || rh < 0 || tw < 0 || th < 0) {
+            return false;
+        }
+        double tx = clip[0];
+        double ty = clip[1];
+        double rx = r.getX();
+        double ry = r.getY();
+        rw += rx;
+        rh += ry;
+        tw += tx;
+        th += ty;
+        //      overflow || intersect
+        return ((rw < rx || rw > tx) &&
+                (rh < ry || rh > ty) &&
+                (tw < tx || tw > rx) &&
+                (th < ty || th > ry));
+    } //
+    
+    public void union(Clip c) {
+        clip[0] = Math.min(clip[0], c.clip[0]);
+        clip[1] = Math.min(clip[1], c.clip[1]);
+        clip[2] = Math.max(clip[6], c.clip[6]);
+        clip[3] = Math.max(clip[7], c.clip[7]);
+    } //
+    
+    public void union(Rectangle2D r) {
+        clip[0] = Math.min(clip[0], r.getX()-1);
+        clip[1] = Math.min(clip[1], r.getY()-1);
+        clip[2] = Math.max(clip[6], r.getX()+r.getWidth()+1);
+        clip[3] = Math.max(clip[7], r.getX()+r.getHeight()+1);
+    } //
+    
+    public double getX() {
+        return clip[0];
+    } //
+    
+    public double getY() {
+        return clip[1];
+    } //
+    
+    public double getWidth() {
+        return clip[6]-clip[0];
+    } //
+    
+    public double getHeight() {
+        return clip[7]-clip[1];
+    } //
+    
+} // end of inner class Clip

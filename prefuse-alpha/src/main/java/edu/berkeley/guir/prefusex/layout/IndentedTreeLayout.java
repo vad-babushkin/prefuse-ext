@@ -1,20 +1,7 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
 package edu.berkeley.guir.prefusex.layout;
 
-import edu.berkeley.guir.prefuse.AggregateItem;
-import edu.berkeley.guir.prefuse.ItemRegistry;
-import edu.berkeley.guir.prefuse.NodeItem;
-import edu.berkeley.guir.prefuse.VisualItem;
-import edu.berkeley.guir.prefuse.action.assignment.TreeLayout;
-import edu.berkeley.guir.prefuse.collections.DOIItemComparator;
-import edu.berkeley.guir.prefuse.graph.TreeNode;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,260 +9,322 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.berkeley.guir.prefuse.AggregateItem;
+import edu.berkeley.guir.prefuse.VisualItem;
+import edu.berkeley.guir.prefuse.ItemRegistry;
+import edu.berkeley.guir.prefuse.NodeItem;
+import edu.berkeley.guir.prefuse.action.assignment.TreeLayout;
+import edu.berkeley.guir.prefuse.collections.DOIItemComparator;
+import edu.berkeley.guir.prefuse.graph.TreeNode;
+
+/**
+ * Performs a simple indented hierarchical layout of a tree. This is the
+ * layout most people are used to seeing in their file managers.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> - prefuse(AT)jheer.org
+ */
 public class IndentedTreeLayout extends TreeLayout {
 	public static final String ATTR_EXPANDED = "expanded";
-	private ItemRegistry m_registry;
+
+	private class LayoutEntry {
+		public LayoutEntry(NodeItem i, int d) {
+			nodeItem = i;
+			aggrItem = null;
+			elided   = false;
+			hidden   = false;
+			index    = -1;
+			depth    = d;
+		} //
+		NodeItem nodeItem, aggrItem;
+		boolean elided, hidden;
+		int index, depth;
+	} //
+
+    private ItemRegistry m_registry;
+    
 	private List m_entryList = new ArrayList();
 	private int m_verticalInc = 15;
 	private int m_indent = 16;
-	private boolean m_elide = false;
-	private List m_tlist = new LinkedList();
-	private Comparator m_comp = new Comparator() {
+
+	private boolean    m_elide = false;            // controls elision
+	private List       m_tlist = new LinkedList(); // temporary list
+	private Comparator m_comp  = new Comparator() {
 		Comparator comp = new DOIItemComparator();
-
-		public int compare(Object var1, Object var2) {
-			NodeItem var3 = ((IndentedTreeLayout.LayoutEntry)var1).nodeItem;
-			NodeItem var4 = ((IndentedTreeLayout.LayoutEntry)var2).nodeItem;
-			return this.comp.compare(var3, var4);
-		}
+		public int compare(Object o1, Object o2) {
+			VisualItem item1 = ((LayoutEntry)o1).nodeItem;
+			VisualItem item2 = ((LayoutEntry)o2).nodeItem;
+			return comp.compare(item1, item2);
+		} //
 	};
+	
 	private AggregateItem m_tmpAggr = null;
-
-	public IndentedTreeLayout() {
-	}
-
+	
 	public int getIndent() {
-		return this.m_indent;
-	}
-
-	public void setIndent(int var1) {
-		this.m_indent = var1;
-	}
-
+		return m_indent;
+	} //
+	
+	public void setIndent(int indent) {
+		m_indent = indent;
+	} //
+	
 	public boolean isEliding() {
-		return this.m_elide;
-	}
-
-	public void setEliding(boolean var1) {
-		this.m_elide = var1;
-	}
-
-	public Point2D getLayoutAnchor(ItemRegistry var1) {
-		Point2D var2 = super.getLayoutAnchor();
-		if (var2 != null) {
-			return var2;
-		} else {
-			Rectangle2D var3 = this.getLayoutBounds(var1);
-			double var4 = 0.0D;
-			double var6 = 0.0D;
-			if (var3 != null) {
-				var4 = var3.getX();
-				var6 = var3.getY();
-			}
-
-			return new Double(var4, var6);
-		}
-	}
-
-	public void run(ItemRegistry var1, double var2) {
-		this.m_registry = var1;
-		this.m_tmpAggr = null;
-		NodeItem var4 = this.getLayoutRoot(var1);
-		if (var4 != null && var4.isVisible()) {
-			Rectangle2D var5 = this.getLayoutBounds(var1);
-			Point2D var6 = this.getLayoutAnchor(var1);
-			int var7 = (int)Math.ceil(var5.getHeight() - var6.getY());
-			int var8 = this.calcTreeHeight(this.m_entryList, var4, 0, 0);
-			this.updateStartLocations(this.m_entryList);
-			if (this.m_elide && var8 > var7) {
-				this.elide(var8, var7);
-			}
-
-			this.layout(this.m_entryList, (int)Math.ceil(var6.getY() + var4.getBounds().getHeight() / 2.0D), (int)Math.ceil(var6.getX()));
+		return m_elide;
+	} //
+	
+	public void setEliding(boolean s) {
+		m_elide = s;
+	} //
+    
+    public Point2D getLayoutAnchor(ItemRegistry registry) {
+        Point2D anchor = super.getLayoutAnchor();
+        if ( anchor != null )
+            return anchor;
+        
+        Rectangle2D b = getLayoutBounds(registry);
+        double x = 0, y = 0;
+        if ( b != null ) {
+            x = b.getX();
+            y = b.getY();
+        }
+        return new Point2D.Double(x,y);
+    } //
+    
+	/**
+	 * @see edu.berkeley.guir.prefuse.action.Action#run(edu.berkeley.guir.prefuse.ItemRegistry, double)
+	 */
+	public void run(ItemRegistry registry, double frac) {
+        m_registry = registry;
+		m_tmpAggr = null;
+		NodeItem n = getLayoutRoot(registry);
+		if ( n != null && n.isVisible() ) {
+            Rectangle2D b = getLayoutBounds(registry);
+            Point2D anchor = getLayoutAnchor(registry);
+			int availHeight = (int)Math.ceil(b.getHeight() - anchor.getY());
+			int treeHeight  = calcTreeHeight(m_entryList, n, 0, 0);
+			updateStartLocations(m_entryList);
+			if ( m_elide && treeHeight > availHeight )
+				elide(treeHeight, availHeight);
+			layout(m_entryList,
+                    (int)Math.ceil(anchor.getY()+n.getBounds().getHeight()/2),
+                    (int)Math.ceil(anchor.getX()));
 		} else {
 			System.err.println("IndentedTreeLayout: Tree root not visible!");
 		}
-
-		this.m_entryList.clear();
-	}
-
-	protected int calcTreeHeight(List var1, NodeItem var2, int var3, int var4) {
-		if (var2 != null && var2.isVisible()) {
-			IndentedTreeLayout.LayoutEntry var5 = new IndentedTreeLayout.LayoutEntry(var2, var4);
-			var5.index = var1.size();
-			var1.add(var5);
-			var3 = (int)((double)var3 + var2.getBounds().getHeight());
-			NodeItem var7;
-			if (this.isExpanded(var2)) {
-				for(Iterator var6 = var2.getChildren(); var6.hasNext(); var3 = this.calcTreeHeight(var1, var7, var3, var4 + 1)) {
-					var7 = (NodeItem)var6.next();
+		m_entryList.clear();
+	} //
+	
+	/**
+	 * Calculates the full height of the tree while constructing an
+	 * in-order list of all visible entries. 
+	 */
+	protected int calcTreeHeight(List entryList, NodeItem n, int height, int depth) {
+		if ( n != null && n.isVisible() ) {
+			// add entry to entry list
+			LayoutEntry entry = new LayoutEntry(n, depth);
+			entry.index = entryList.size();
+			entryList.add(entry);
+			
+			// increment height and recurse as necessary
+			height += n.getBounds().getHeight();
+			if ( isExpanded(n) ) {
+				Iterator childIter = n.getChildren();
+				while ( childIter.hasNext() ) {
+					NodeItem c = (NodeItem)childIter.next();
+					height = calcTreeHeight(entryList, c, height, depth+1);
 				}
 			}
 		}
-
-		return var3;
-	}
-
-	protected void elide(int var1, int var2) {
-		ArrayList var3 = new ArrayList(this.m_entryList);
-		boolean[] var4 = new boolean[var3.size()];
-		Collections.sort(var3, this.m_comp);
-		Iterator var5 = var3.iterator();
-
-		int var8;
-		while(var5.hasNext() && var1 > var2) {
-			IndentedTreeLayout.LayoutEntry var6 = (IndentedTreeLayout.LayoutEntry)var5.next();
-			NodeItem var7 = var6.nodeItem;
-			int var9 = var6.index;
-			var4[var9] = true;
-			if ((var8 = this.elisionRun(var4, var9)) > 0) {
-				for(int var10 = 0; var10 < var8; ++var10) {
-					NodeItem var11 = ((IndentedTreeLayout.LayoutEntry)this.m_entryList.get(var9 + var10)).nodeItem;
-					var1 = (int)((double)var1 - var11.getBounds().getHeight());
+		return height;
+	} //
+	
+	/**
+	 * Elides nodes of lower interest until the structure fits within
+	 * its display bounds.
+	 * @param treeHeight the current height of the tree structure
+	 * @param availHeight the available height for displaying the structure
+	 */
+	protected void elide(int treeHeight, int availHeight) {
+		//// allocate auxiliary data structures
+//		Map       pmap     = new HashMap();
+		List list = new ArrayList(m_entryList);
+		boolean elided[]   = new boolean[list.size()];
+		
+		//// sort all NodeItems in increasing order by doi
+		Collections.sort(list, m_comp);
+		
+		//// iterate through the sorted NodeItems
+		Iterator nodeIter = list.iterator();
+		while ( nodeIter.hasNext() && treeHeight > availHeight ) {
+			// get the next node, set node item as elided, calculate space savings
+			LayoutEntry entry = (LayoutEntry)nodeIter.next();
+			VisualItem nitem = entry.nodeItem;
+			int run, idx = entry.index;
+			elided[idx] = true;
+			if ( (run=elisionRun(elided, idx)) > 0 ) {
+				for ( int j = 0; j < run; j++ ) {
+					VisualItem item = ((LayoutEntry)m_entryList.get(idx+j)).nodeItem;
+					treeHeight -= item.getBounds().getHeight();
+					
+					// if all children are elided, don't bother with aggregate
+//					DefaultTreeNode p = (DefaultTreeNode)item.getEntity();
+//					if ( p != null ) {
+//						Integer ecount = (Integer)pmap.get(p);
+//						ecount = new Integer((ecount == null ? 1 : ecount.intValue()+1));
+//						if ( ecount.intValue() == p.getNumChildren() ) {
+//							treeHeight -= item.getBounds().height;
+//						}
+//					}
+					
+					//System.out.println("elided: " + item.getAttribute("FullName"));
 				}
 			}
 		}
+		
+		//// update nodes and aggregates to reflect elided status
+		AggregateItem aitem = null;
+		for ( int i = 0, size = 0; i < elided.length; i++ ) {
+			if ( (aitem != null && elided[i]) || 
+				 (i < elided.length-1 && elided[i] && elided[i+1]) ) {
+				LayoutEntry entry = ((LayoutEntry)m_entryList.get(i));
+				VisualItem item = entry.nodeItem;
+				TreeNode n = (TreeNode)item.getEntity();
+				if ( aitem == null ) {
+					// get the new aggregate item when needed
+					aitem = m_registry.getAggregateItem(n);
+					if ( aitem != null )
+						m_registry.removeMappings(aitem);
+					aitem = m_registry.getAggregateItem(n, true);
+					copyAttributes(item, aitem);
+				} else {
+					// otherwise add a mapping
+					m_registry.addMapping(n, aitem);
+				}
+				aitem.setAggregateSize(++size);
+				item.setVisible(false);
+				entry.elided = true;
+				entry.aggrItem = aitem;
+			} else if ( aitem != null && !elided[i] ) {
+				aitem = null; size = 0;
+			}
+		}
+	} //
 
-		AggregateItem var12 = null;
-		int var13 = 0;
+	private int elisionRun(boolean[] elided, int idx) {
+		int len = elided.length;
+		if ( idx == 0 ) {
+			return ( len > 1 && elided[1] ? 1 : 0 );
+		} else if ( idx == len-1 ) {
+			return ( idx > 0 && elided[idx-1] ? 1 : 0 );
+		} else {
+			if ( len >= 2 && elided[idx-1] && elided[idx+1] ) {
+				return 2;
+			} else if ( (idx > 0 && elided[idx-1]) || (idx < len-1 && elided[idx+1]) ) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+	} //
+	
+	/**
+	 * Copy attributes from one item to another. Used for initializing
+	 * aggregate items.
+	 */
+	private void copyAttributes(VisualItem item1, VisualItem item2) {
+		item2.setLocation(item1.getLocation());
+		item2.setEndLocation(item1.getEndLocation());
+		item2.setSize(item1.getSize());
+		item2.setEndSize(item1.getEndSize());		
+	} //
 
-		for(var8 = 0; var13 < var4.length; ++var13) {
-			if ((var12 == null || !var4[var13]) && (var13 >= var4.length - 1 || !var4[var13] || !var4[var13 + 1])) {
-				if (var12 != null && !var4[var13]) {
-					var12 = null;
-					var8 = 0;
+	/**
+	 * Updates the starting locations of newly visible nodes to ensure
+	 * that they animate from their intuitive sources. Must
+	 * be run before elision is performed, so that old aggregate
+	 * positions are retrieved correctly.
+	 * @param entryList
+	 */
+	protected void updateStartLocations(List entryList) {
+		for ( int i = 0; i < entryList.size(); i++ ) {
+			LayoutEntry entry = (LayoutEntry)entryList.get(i);
+			VisualItem item;
+			item = entry.nodeItem;
+					
+			// added set start position for newly visible nodes -- jheer
+			if ( item.isNewlyVisible() ) {
+				TreeNode node = (TreeNode)item.getEntity();
+				AggregateItem aitem = m_registry.getAggregateItem(node);
+				if ( aitem != null && aitem.isVisible() ) {
+					item.setLocation(aitem.getEndLocation());
+				} else {
+					TreeNode p = node.getParent();
+					if ( p != null ) {
+						VisualItem pitem = m_registry.getNodeItem(p);
+						item.setLocation(pitem.getEndLocation());
+					}
+				}
+			}
+		}		
+	} //
+
+	/**
+	 * Compute the layout.
+	 */
+	protected int layout(List entryList, int xAnchor, int height) {
+		VisualItem tmpAggr = null;
+		for ( int i = 0; i < entryList.size(); i++ ) {
+			LayoutEntry entry = (LayoutEntry)entryList.get(i);
+			NodeItem item;
+			if ( entry.hidden ) {
+				continue;
+			} else if ( entry.elided ) {
+				item = entry.aggrItem;
+				if ( item == tmpAggr ) {
+					continue;
+				} else {
+					tmpAggr = item;
 				}
 			} else {
-				IndentedTreeLayout.LayoutEntry var14 = (IndentedTreeLayout.LayoutEntry)this.m_entryList.get(var13);
-				NodeItem var15 = var14.nodeItem;
-				TreeNode var16 = (TreeNode)var15.getEntity();
-				if (var12 == null) {
-					var12 = this.m_registry.getAggregateItem(var16, false);
-					if (var12 != null) {
-						this.m_registry.removeMappings(var12);
-					}
-
-					var12 = this.m_registry.getAggregateItem(var16, true);
-					this.copyAttributes(var15, var12);
-				} else {
-					this.m_registry.addMapping(var16, var12);
-				}
-
-				++var8;
-				var12.setAggregateSize(var8);
-				var15.setVisible(false);
-				var14.elided = true;
-				var14.aggrItem = var12;
+				item = entry.nodeItem;
+			}			
+			setLocation(item,(NodeItem)item.getParent(), 
+                    entry.depth*m_indent+xAnchor, height);
+			height += item.getBounds().getHeight();
+		}
+		return height;
+	} //
+		
+	/**
+	 * Set the (x,y) co-ordinates of the given node. Updates aggregated
+	 * items as well as visible items.
+	 * @param item the item to set the position for
+	 * @param x the x-coordinate of the node
+	 * @param y the y-coordinate of the node
+	 */
+	protected void setLocation(VisualItem item, VisualItem referer, 
+            double x, double y)
+    {
+        super.setLocation(item,referer,x,y);
+		List entities = null;
+		if ( item instanceof AggregateItem ) {
+			entities = ((AggregateItem)item).getEntities();
+		}
+		if ( entities != null ) {
+			Iterator iter = entities.iterator();
+			while ( iter.hasNext() ) {
+				NodeItem nitem = m_registry.getNodeItem((TreeNode)iter.next());
+				super.setLocation(nitem,item,x,y);
 			}
 		}
+	} //
 
-	}
+	/**
+	 * Indicates whether or not a node has been manually expanded.
+	 */
+	private boolean isExpanded(VisualItem item) {
+		Boolean b = ((Boolean)item.getVizAttribute(ATTR_EXPANDED));
+		return ( b == null ? false : b.booleanValue() );
+	} //
 
-	private int elisionRun(boolean[] var1, int var2) {
-		int var3 = var1.length;
-		if (var2 == 0) {
-			return var3 > 1 && var1[1] ? 1 : 0;
-		} else if (var2 == var3 - 1) {
-			return var2 > 0 && var1[var2 - 1] ? 1 : 0;
-		} else if (var3 >= 2 && var1[var2 - 1] && var1[var2 + 1]) {
-			return 2;
-		} else {
-			return (var2 <= 0 || !var1[var2 - 1]) && (var2 >= var3 - 1 || !var1[var2 + 1]) ? 0 : 1;
-		}
-	}
-
-	private void copyAttributes(VisualItem var1, VisualItem var2) {
-		var2.setLocation(var1.getLocation());
-		var2.setEndLocation(var1.getEndLocation());
-		var2.setSize(var1.getSize());
-		var2.setEndSize(var1.getEndSize());
-	}
-
-	protected void updateStartLocations(List var1) {
-		for(int var2 = 0; var2 < var1.size(); ++var2) {
-			IndentedTreeLayout.LayoutEntry var3 = (IndentedTreeLayout.LayoutEntry)var1.get(var2);
-			NodeItem var4 = var3.nodeItem;
-			if (var4.isNewlyVisible()) {
-				TreeNode var5 = (TreeNode)var4.getEntity();
-				AggregateItem var6 = this.m_registry.getAggregateItem(var5);
-				if (var6 != null && var6.isVisible()) {
-					var4.setLocation(var6.getEndLocation());
-				} else {
-					TreeNode var7 = var5.getParent();
-					if (var7 != null) {
-						NodeItem var8 = this.m_registry.getNodeItem(var7);
-						var4.setLocation(var8.getEndLocation());
-					}
-				}
-			}
-		}
-
-	}
-
-	protected int layout(List var1, int var2, int var3) {
-		NodeItem var4 = null;
-
-		for(int var5 = 0; var5 < var1.size(); ++var5) {
-			IndentedTreeLayout.LayoutEntry var6 = (IndentedTreeLayout.LayoutEntry)var1.get(var5);
-			if (!var6.hidden) {
-				NodeItem var7;
-				if (var6.elided) {
-					var7 = var6.aggrItem;
-					if (var7 == var4) {
-						continue;
-					}
-
-					var4 = var7;
-				} else {
-					var7 = var6.nodeItem;
-				}
-
-				this.setLocation(var7, (NodeItem)var7.getParent(), (double)(var6.depth * this.m_indent + var2), (double)var3);
-				var3 = (int)((double)var3 + var7.getBounds().getHeight());
-			}
-		}
-
-		return var3;
-	}
-
-	protected void setLocation(VisualItem var1, VisualItem var2, double var3, double var5) {
-		super.setLocation(var1, var2, var3, var5);
-		List var7 = null;
-		if (var1 instanceof AggregateItem) {
-			var7 = ((AggregateItem)var1).getEntities();
-		}
-
-		if (var7 != null) {
-			Iterator var8 = var7.iterator();
-
-			while(var8.hasNext()) {
-				NodeItem var9 = this.m_registry.getNodeItem((TreeNode)var8.next());
-				super.setLocation(var9, var1, var3, var5);
-			}
-		}
-
-	}
-
-	private boolean isExpanded(VisualItem var1) {
-		Boolean var2 = (Boolean)var1.getVizAttribute("expanded");
-		return var2 == null ? false : var2;
-	}
-
-	private class LayoutEntry {
-		NodeItem nodeItem;
-		NodeItem aggrItem;
-		boolean elided;
-		boolean hidden;
-		int index;
-		int depth;
-
-		public LayoutEntry(NodeItem var2, int var3) {
-			this.nodeItem = var2;
-			this.aggrItem = null;
-			this.elided = false;
-			this.hidden = false;
-			this.index = -1;
-			this.depth = var3;
-		}
-	}
-}
+} // end of class IndentedTreeLayout

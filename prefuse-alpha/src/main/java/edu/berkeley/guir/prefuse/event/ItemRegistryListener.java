@@ -1,18 +1,29 @@
 package edu.berkeley.guir.prefuse.event;
 
-import edu.berkeley.guir.prefuse.VisualItem;
-
 import java.util.EventListener;
 
-public abstract interface ItemRegistryListener
-		extends EventListener {
-	public abstract void registryItemAdded(VisualItem paramVisualItem);
+import edu.berkeley.guir.prefuse.VisualItem;
 
-	public abstract void registryItemRemoved(VisualItem paramVisualItem);
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/event/ItemRegistryListener.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * A listener interface through which components can be notified
+ * of changes in registry bindings. 
+ * 
+ * Apr 25, 2003 - alann - Created class
+ * 
+ * @author alann
  */
+public interface ItemRegistryListener extends EventListener {
+  
+  /**
+   * Indicates a binding to a new VisualItem has been established.
+   * @param item the new VisualItem
+   */
+  public void registryItemAdded(VisualItem item);
+  
+  /**
+   * Indicates a binding to a VisualItem has been removed.
+   * @param item the removed VisualItem
+   */
+  public void registryItemRemoved(VisualItem item);
+  
+} // end of class ItemRegistryListener

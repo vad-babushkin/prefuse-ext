@@ -1,141 +1,134 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
 package edu.berkeley.guir.prefuse.action.filter;
+
+import java.util.Iterator;
 
 import edu.berkeley.guir.prefuse.EdgeItem;
 import edu.berkeley.guir.prefuse.ItemRegistry;
 import edu.berkeley.guir.prefuse.NodeItem;
-import edu.berkeley.guir.prefuse.graph.DefaultTree;
 import edu.berkeley.guir.prefuse.graph.Edge;
 import edu.berkeley.guir.prefuse.graph.Graph;
 import edu.berkeley.guir.prefuse.graph.GraphLib;
 import edu.berkeley.guir.prefuse.graph.Node;
 import edu.berkeley.guir.prefuse.graph.Tree;
-import edu.berkeley.guir.prefuse.graph.TreeNode;
-import java.util.Iterator;
 
+/**
+ * Filters a tree in it's entirety. If the backing graph is not a tree,
+ * a tree structure will still be imposed on the filtered graph.
+ * By default, garbage collection on node and edge items is performed.
+ *
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
 public class TreeFilter extends Filter {
-	public static final String[] ITEM_CLASSES = new String[]{"node", "edge"};
-	private boolean m_edgesVisible;
-	private boolean m_useFocusAsRoot;
-	private Node m_root;
 
-	public TreeFilter() {
-		this(false, true, true);
-	}
-
-	public TreeFilter(boolean var1) {
-		this(var1, true, true);
-	}
-
-	public TreeFilter(boolean var1, boolean var2) {
-		this(var1, var2, true);
-	}
-
-	public TreeFilter(boolean var1, boolean var2, boolean var3) {
-		super(ITEM_CLASSES, var3);
-		this.m_edgesVisible = var2;
-		this.m_useFocusAsRoot = var1;
-	}
-
-	public void setTreeRoot(Node var1) {
-		this.m_root = var1;
-	}
-
-	public void run(ItemRegistry var1, double var2) {
-		Graph var4 = var1.getGraph();
-		boolean var5 = var4 instanceof Tree;
-		Graph var6 = var1.getFilteredGraph();
-		Object var7 = null;
-		if (var5 && var6 instanceof DefaultTree) {
-			var7 = (DefaultTree)var6;
-			((Tree)var7).setRoot((TreeNode)null);
-		} else if (var5) {
-			var7 = new DefaultTree();
-		}
-
-		NodeItem var8 = null;
-		Iterator var9 = var4.getNodes();
-
-		while(var9.hasNext()) {
-			NodeItem var10 = var1.getNodeItem((Node)var9.next(), true);
-			if (var8 == null) {
-				var8 = var10;
-			}
-		}
-
-		Iterator var20 = var1.getDefaultFocusSet().iterator();
-		NodeItem var11 = null;
-		if (var20.hasNext()) {
-			var11 = var1.getNodeItem((Node)var20.next(), true);
-		}
-
-		if (this.m_root != null) {
-			Object var12 = this.m_root instanceof NodeItem ? this.m_root : var1.getNodeItem(this.m_root);
-			if (var12 != var8) {
-				var7 = null;
-			}
-
-			var8 = (NodeItem)var12;
-		} else if (var11 != null && this.m_useFocusAsRoot) {
-			var8 = var11;
-		} else if (var5) {
-			var8 = var1.getNodeItem(((Tree)var4).getRoot());
-			if (var7 != null) {
-				((Tree)var7).setRoot(var8);
-			}
-		}
-
-		var9 = var1.getNodeItems();
-
-		while(var9.hasNext()) {
-			NodeItem var21 = (NodeItem)var9.next();
-			Node var13 = (Node)var21.getEntity();
-			Iterator var14 = var13.getEdges();
-
-			while(var14.hasNext()) {
-				Edge var15 = (Edge)var14.next();
-				Node var16 = var15.getAdjacentNode(var13);
-				EdgeItem var17 = var1.getEdgeItem(var15, true);
-				if (var15.isTreeEdge()) {
-					TreeNode var18 = (TreeNode)var17.getAdjacentNode(var21);
-					Object var19 = ((TreeNode)var16).getParent() == var13 ? var21 : var18;
-					((TreeNode)var19).addChild(var17);
-				} else {
-					var17.getFirstNode().addEdge(var17);
-					var17.getSecondNode().addEdge(var17);
-				}
-
-				if (!this.m_edgesVisible) {
-					var17.setVisible(false);
-				}
-			}
-		}
-
-		if (var7 == null) {
-			var7 = GraphLib.breadthFirstTree(var8);
-		}
-
-		var1.setFilteredGraph((Graph)var7);
-		super.run(var1, var2);
-	}
-
+    public static final String[] ITEM_CLASSES = 
+        {ItemRegistry.DEFAULT_NODE_CLASS, ItemRegistry.DEFAULT_EDGE_CLASS};
+    
+    // determines if filtered edges are visible by default
+    private boolean m_edgesVisible;
+    private boolean m_useFocusAsRoot;
+    private Node m_root;
+    
+    // ========================================================================
+    // == CONSTRUCTORS ========================================================
+    
+    public TreeFilter() {
+        this(false, true, true);
+    } //
+    
+    public TreeFilter(boolean useFocusAsRoot) {
+        this(useFocusAsRoot, true, true);
+    } //
+    
+    public TreeFilter(boolean useFocusAsRoot, boolean edgesVisible) {
+        this(useFocusAsRoot, edgesVisible, true);
+    } //
+    
+    public TreeFilter(boolean useFocusAsRoot, boolean edgesVisible, boolean garbageCollect) {
+        super(ITEM_CLASSES, garbageCollect);
+        m_edgesVisible = edgesVisible;
+        m_useFocusAsRoot = useFocusAsRoot;
+    } //
+    
+    // ========================================================================
+    // == FILTER METHODS ======================================================
+    
+    public void setTreeRoot(Node r) {
+        m_root = r;
+    } //
+    
+    public void run(ItemRegistry registry, double frac) {
+        Graph graph = registry.getGraph();
+        boolean isTree = (graph instanceof Tree);
+        NodeItem root = null;
+        
+        // filter the nodes
+        Iterator nodeIter = graph.getNodes();
+        while ( nodeIter.hasNext() ) {
+            NodeItem item = registry.getNodeItem((Node)nodeIter.next(), true, true);
+            if ( root == null ) root = item;
+        }
+        
+        Iterator fiter = registry.getDefaultFocusSet().iterator();
+        NodeItem focus = null;
+        if ( fiter.hasNext() ) {
+            focus = registry.getNodeItem((Node)fiter.next(), true, true);
+        }
+        
+        // update root node as necessary
+        if ( m_root != null ) {
+            Node r = (m_root instanceof NodeItem ? m_root : 
+                        registry.getNodeItem(m_root));
+            root = (NodeItem)r;
+        } else if ( focus != null && m_useFocusAsRoot ) {
+            root = focus;
+        } else if ( isTree ) {
+            root = registry.getNodeItem(((Tree)graph).getRoot());
+        }
+        
+        // process each node's edges
+        nodeIter = registry.getNodeItems();
+        while ( nodeIter.hasNext() ) {
+            NodeItem item = (NodeItem)nodeIter.next();
+            if ( item.getDirty() > 0 )
+                continue;
+            Node     node = (Node)item.getEntity();
+            Iterator edgeIter = node.getEdges();
+            while ( edgeIter.hasNext() ) {
+                Edge edge = (Edge)edgeIter.next();
+                Node n = edge.getAdjacentNode(node);
+                // filter the edge
+                EdgeItem eitem = registry.getEdgeItem(edge, true);
+                eitem.getFirstNode().addEdge(eitem);
+                if ( !eitem.isDirected() )
+                    eitem.getSecondNode().addEdge(eitem);
+                if ( !m_edgesVisible ) eitem.setVisible(false);
+            }
+        }
+        // we need to tree-ify things now
+        Tree ftree = GraphLib.breadthFirstTree(root);
+        
+        // update the registry's filtered graph
+        registry.setFilteredGraph(ftree);
+        
+        // optional garbage collection
+        super.run(registry, frac);
+    } //    
+    
 	public boolean isEdgesVisible() {
-		return this.m_edgesVisible;
-	}
-
-	public void setEdgesVisible(boolean var1) {
-		this.m_edgesVisible = var1;
-	}
-
+		return m_edgesVisible;
+	} //
+	
+	public void setEdgesVisible(boolean visible) {
+		m_edgesVisible = visible;
+	} //
+	
 	public boolean isUseFocusAsRoot() {
-		return this.m_useFocusAsRoot;
-	}
-
-	public void setUseFocusAsRoot(boolean var1) {
-		this.m_useFocusAsRoot = var1;
-	}
-}
+		return m_useFocusAsRoot;
+	} //
+	
+	public void setUseFocusAsRoot(boolean focusAsRoot) {
+		m_useFocusAsRoot = focusAsRoot;
+	} //
+    
+} // end of class TreeFilter

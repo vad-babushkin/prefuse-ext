@@ -1,40 +1,38 @@
 package edu.berkeley.guir.prefuse.util.io;
 
-import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
-public class SimpleFileFilter
-		extends FileFilter {
-	private String ext;
-	private String desc;
+import javax.swing.filechooser.FileFilter;
 
-	public SimpleFileFilter(String paramString1, String paramString2) {
-		this.ext = paramString1;
-		this.desc = paramString2;
-	}
-
-	public boolean accept(File paramFile) {
-		if (paramFile == null) {
-			return false;
-		}
-		if (paramFile.isDirectory()) {
-			return true;
-		}
-		String str = IOLib.getExtension(paramFile);
-		return (str != null) && (str.equals(this.ext));
-	}
-
-	public String getDescription() {
-		return this.desc;
-	}
-
-	public String getExtension() {
-		return this.ext;
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/util/io/SimpleFileFilter.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * SimpleFileFilter
+ *  
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class SimpleFileFilter extends FileFilter {
+    private String ext, desc;
+    
+    public SimpleFileFilter(String ext, String desc) {
+        this.ext = ext;
+        this.desc = desc;
+    } //
+    
+    public boolean accept(File f) {
+        if ( f == null )
+            return false;
+        if ( f.isDirectory() )
+            return true;
+        String extension = IOLib.getExtension(f);
+        return ( extension != null && extension.equals(ext) );
+    } //
+    
+    public String getDescription() {
+        return desc;
+    } //
+    
+    public String getExtension() {
+        return ext;
+    } //
+    
+} // end of class SimpleFileFilter

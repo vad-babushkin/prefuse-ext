@@ -1,14 +1,22 @@
 package edu.berkeley.guir.prefuse.activity;
 
-public class ThereAndBackPacer
-		implements Pacer {
-	public double pace(double paramDouble) {
-		return 2.0D * (paramDouble <= 0.5D ? paramDouble : 1.0D - paramDouble);
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/activity/ThereAndBackPacer.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Pacing function that maps the animation fraction f such that it ranges
+ * from 0 to 1 and then back to 0 again. This is useful for animations
+ * with periodic activity.
+ *
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ * @see edu.berkeley.guir.prefuse.activity.Pacer
  */
+public class ThereAndBackPacer implements Pacer {
+
+    /**
+     * Pacing function for providing there-and-back (periodic) transitions.
+     * @see edu.berkeley.guir.prefuse.activity.Pacer#pace(double)
+     */
+    public double pace(double f) {
+        return 2*(f <= 0.5 ? f : (1-f));
+    } //
+
+} // end of class ThereAndBackPacer

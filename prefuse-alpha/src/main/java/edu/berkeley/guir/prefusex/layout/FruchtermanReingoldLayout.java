@@ -1,5 +1,9 @@
 package edu.berkeley.guir.prefusex.layout;
 
+import java.awt.geom.Rectangle2D;
+import java.util.Iterator;
+import java.util.Random;
+
 import edu.berkeley.guir.prefuse.EdgeItem;
 import edu.berkeley.guir.prefuse.ItemRegistry;
 import edu.berkeley.guir.prefuse.NodeItem;
@@ -7,182 +11,205 @@ import edu.berkeley.guir.prefuse.VisualItem;
 import edu.berkeley.guir.prefuse.action.assignment.Layout;
 import edu.berkeley.guir.prefuse.graph.Graph;
 
-import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
-import java.util.Random;
-
-public class FruchtermanReingoldLayout
-		extends Layout {
-	private double forceConstant;
-	private double temp;
-	private int maxIter = 700;
-	private static final double EPSILON = 1.0E-6D;
-	private static final double ALPHA = 0.1D;
-
-	public FruchtermanReingoldLayout() {
-		this(700);
-	}
-
-	public FruchtermanReingoldLayout(int paramInt) {
-		this.maxIter = paramInt;
-	}
-
-	public int getMaxIterations() {
-		return this.maxIter;
-	}
-
-	public void setMaxIterations(int paramInt) {
-		this.maxIter = paramInt;
-	}
-
-	public void run(ItemRegistry paramItemRegistry, double paramDouble) {
-		Graph localGraph = paramItemRegistry.getFilteredGraph();
-		Rectangle2D localRectangle2D = super.getLayoutBounds(paramItemRegistry);
-		init(localGraph, localRectangle2D);
-		for (int i = 0; i < this.maxIter; i++) {
-			Iterator localIterator1 = localGraph.getNodes();
-			Object localObject;
-			while (localIterator1.hasNext()) {
-				localObject = (NodeItem) localIterator1.next();
-				if (!((NodeItem) localObject).isFixed()) {
-					calcRepulsion(localGraph, (NodeItem) localObject);
-				}
-			}
-			localIterator1 = localGraph.getEdges();
-			while (localIterator1.hasNext()) {
-				localObject = (EdgeItem) localIterator1.next();
-				calcAttraction((EdgeItem) localObject);
-			}
-			double d = 0.0D;
-			Iterator localIterator2 = localGraph.getNodes();
-			while (localIterator2.hasNext()) {
-				NodeItem localNodeItem = (NodeItem) localIterator2.next();
-				if (!localNodeItem.isFixed()) {
-					calcPositions(localNodeItem, localRectangle2D);
-				}
-			}
-			cool(i);
-		}
-		finish(localGraph);
-	}
-
-	private void init(Graph paramGraph, Rectangle2D paramRectangle2D) {
-		this.temp = (paramRectangle2D.getWidth() / 10.0D);
-		this.forceConstant = (0.75D * Math.sqrt(paramRectangle2D.getHeight() * paramRectangle2D.getWidth() / paramGraph.getNodeCount()));
-		Iterator localIterator = paramGraph.getNodes();
-		Random localRandom = new Random(42L);
-		double d1 = 0.1D * paramRectangle2D.getWidth() / 2.0D;
-		double d2 = 0.1D * paramRectangle2D.getHeight() / 2.0D;
-		while (localIterator.hasNext()) {
-			NodeItem localNodeItem = (NodeItem) localIterator.next();
-			FRParams localFRParams = getParams(localNodeItem);
-			localFRParams.loc[0] = (paramRectangle2D.getCenterX() + localRandom.nextDouble() * d1);
-			localFRParams.loc[1] = (paramRectangle2D.getCenterY() + localRandom.nextDouble() * d2);
-		}
-	}
-
-	private void finish(Graph paramGraph) {
-		Iterator localIterator = paramGraph.getNodes();
-		while (localIterator.hasNext()) {
-			NodeItem localNodeItem = (NodeItem) localIterator.next();
-			FRParams localFRParams = getParams(localNodeItem);
-			setLocation(localNodeItem, null, localFRParams.loc[0], localFRParams.loc[1]);
-		}
-	}
-
-	public void calcPositions(NodeItem paramNodeItem, Rectangle2D paramRectangle2D) {
-		FRParams localFRParams = getParams(paramNodeItem);
-		double d1 = Math.max(1.0E-6D, Math.sqrt(localFRParams.disp[0] * localFRParams.disp[0] + localFRParams.disp[1] * localFRParams.disp[1]));
-		double d2 = localFRParams.disp[0] / d1 * Math.min(d1, this.temp);
-		if (Double.isNaN(d2)) {
-			System.err.println("Mathematical error... (calcPositions:xDisp)");
-		}
-		double d3 = localFRParams.disp[1] / d1 * Math.min(d1, this.temp);
-		localFRParams.loc[0] += d2;
-		localFRParams.loc[1] += d3;
-		double d4 = paramRectangle2D.getWidth() / 50.0D;
-		double d5 = localFRParams.loc[0];
-		if (d5 < paramRectangle2D.getMinX() + d4) {
-			d5 = paramRectangle2D.getMinX() + d4 + Math.random() * d4 * 2.0D;
-		} else if (d5 > paramRectangle2D.getMaxX() - d4) {
-			d5 = paramRectangle2D.getMaxX() - d4 - Math.random() * d4 * 2.0D;
-		}
-		double d6 = localFRParams.loc[1];
-		if (d6 < paramRectangle2D.getMinY() + d4) {
-			d6 = paramRectangle2D.getMinY() + d4 + Math.random() * d4 * 2.0D;
-		} else if (d6 > paramRectangle2D.getMaxY() - d4) {
-			d6 = paramRectangle2D.getMaxY() - d4 - Math.random() * d4 * 2.0D;
-		}
-		localFRParams.loc[0] = d5;
-		localFRParams.loc[1] = d6;
-	}
-
-	public void calcAttraction(EdgeItem paramEdgeItem) {
-		NodeItem localNodeItem1 = (NodeItem) paramEdgeItem.getFirstNode();
-		FRParams localFRParams1 = getParams(localNodeItem1);
-		NodeItem localNodeItem2 = (NodeItem) paramEdgeItem.getSecondNode();
-		FRParams localFRParams2 = getParams(localNodeItem2);
-		double d1 = localFRParams1.loc[0] - localFRParams2.loc[0];
-		double d2 = localFRParams1.loc[1] - localFRParams2.loc[1];
-		double d3 = Math.max(1.0E-6D, Math.sqrt(d1 * d1 + d2 * d2));
-		double d4 = d3 * d3 / this.forceConstant;
-		if (Double.isNaN(d4)) {
-			System.err.println("Mathematical error...");
-		}
-		double d5 = d1 / d3 * d4;
-		double d6 = d2 / d3 * d4;
-		localFRParams1.disp[0] -= d5;
-		localFRParams1.disp[1] -= d6;
-		localFRParams2.disp[0] += d5;
-		localFRParams2.disp[1] += d6;
-	}
-
-	public void calcRepulsion(Graph paramGraph, NodeItem paramNodeItem) {
-		FRParams localFRParams1 = getParams(paramNodeItem);
-		localFRParams1.disp[0] = 0.0D;
-		localFRParams1.disp[1] = 0.0D;
-		Iterator localIterator = paramGraph.getNodes();
-		while (localIterator.hasNext()) {
-			NodeItem localNodeItem = (NodeItem) localIterator.next();
-			FRParams localFRParams2 = getParams(localNodeItem);
-			if ((!localNodeItem.isFixed()) && (paramNodeItem != localNodeItem)) {
-				double d1 = localFRParams1.loc[0] - localFRParams2.loc[0];
-				double d2 = localFRParams1.loc[1] - localFRParams2.loc[1];
-				double d3 = Math.max(1.0E-6D, Math.sqrt(d1 * d1 + d2 * d2));
-				double d4 = this.forceConstant * this.forceConstant / d3;
-				if (Double.isNaN(d4)) {
-					System.err.println("Mathematical error...");
-				}
-				localFRParams1.disp[0] += d1 / d3 * d4;
-				localFRParams1.disp[1] += d2 / d3 * d4;
-			}
-		}
-	}
-
-	private void cool(int paramInt) {
-		this.temp *= (1.0D - paramInt / this.maxIter);
-	}
-
-	private FRParams getParams(VisualItem paramVisualItem) {
-		FRParams localFRParams = (FRParams) paramVisualItem.getVizAttribute("frParams");
-		if (localFRParams == null) {
-			localFRParams = new FRParams();
-			paramVisualItem.setVizAttribute("frParams", localFRParams);
-		}
-		return localFRParams;
-	}
-
-	public class FRParams {
-		double[] loc = new double[2];
-		double[] disp = new double[2];
-
-		public FRParams() {
-		}
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefusex/layout/FruchtermanReingoldLayout.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Implements the Fruchterman-Reingold algorithm for node layout.
+ * 
+ * Ported from the implementation in the <a href="http://jung.sourceforge.net/">JUNG</a> framework.
+ * 
+ * @author Scott White, Yan-Biao Boey, Danyel Fisher
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org</a>
  */
+public class FruchtermanReingoldLayout extends Layout {
+
+    private double forceConstant;
+    private double temp;
+    private int maxIter = 700;
+    
+    private static final double EPSILON = 0.000001D;
+    private static final double ALPHA = 0.1;
+    
+    public FruchtermanReingoldLayout() {
+        this(700);
+    } //
+    
+    public FruchtermanReingoldLayout(int maxIter) {
+        this.maxIter = maxIter;
+    } //
+    
+    public int getMaxIterations() {
+        return maxIter;
+    } //
+    
+    public void setMaxIterations(int maxIter) {
+        this.maxIter = maxIter;
+    } //
+    
+    /**
+     * @see edu.berkeley.guir.prefuse.action.Action#run(edu.berkeley.guir.prefuse.ItemRegistry, double)
+     */
+    public void run(ItemRegistry registry, double frac) {
+        Graph g = registry.getFilteredGraph();
+        Rectangle2D bounds = super.getLayoutBounds(registry);
+        init(g, bounds);
+
+        for (int curIter=0; curIter < maxIter; curIter++ ) {
+
+            // Calculate repulsion
+            for (Iterator iter = g.getNodes(); iter.hasNext();) {
+                NodeItem n = (NodeItem)iter.next();
+                if (n.isFixed()) continue;
+                calcRepulsion(g, n);
+            }
+
+            // Calculate attraction
+            for (Iterator iter = g.getEdges(); iter.hasNext();) {
+                EdgeItem e = (EdgeItem) iter.next();
+                calcAttraction(e);
+            }
+
+            double cumulativeChange = 0;
+
+            for (Iterator iter = g.getNodes(); iter.hasNext();) {
+                NodeItem n = (NodeItem)iter.next();
+                if (n.isFixed()) continue;
+                calcPositions(n,bounds);
+            }
+
+            cool(curIter);
+        }
+        
+        finish(g);
+    } //
+    
+    private void init(Graph g, Rectangle2D b) {
+        temp = b.getWidth() / 10;
+        forceConstant = 0.75 * 
+        	Math.sqrt(b.getHeight()*b.getWidth()/g.getNodeCount());
+        
+        // initialize node positions
+        Iterator nodeIter = g.getNodes();
+        Random rand = new Random(42); // get a deterministic layout result
+        double scaleW = ALPHA*b.getWidth()/2;
+        double scaleH = ALPHA*b.getHeight()/2;
+        while ( nodeIter.hasNext() ) {
+            NodeItem n = (NodeItem)nodeIter.next();
+            FRParams np = getParams(n);
+            np.loc[0] = b.getCenterX() + rand.nextDouble()*scaleW;
+            np.loc[1] = b.getCenterY() + rand.nextDouble()*scaleH;
+        }
+    } //
+    
+    private void finish(Graph g) {
+        Iterator nodeIter = g.getNodes();
+        while ( nodeIter.hasNext() ) {
+            NodeItem n = (NodeItem)nodeIter.next();
+            FRParams np = getParams(n);
+            this.setLocation(n,null,np.loc[0],np.loc[1]);
+        }
+    } //
+    
+    public void calcPositions(NodeItem n, Rectangle2D b) {
+        FRParams np = getParams(n);
+        double deltaLength = Math.max(EPSILON,
+                Math.sqrt(np.disp[0]*np.disp[0] + np.disp[1]*np.disp[1]));
+        
+        double xDisp = np.disp[0]/deltaLength * Math.min(deltaLength, temp);
+
+        if (Double.isNaN(xDisp)) {
+            System.err.println("Mathematical error... (calcPositions:xDisp)");
+         }
+
+        double yDisp = np.disp[1]/deltaLength * Math.min(deltaLength, temp);
+        
+        np.loc[0] += xDisp;
+        np.loc[1] += yDisp;
+
+        // don't let nodes leave the display
+        double borderWidth = b.getWidth() / 50.0;
+        double x = np.loc[0];
+        if (x < b.getMinX() + borderWidth) {
+            x = b.getMinX() + borderWidth + Math.random() * borderWidth * 2.0;
+        } else if (x > (b.getMaxX() - borderWidth)) {
+            x = b.getMaxX() - borderWidth - Math.random() * borderWidth * 2.0;
+        }
+
+        double y = np.loc[1];
+        if (y < b.getMinY() + borderWidth) {
+            y = b.getMinY() + borderWidth + Math.random() * borderWidth * 2.0;
+        } else if (y > (b.getMaxY() - borderWidth)) {
+            y = b.getMaxY() - borderWidth - Math.random() * borderWidth * 2.0;
+        }
+
+        np.loc[0] = x;
+        np.loc[1] = y;
+    } //
+
+    public void calcAttraction(EdgeItem e) {
+        NodeItem n1 = (NodeItem)e.getFirstNode();
+        FRParams n1p = getParams(n1);
+        NodeItem n2 = (NodeItem)e.getSecondNode();
+        FRParams n2p = getParams(n2);
+        
+        double xDelta = n1p.loc[0] - n2p.loc[0];
+        double yDelta = n1p.loc[1] - n2p.loc[1];
+
+        double deltaLength = Math.max(EPSILON, 
+                Math.sqrt(xDelta*xDelta + yDelta*yDelta));
+        double force = (deltaLength*deltaLength) / forceConstant;
+
+        if (Double.isNaN(force)) {
+            System.err.println("Mathematical error...");
+        }
+
+        double xDisp = (xDelta/deltaLength) * force;
+        double yDisp = (yDelta/deltaLength) * force;
+        
+        n1p.disp[0] -= xDisp; n1p.disp[1] -= yDisp;
+        n2p.disp[0] += xDisp; n2p.disp[1] += yDisp;
+    } //
+
+    public void calcRepulsion(Graph g, NodeItem n1) {
+        FRParams np = getParams(n1);
+        np.disp[0] = 0.0; np.disp[1] = 0.0;
+
+        for (Iterator iter2 = g.getNodes(); iter2.hasNext();) {
+            NodeItem n2 = (NodeItem) iter2.next();
+            FRParams n2p = getParams(n2);
+            if (n2.isFixed()) continue;
+            if (n1 != n2) {
+                double xDelta = np.loc[0] - n2p.loc[0];
+                double yDelta = np.loc[1] - n2p.loc[1];
+
+                double deltaLength = Math.max(EPSILON, 
+                        Math.sqrt(xDelta*xDelta + yDelta*yDelta));
+
+                double force = (forceConstant*forceConstant) / deltaLength;
+
+                if (Double.isNaN(force)) {
+                    System.err.println("Mathematical error...");
+                }
+
+                np.disp[0] += (xDelta/deltaLength)*force;
+                np.disp[1] += (yDelta/deltaLength)*force;
+            }
+        }
+    } //
+    
+    private void cool(int curIter) {
+        temp *= (1.0 - curIter / (double) maxIter);
+    } //
+
+    private FRParams getParams(VisualItem item) {
+        FRParams rp = (FRParams)item.getVizAttribute("frParams");
+        if ( rp == null ) {
+            rp = new FRParams();
+            item.setVizAttribute("frParams", rp);
+        }
+        return rp;
+    } //
+    
+    public class FRParams {
+        double[] loc = new double[2];
+        double[] disp = new double[2];
+    } //
+} // end of class FruchtermanReingoldLayout

@@ -1,11 +1,14 @@
 package edu.berkeley.guir.prefusex.force;
 
-public abstract interface Integrator {
-	public abstract void integrate(ForceSimulator paramForceSimulator, long paramLong);
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefusex/force/Integrator.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Interface for numerical integration routines. These routines are used
+ * to update the position and velocity of items in response to forces.
+ *
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public interface Integrator {
+
+    public void integrate(ForceSimulator sim, long timestep);
+    
+} // end of interface Integrator

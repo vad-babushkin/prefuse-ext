@@ -1,108 +1,123 @@
 package edu.berkeley.guir.prefuse.graph.io;
 
-import edu.berkeley.guir.prefuse.graph.*;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
-import java.io.InputStream;
 
-public class TreeMLTreeReader
-		extends AbstractTreeReader {
-	public Tree loadTree(InputStream paramInputStream)
-			throws IOException {
-		try {
-			TreeMLHandler localTreeMLHandler = new TreeMLHandler();
-			SAXParserFactory localSAXParserFactory = SAXParserFactory.newInstance();
-			SAXParser localSAXParser = localSAXParserFactory.newSAXParser();
-			localSAXParser.parse(paramInputStream, localTreeMLHandler);
-			return localTreeMLHandler.getTree();
-		} catch (SAXException localSAXException) {
-			localSAXException.printStackTrace();
-		} catch (ParserConfigurationException localParserConfigurationException) {
-			localParserConfigurationException.printStackTrace();
-		}
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+import edu.berkeley.guir.prefuse.graph.DefaultEdge;
+import edu.berkeley.guir.prefuse.graph.DefaultTree;
+import edu.berkeley.guir.prefuse.graph.DefaultTreeNode;
+import edu.berkeley.guir.prefuse.graph.Tree;
+import edu.berkeley.guir.prefuse.graph.TreeNode;
+
+/**
+ * Reads in tree-structured data in the TreeML, XML-based format.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
+public class TreeMLTreeReader extends AbstractTreeReader {
+
+	/**
+	 * @see edu.berkeley.guir.prefuse.graph.io.TreeReader#loadTree(java.io.InputStream)
+	 */
+	public Tree loadTree(InputStream is) throws IOException {
+		try {		
+			TreeMLHandler    handler   = new TreeMLHandler();
+			SAXParserFactory factory   = SAXParserFactory.newInstance();
+			SAXParser        saxParser = factory.newSAXParser();
+			saxParser.parse(is, handler);
+			return handler.getTree();
+		} catch ( SAXException se ) {
+			se.printStackTrace();
+		} catch ( ParserConfigurationException pce ) {
+			pce.printStackTrace();
+		} 
 		return null;
-	}
+	} //
 
-	public class TreeMLHandler
-			extends DefaultHandler {
-		public static final String TREE = "tree";
+	/**
+	 * Helper class that performs XML parsing of graph files using
+	 * SAX (the Simple API for XML).
+	 */
+	public class TreeMLHandler extends DefaultHandler {
+		
+		public static final String TREE   = "tree";
 		public static final String BRANCH = "branch";
-		public static final String LEAF = "leaf";
-		public static final String ATTR = "attribute";
-		public static final String NAME = "name";
-		public static final String VALUE = "value";
+		public static final String LEAF   = "leaf";
+		public static final String ATTR   = "attribute";
+		public static final String NAME   = "name";
+		public static final String VALUE  = "value";
+		
 		private Tree m_tree = null;
 		private TreeNode m_root = null;
 		private TreeNode m_activeNode = null;
 		private boolean m_directed = false;
-		private boolean inNode;
-		private boolean inEdge;
-
-		public TreeMLHandler() {
-		}
-
+		
+		private boolean inNode, inEdge;
+		
 		public void startDocument() {
-			this.m_tree = null;
-		}
-
+			m_tree = null;
+		} //
+		
 		public void endDocument() {
-			this.m_tree = new DefaultTree(this.m_root);
-		}
-
-		public void endElement(String paramString1, String paramString2, String paramString3) {
-			if ((paramString3.equals("branch")) || (paramString3.equals("leaf"))) {
-				this.m_activeNode = this.m_activeNode.getParent();
+			// construct tree
+			m_tree = new DefaultTree(m_root);
+		} //
+		
+		public void endElement(String namespaceURI, String localName, String qName) {
+			if ( qName.equals(BRANCH) || qName.equals(LEAF) ) {
+				m_activeNode = m_activeNode.getParent();
 			}
-		}
-
-		public void startElement(String paramString1, String paramString2, String paramString3, Attributes paramAttributes) {
-			if ((paramString3.equals("branch")) || (paramString3.equals("leaf"))) {
-				DefaultTreeNode localDefaultTreeNode;
-				if (this.m_activeNode == null) {
-					localDefaultTreeNode = new DefaultTreeNode();
-					this.m_root = localDefaultTreeNode;
+		} //
+		
+		public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {			
+			if ( qName.equals(BRANCH) || qName.equals(LEAF) ) {
+				// parse a node element
+				TreeNode n;
+				if ( m_activeNode == null ) {
+					n = new DefaultTreeNode();
+					m_root = n;
 				} else {
-					localDefaultTreeNode = new DefaultTreeNode();
-					this.m_activeNode.addChild(new DefaultEdge(this.m_activeNode, localDefaultTreeNode));
+					n = new DefaultTreeNode();
+                    m_activeNode.addChild(new DefaultEdge(m_activeNode,n));
 				}
-				this.m_activeNode = localDefaultTreeNode;
-			} else if (paramString3.equals("attribute")) {
-				parseAttribute(paramAttributes);
+				m_activeNode = n;
+			} else if ( qName.equals(ATTR) ) {
+				// parse an attribute
+				parseAttribute(atts);
 			}
-		}
-
-		protected void parseAttribute(Attributes paramAttributes) {
-			String str2 = null;
-			String str3 = null;
-			for (int i = 0; i < paramAttributes.getLength(); i++) {
-				String str1 = paramAttributes.getQName(i);
-				if (str1.equals("name")) {
-					str2 = paramAttributes.getValue(i);
-				} else if (str1.equals("value")) {
-					str3 = paramAttributes.getValue(i);
+		} //
+		
+		protected void parseAttribute(Attributes atts) {
+			String alName, name = null, value = null;
+			for ( int i = 0; i < atts.getLength(); i++ ) {
+				alName = atts.getQName(i);
+				if ( alName.equals(NAME) ) {
+					name = atts.getValue(i);
+				} else if ( alName.equals(VALUE) ) {
+					value = atts.getValue(i);
 				}
 			}
-			if ((str2 == null) || (str3 == null)) {
+			if ( name == null || value == null ) {
 				System.err.println("Attribute under-specified");
 				return;
 			}
-			this.m_activeNode.setAttribute(str2, str3);
-		}
 
+			m_activeNode.setAttribute(name, value);
+		} //
+		
 		public Tree getTree() {
-			return this.m_tree;
-		}
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/graph/io/TreeMLTreeReader.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
- */
+			return m_tree;
+		} //
+		
+	} // end of inner class TreeMLHandler
+	
+} // end of class TreeMLTReeReader

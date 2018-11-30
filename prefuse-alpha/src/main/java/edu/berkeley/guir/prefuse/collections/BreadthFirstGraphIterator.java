@@ -1,45 +1,60 @@
 package edu.berkeley.guir.prefuse.collections;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
+import java.util.Set;
+
 import edu.berkeley.guir.prefuse.graph.Node;
 
-import java.util.*;
+/**
+ * Iterates over graph nodes in a breadth-first manner.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> - prefuse(AT)jheer.org
+ */
+public class BreadthFirstGraphIterator implements Iterator {
 
-public class BreadthFirstGraphIterator
-		implements Iterator {
 	private Set m_visited = new HashSet();
-	private LinkedList m_queue = new LinkedList();
+	private LinkedList m_queue  = new LinkedList();
 
-	public BreadthFirstGraphIterator(Node paramNode) {
-		this.m_queue.add(paramNode);
-	}
+	public BreadthFirstGraphIterator(Node n) {
+		 m_queue.add(n);
+	} //
 
+	/**
+	 * @see java.util.Iterator#remove()
+	 */
 	public void remove() {
 		throw new UnsupportedOperationException();
-	}
+	} //
 
+	/**
+	 * @see java.util.Iterator#hasNext()
+	 */
 	public boolean hasNext() {
-		return !this.m_queue.isEmpty();
-	}
+		return !m_queue.isEmpty();
+	} //
 
+	/**
+	 * @see java.util.Iterator#next()
+	 */
 	public Object next() {
-		if (this.m_queue.isEmpty()) {
+		if ( m_queue.isEmpty() ) {
 			throw new NoSuchElementException();
 		}
-		Node localNode1 = (Node) this.m_queue.removeFirst();
-		this.m_visited.add(localNode1);
-		Iterator localIterator = localNode1.getNeighbors();
-		while (localIterator.hasNext()) {
-			Node localNode2 = (Node) localIterator.next();
-			if (!this.m_visited.contains(localNode2)) {
-				this.m_queue.add(localNode2);
+		
+		Node n = (Node)m_queue.removeFirst();
+		m_visited.add(n);
+		Iterator iter = n.getNeighbors();
+		while ( iter.hasNext() ) {
+			Node c = (Node)iter.next();
+			if ( !m_visited.contains(c) ) {
+				m_queue.add(c);
 			}
 		}
-		return localNode1;
-	}
-}
+		return n;
+	} //
 
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/collections/BreadthFirstGraphIterator.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
- */
+} // end of class BreadthFirstIterator

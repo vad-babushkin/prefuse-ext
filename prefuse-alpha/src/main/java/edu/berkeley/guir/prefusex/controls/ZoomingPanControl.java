@@ -1,162 +1,151 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
 package edu.berkeley.guir.prefusex.controls;
+
+import java.awt.Cursor;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+
+import javax.swing.SwingUtilities;
 
 import edu.berkeley.guir.prefuse.Display;
 import edu.berkeley.guir.prefuse.activity.Activity;
 import edu.berkeley.guir.prefuse.activity.SlowInSlowOutPacer;
 import edu.berkeley.guir.prefuse.event.ControlAdapter;
-import java.awt.Cursor;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import javax.swing.SwingUtilities;
 
+/**
+ * <p>Allows users to pan over a display such that the display zooms in and
+ * out proportionally to how fast the pan is performed.</p>
+ * 
+ * <p>This implementation uses the method described in Igarishi, T. and
+ * Hinckley, K. "Speed-dependent Automatic Zooming for Browsing Large
+ * Documents", UIST 2000. Available online at
+ * <a href="http://citeseer.ist.psu.edu/igarashi00speeddependent.html">
+ * http://citeseer.ist.psu.edu/igarashi00speeddependent.html</a>.</p>
+ *
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
 public class ZoomingPanControl extends ControlAdapter {
-	private int xDown;
-	private int yDown;
-	private double sDown;
-	private boolean repaint;
-	private boolean started;
-	private Point mouseDown;
-	private Point mouseCur;
-	private Point mouseUp;
-	private int dx;
-	private int dy;
-	private double pd;
-	private double d;
-	private double v0;
-	private double d0;
-	private double d1;
-	private double s0;
-	private ZoomingPanControl.UpdateActivity update;
-	private ZoomingPanControl.FinishActivity finish;
 
-	public ZoomingPanControl() {
-		this(true);
-	}
-
-	public ZoomingPanControl(boolean var1) {
-		this.repaint = true;
-		this.started = false;
-		this.pd = 0.0D;
-		this.d = 0.0D;
-		this.v0 = 75.0D;
-		this.d0 = 50.0D;
-		this.d1 = 400.0D;
-		this.s0 = 0.1D;
-		this.update = new ZoomingPanControl.UpdateActivity();
-		this.finish = new ZoomingPanControl.FinishActivity();
-		this.repaint = var1;
-	}
-
-	public void mousePressed(MouseEvent var1) {
-		if (SwingUtilities.isLeftMouseButton(var1)) {
-			Display var2 = (Display)var1.getComponent();
-			var2.setCursor(Cursor.getPredefinedCursor(13));
-			this.mouseDown = var1.getPoint();
-			this.sDown = var2.getTransform().getScaleX();
-		}
-
-	}
-
-	public void mouseDragged(MouseEvent var1) {
-		if (SwingUtilities.isLeftMouseButton(var1)) {
-			this.mouseCur = var1.getPoint();
-			this.pd = this.d;
-			this.dx = this.mouseCur.x - this.mouseDown.x;
-			this.dy = this.mouseCur.y - this.mouseDown.y;
-			this.d = Math.sqrt((double)(this.dx * this.dx + this.dy * this.dy));
-			if (!this.started) {
-				Display var2 = (Display)var1.getComponent();
-				this.update.setDisplay(var2);
-				this.update.runNow();
-			}
-		}
-
-	}
-
-	public void mouseReleased(MouseEvent var1) {
-		if (SwingUtilities.isLeftMouseButton(var1)) {
-			this.update.cancel();
-			this.started = false;
-			Display var2 = (Display)var1.getComponent();
-			this.mouseUp = var1.getPoint();
-			this.finish.setDisplay(var2);
-			this.finish.runNow();
-			var2.setCursor(Cursor.getDefaultCursor());
-		}
-
-	}
-
-	private class FinishActivity extends Activity {
-		private Display display;
-		private double scale;
-
-		public FinishActivity() {
-			super(1500L, 15L, 0L);
-			this.setPacingFunction(new SlowInSlowOutPacer());
-		}
-
-		public void setDisplay(Display var1) {
-			this.display = var1;
-			this.scale = var1.getTransform().getScaleX();
-			double var2 = this.scale < 1.0D ? 1.0D / this.scale : this.scale;
-			this.setDuration((long)(500.0D + 500.0D * Math.log(1.0D + var2)));
-		}
-
-		protected void run(long var1) {
-			double var3 = this.getPace(var1);
-			double var5 = this.display.getTransform().getScaleX();
-			double var7 = (var3 + (1.0D - var3) * this.scale) / var5;
-			this.display.zoom(ZoomingPanControl.this.mouseUp, var7);
-			if (ZoomingPanControl.this.repaint) {
-				this.display.repaint();
-			}
-
-		}
-	}
-
-	private class UpdateActivity extends Activity {
-		private Display display;
-		private long lastTime = 0L;
-
-		public UpdateActivity() {
-			super(-1L, 15L, 0L);
-		}
-
-		public void setDisplay(Display var1) {
-			this.display = var1;
-		}
-
-		protected void run(long var1) {
-			double var3 = this.display.getTransform().getScaleX();
-			double var5;
-			double var7;
-			if (ZoomingPanControl.this.d <= ZoomingPanControl.this.d0) {
-				var5 = 1.0D;
-				var7 = ZoomingPanControl.this.v0 * (ZoomingPanControl.this.d / ZoomingPanControl.this.d0);
-			} else {
-				var5 = ZoomingPanControl.this.d >= ZoomingPanControl.this.d1 ? ZoomingPanControl.this.s0 : Math.pow(ZoomingPanControl.this.s0, (ZoomingPanControl.this.d - ZoomingPanControl.this.d0) / (ZoomingPanControl.this.d1 - ZoomingPanControl.this.d0));
-				var7 = ZoomingPanControl.this.v0;
-			}
-
-			var5 /= var3;
-			double var9 = var7 * (double)(var1 - this.lastTime) / 1000.0D;
-			this.lastTime = var1;
-			double var11 = -var9 * (double)ZoomingPanControl.this.dx / ZoomingPanControl.this.d;
-			double var13 = -var9 * (double)ZoomingPanControl.this.dy / ZoomingPanControl.this.d;
-			this.display.pan(var11, var13);
-			if (var5 != 1.0D) {
-				this.display.zoom(ZoomingPanControl.this.mouseCur, var5);
-			}
-
-			if (ZoomingPanControl.this.repaint) {
-				this.display.repaint();
-			}
-
-		}
-	}
-}
+    private int xDown, yDown;
+    private double sDown;
+    private boolean repaint = true, started = false;
+    
+    private Point mouseDown, mouseCur, mouseUp;
+    private int dx, dy;
+    private double pd = 0, d = 0;
+    
+    private double v0 = 75.0, d0 = 50, d1 = 400, s0 = .1;
+    
+    private UpdateActivity update = new UpdateActivity();
+    private FinishActivity finish = new FinishActivity();
+    
+    public ZoomingPanControl() {
+        this(true);
+    } //
+    
+    public ZoomingPanControl(boolean repaint) {
+        this.repaint = repaint;
+    } //
+    
+    public void mousePressed(MouseEvent e) {
+        if ( SwingUtilities.isLeftMouseButton(e) ) {
+            Display display = (Display)e.getComponent();
+            display.setCursor(
+                    Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+            mouseDown = e.getPoint();
+            sDown = display.getTransform().getScaleX();
+        }        
+    } //
+    
+    public void mouseDragged(MouseEvent e) {
+        if ( SwingUtilities.isLeftMouseButton(e) ) {
+            mouseCur = e.getPoint();
+            pd = d;
+            dx = mouseCur.x - mouseDown.x;
+            dy = mouseCur.y - mouseDown.y;
+            d  = Math.sqrt(dx*dx + dy*dy);
+            
+            if ( !started ) {
+                Display display = (Display)e.getComponent();
+                update.setDisplay(display);
+                update.runNow();
+            }
+        }
+    } //
+    
+    public void mouseReleased(MouseEvent e) {
+        if ( SwingUtilities.isLeftMouseButton(e) ) {
+            update.cancel();
+            started = false;
+            
+            Display display = (Display)e.getComponent();
+            mouseUp = e.getPoint();
+            
+            finish.setDisplay(display);
+            finish.runNow();
+            
+            display.setCursor(Cursor.getDefaultCursor());
+        }
+    } //
+    
+    private class UpdateActivity extends Activity {
+        private Display display;
+        private long lastTime = 0;
+        public UpdateActivity() {
+            super(-1,15,0);
+        } //
+        public void setDisplay(Display display) {
+            this.display = display;
+        } //
+        protected void run(long elapsedTime) {
+            double sx = display.getTransform().getScaleX();
+            double s, v;
+            
+            if ( d <= d0 ) {
+                s = 1.0;
+                v = v0*(d/d0);
+            } else {
+                s = ( d >= d1 ? s0 : Math.pow(s0, (d-d0)/(d1-d0)) );
+                v = v0;
+            }
+            
+            s = s/sx;
+            
+            double dd = (v*(elapsedTime-lastTime))/1000;
+            lastTime = elapsedTime;
+            double deltaX = -dd*dx/d;
+            double deltaY = -dd*dy/d;
+            
+            display.pan(deltaX,deltaY);
+            if (s != 1.0)
+                display.zoom(mouseCur, s);
+            
+            if ( repaint )
+                display.repaint();
+        } //
+    } //
+    
+    private class FinishActivity extends Activity {
+        private Display display;
+        private double scale;
+        public FinishActivity() {
+            super(1500,15,0);
+            setPacingFunction(new SlowInSlowOutPacer());
+        } //
+        public void setDisplay(Display display) {
+            this.display = display;
+            this.scale = display.getTransform().getScaleX();
+            double z = (scale<1.0 ? 1/scale : scale);
+            setDuration((long)(500+500*Math.log(1+z)));
+        } //
+        protected void run(long elapsedTime) {
+            double f = getPace(elapsedTime);
+            double s = display.getTransform().getScaleX();
+            double z = (f + (1-f)*scale)/s;
+            display.zoom(mouseUp,z);
+            if ( repaint )
+                display.repaint();
+        } //
+    } //
+    
+} // end of class ZoomingPanControl

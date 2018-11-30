@@ -1,57 +1,74 @@
 package edu.berkeley.guir.prefusex.layout;
 
+import java.awt.geom.Rectangle2D;
+import java.util.Iterator;
+
 import edu.berkeley.guir.prefuse.ItemRegistry;
 import edu.berkeley.guir.prefuse.NodeItem;
 import edu.berkeley.guir.prefuse.action.assignment.Layout;
 import edu.berkeley.guir.prefuse.graph.Graph;
 
-import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
-
-public class CircleLayout
-		extends Layout {
-	private double m_radius;
-
-	public CircleLayout() {
-	}
-
-	public CircleLayout(double paramDouble) {
-		this.m_radius = paramDouble;
-	}
-
-	public double getRadius() {
-		return this.m_radius;
-	}
-
-	public void setRadius(double paramDouble) {
-		this.m_radius = paramDouble;
-	}
-
-	public void run(ItemRegistry paramItemRegistry, double paramDouble) {
-		Graph localGraph = paramItemRegistry.getFilteredGraph();
-		int i = localGraph.getNodeCount();
-		Rectangle2D localRectangle2D = super.getLayoutBounds(paramItemRegistry);
-		double d1 = localRectangle2D.getHeight();
-		double d2 = localRectangle2D.getWidth();
-		double d3 = localRectangle2D.getCenterX();
-		double d4 = localRectangle2D.getCenterY();
-		double d5 = this.m_radius;
-		if (d5 <= 0.0D) {
-			d5 = 0.45D * (d1 < d2 ? d1 : d2);
-		}
-		Iterator localIterator = localGraph.getNodes();
-		for (int j = 0; localIterator.hasNext(); j++) {
-			NodeItem localNodeItem = (NodeItem) localIterator.next();
-			double d6 = 6.283185307179586D * j / i;
-			double d7 = Math.cos(d6) * d5 + d3;
-			double d8 = Math.sin(d6) * d5 + d4;
-			setLocation(localNodeItem, null, d7, d8);
-		}
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefusex/layout/CircleLayout.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Layout algorithm that positions graph elements along a circle.
+ *
+ * Ported from the implementation in the <a href="http://jung.sourceforge.net/">JUNG</a> framework.
+ * 
+ * @author Masanori Harada
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org</a>
  */
+public class CircleLayout extends Layout {
+    
+    private double m_radius; // radius of the circle layout
+    
+    /**
+     * Default constructor. The radius of the circle layout will be computed
+     * automatically based on the display size.
+     */
+    public CircleLayout() {
+        // do nothing
+    } //
+    
+    /**
+     * Constructor. Use the specified radius for the the circle layout,
+     * regardless of the display size.
+     * @param radius the radius of the circle layout.
+     */
+    public CircleLayout(double radius) {
+        m_radius = radius;
+    } //
+    
+	public double getRadius() {
+		return m_radius;
+	} //
+
+	public void setRadius(double radius) {
+		m_radius = radius;
+	} //
+    
+	public void run(ItemRegistry registry, double frac) {
+	    Graph g = registry.getFilteredGraph();
+	    
+	    int nn = g.getNodeCount();
+	    
+	    Rectangle2D r = super.getLayoutBounds(registry);	
+		double height = r.getHeight();
+		double width = r.getWidth();
+		double cx = r.getCenterX();
+		double cy = r.getCenterY();
+
+		double radius = m_radius;
+		if (radius <= 0) {
+			radius = 0.45 * (height < width ? height : width);
+		}
+
+		Iterator nodeIter = g.getNodes();
+		for (int i=0; nodeIter.hasNext(); i++) {
+		    NodeItem n = (NodeItem)nodeIter.next();
+		    double angle = (2*Math.PI*i) / nn;
+		    double x = Math.cos(angle)*radius + cx;
+		    double y = Math.sin(angle)*radius + cy;
+		    this.setLocation(n, null, x, y);
+		}
+	} //
+
+} // end of class CircleLayout

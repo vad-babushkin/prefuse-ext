@@ -3,57 +3,115 @@ package edu.berkeley.guir.prefuse.util;
 import java.io.IOException;
 import java.net.URL;
 
+/**
+ * <p>
+ * Browser launcher will open a URL in an external browser on your system.
+ *  (e.g. Internet Explorer or Netscape). If your browser is already open,
+ *  a new browser window should be created without starting any new processes.
+ * </p>
+ *
+ * <p>
+ * On Windows systems the system's default browser will be used. On UNIX and other
+ *  platforms the browser defaults to Netscape. For this default behavior to work,
+ *  the command 'netscape' must be on your path.
+ * </p>
+ *
+ * <p>
+ * The ability to load a user-specified browser may be introduced in the future.
+ *  A preliminary version was written, but then removed due to unacceptable 
+ *  security issues.
+ * </p>
+ *
+ * <p>
+ * This class was inspired by an article at www.javaworld.com by Steven Spencer.
+ *  The article is available at
+ *  <A HREF="http://www.javaworld.com/javaworld/javatips/jw-javatip66.html">
+ *   http://www.javaworld.com/javaworld/javatips/jw-javatip66.html
+ *  </A>.
+ * </p>
+ *
+ * @version 1.0
+ * @author Steven Spencer
+ * @author Jeffrey Heer (adapted original author's code)
+ */
 public abstract class BrowserLauncher {
+
 	private static final String WIN_ID = "Windows";
 	private static final String WIN_PATH = "rundll32";
 	private static final String WIN_FLAG = "url.dll,FileProtocolHandler";
 	private static final String UNIX_PATH = "netscape";
 	private static final String UNIX_FLAG = "-remote openURL";
 
-	public static void showDocument(URL paramURL) {
-		showDocument(paramURL.toString());
-	}
+	/**
+	 * Display a file in the system browser.
+	 * @param url the file's url
+	 */
+	public static void showDocument(URL url) {
+		showDocument(url.toString());
+	} //
 
-	public static void showDocument(String paramString) {
-		boolean bool = isWindowsPlatform();
-		String str = null;
+	/**
+	 * Display a file in the system browser.  If you want to display a
+	 * file, you must include the absolute path name.
+	 * @param url the file's url (the url must start with either 
+	 *   "http://" or "file://").
+	 */
+	public static void showDocument(String url) {
+		boolean windows = isWindowsPlatform();
+		String cmd = null;
 		try {
-			Process localProcess;
-			if (bool) {
-				str = "rundll32 url.dll,FileProtocolHandler " + paramString;
-				localProcess = Runtime.getRuntime().exec(str);
+			if (windows) {
+				// cmd = 'rundll32 url.dll,FileProtocolHandler http://...'
+				cmd = WIN_PATH + " " + WIN_FLAG + " " + url;
+				Process p = Runtime.getRuntime().exec(cmd);
 			} else {
-				str = "netscape -remote openURL(" + paramString + ")";
-				localProcess = Runtime.getRuntime().exec(str);
+				// Under Unix, Netscape has to be running for the "-remote"
+				// command to work.  So, we try sending the command and
+				// check for an exit value.  If the exit command is 0,
+				// it worked, otherwise we need to start the browser.
+				// cmd = 'netscape -remote openURL(http://www.javaworld.com)'
+				cmd = UNIX_PATH + " " + UNIX_FLAG + "(" + url + ")";
+				Process p = Runtime.getRuntime().exec(cmd);
 				try {
-					int i = localProcess.waitFor();
-					if (i != 0) {
-						str = "netscape " + paramString;
-						localProcess = Runtime.getRuntime().exec(str);
+					// wait for exit code -- if it's 0, command worked,
+					// otherwise we need to start the browser up.
+					int exitCode = p.waitFor();
+					if (exitCode != 0) {
+						// Command failed, start up the browser
+						// cmd = 'netscape http://www.javaworld.com'
+						cmd = UNIX_PATH + " " + url;
+						p = Runtime.getRuntime().exec(cmd);
 					}
-				} catch (InterruptedException localInterruptedException) {
-					System.err.println("Error bringing up browser, cmd='" + str + "'");
-					System.err.println("Caught: " + localInterruptedException);
+				} catch (InterruptedException x) {
+					System.err.println(
+						"Error bringing up browser, cmd='" + cmd + "'");
+					System.err.println("Caught: " + x);
 				}
 			}
-		} catch (IOException localIOException) {
-			System.err.println("Could not invoke browser, command=" + str);
-			System.err.println("Caught: " + localIOException);
+		} catch (IOException x) {
+			// couldn't exec browser
+			System.err.println("Could not invoke browser, command=" + cmd);
+			System.err.println("Caught: " + x);
 		}
-	}
+	} //
 
+	/**
+	 * Try to determine whether this application is running under Windows
+	 * or some other platform by examing the "os.name" property.
+	 * @return true if this application is running under a Windows OS
+	 */
 	public static boolean isWindowsPlatform() {
-		String str = System.getProperty("os.name");
-		return (str != null) && (str.startsWith("Windows"));
-	}
+		String os = System.getProperty("os.name");
+		return (os != null && os.startsWith(WIN_ID));
+	} //
 
-	public static void main(String[] paramArrayOfString) {
-		showDocument(paramArrayOfString[0]);
-	}
-}
+	/**
+	 * Opens the URL specified on the command line in
+	 *  the system browser.
+	 * @param argv argument array. Only the first argument is considered.
+	 */
+	public static void main(String[] argv) {
+		showDocument(argv[0]);
+	} //
 
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/util/BrowserLauncher.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
- */
+} // end of class BrowserLauncher

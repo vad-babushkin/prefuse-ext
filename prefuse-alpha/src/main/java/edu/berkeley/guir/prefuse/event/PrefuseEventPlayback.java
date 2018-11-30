@@ -1,8 +1,14 @@
+/*
+ * Created on Jan 10, 2005
+ *
+ * To change the template for this generated file go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
+ */
 package edu.berkeley.guir.prefuse.event;
 
-import edu.berkeley.guir.prefuse.Display;
-
-import java.awt.*;
+import java.awt.AWTEvent;
+import java.awt.EventQueue;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -13,224 +19,217 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import edu.berkeley.guir.prefuse.Display;
+
+/**
+ * @author jheer
+ *
+ * To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
+ */
 public class PrefuseEventPlayback {
+
 	private static HashSet s_mouseEvents = new HashSet();
 	private static HashSet s_keyEvents = new HashSet();
+	static {
+		s_mouseEvents.add(PrefuseEventLogger.ITEM_DRAGGED);
+		s_mouseEvents.add(PrefuseEventLogger.ITEM_MOVED);
+		s_mouseEvents.add(PrefuseEventLogger.ITEM_WHEEL_MOVED);
+		s_mouseEvents.add(PrefuseEventLogger.ITEM_CLICKED);
+		s_mouseEvents.add(PrefuseEventLogger.ITEM_PRESSED);
+		s_mouseEvents.add(PrefuseEventLogger.ITEM_RELEASED);
+		s_mouseEvents.add(PrefuseEventLogger.ITEM_ENTERED);
+		s_mouseEvents.add(PrefuseEventLogger.ITEM_EXITED);
+		s_mouseEvents.add(PrefuseEventLogger.MOUSE_ENTERED);
+		s_mouseEvents.add(PrefuseEventLogger.MOUSE_EXITED);
+		s_mouseEvents.add(PrefuseEventLogger.MOUSE_PRESSED);
+		s_mouseEvents.add(PrefuseEventLogger.MOUSE_RELEASED);
+		s_mouseEvents.add(PrefuseEventLogger.MOUSE_CLICKED);
+		s_mouseEvents.add(PrefuseEventLogger.MOUSE_DRAGGED);
+		s_mouseEvents.add(PrefuseEventLogger.MOUSE_MOVED);
+		s_mouseEvents.add(PrefuseEventLogger.MOUSE_WHEEL_MOVED);
+		
+		s_keyEvents.add(PrefuseEventLogger.KEY_PRESSED);
+		s_keyEvents.add(PrefuseEventLogger.KEY_RELEASED);
+		s_keyEvents.add(PrefuseEventLogger.KEY_TYPED);
+		s_keyEvents.add(PrefuseEventLogger.ITEM_KEY_PRESSED);
+		s_keyEvents.add(PrefuseEventLogger.ITEM_KEY_RELEASED);
+		s_keyEvents.add(PrefuseEventLogger.ITEM_KEY_TYPED);
+	} //
+	
 	private Display display;
 	private List events;
 	private long startTime;
-
-	public PrefuseEventPlayback(Display paramDisplay, String paramString) {
-		this.display = paramDisplay;
+	
+	public PrefuseEventPlayback(Display display, String logfile) {
+		this.display = display;
 		this.events = new ArrayList();
 		try {
-			parseLogFile(paramString);
-		} catch (Exception localException) {
-			localException.printStackTrace();
+			parseLogFile(logfile);
+		} catch ( Exception e ) {
+			e.printStackTrace();
 		}
-	}
-
+	} //
+	
 	public void play() {
-		Runnable local1 = new Runnable() {
+		Runnable runner = new Runnable() {
 			public void run() {
-				PrefuseEventPlayback.this.playInternal();
-			}
+				playInternal();
+			} //
 		};
-		new Thread(local1).start();
-	}
-
+		new Thread(runner).start();
+	} //
+	
 	public void playInternal() {
-		EventQueue localEventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
-		long l1 = System.currentTimeMillis();
-		long l2 = this.startTime;
+		EventQueue queue = Toolkit.getDefaultToolkit().getSystemEventQueue();
+		long realtime = System.currentTimeMillis();
+		long playtime = startTime;
 		int i = 0;
-		while (i < this.events.size()) {
-			long l3 = System.currentTimeMillis();
-			long l4 = l3 - l1;
-			l1 = l3;
-			l2 += l4;
-			EventEntry localEventEntry = (EventEntry) this.events.get(i);
-			while ((localEventEntry != null) && (localEventEntry.time < l2)) {
-				AWTEvent localAWTEvent = getEvent(l3, localEventEntry.event);
-				localEventQueue.postEvent(localAWTEvent);
-				if (i < this.events.size() - 1) {
-					localEventEntry = (EventEntry) this.events.get(++i);
-				} else {
-					i++;
-					localEventEntry = null;
+		while ( i < events.size() ) {
+			long mark = System.currentTimeMillis();
+			long elapsed = mark-realtime;
+			realtime = mark;
+			playtime += elapsed;
+			
+			EventEntry entry = (EventEntry)events.get(i);
+			while ( entry != null && entry.time < playtime ) {
+				AWTEvent event = getEvent(mark, entry.event);
+				queue.postEvent(event);
+				if ( i < events.size()-1 )
+					entry = (EventEntry)events.get(++i);
+				else {
+					i++; entry = null;
 				}
 			}
-			if (localEventEntry != null) {
-				long l5 = localEventEntry.time - l2;
+			if ( entry != null ) {
+				long sleeptime = entry.time - playtime;
 				try {
-					Thread.sleep(l5);
-				} catch (Exception localException) {
-				}
+					Thread.sleep(sleeptime);
+				} catch ( Exception e ) {}
 			}
 		}
-	}
-
-	private void parseLogFile(String paramString)
-			throws IOException {
-		this.startTime = -1L;
-		BufferedReader localBufferedReader = new BufferedReader(new FileReader(paramString));
-		String str;
-		while ((str = localBufferedReader.readLine()) != null) {
-			parseLine(str);
+	} //
+	
+	private void parseLogFile(String logfile) throws IOException {
+		startTime = -1L;
+		BufferedReader br = new BufferedReader(new FileReader(logfile));
+		String line;
+		
+		while ((line=br.readLine()) != null) {
+			parseLine(line);
 		}
-		localBufferedReader.close();
-	}
-
-	private void parseLine(String paramString) {
-		String[] arrayOfString = paramString.split("\t");
-		long l = Long.parseLong(arrayOfString[0]);
-		if (this.startTime == -1L) {
-			this.startTime = l;
-		}
-		boolean bool1 = s_mouseEvents.contains(arrayOfString[1]);
-		boolean bool2 = s_keyEvents.contains(arrayOfString[1]);
-		if ((bool1) || (bool2)) {
-			String str = null;
-			for (int i = 2; i < arrayOfString.length; i++) {
-				if (arrayOfString[i].startsWith("[")) {
-					str = arrayOfString[i];
-				}
+		br.close();
+	} //
+	
+	private void parseLine(String line) {
+		String[] toks = line.split("\t");
+		long time = Long.parseLong(toks[0]);
+		if ( startTime == -1L ) { startTime = time;	}
+		boolean mouseEvent = s_mouseEvents.contains(toks[1]);
+		boolean keyEvent   = s_keyEvents.contains(toks[1]);
+		if ( mouseEvent || keyEvent ) {
+			String data = null;
+			for ( int i=2; i<toks.length; i++ ) {
+				if ( toks[i].startsWith("[") )
+					data = toks[i];
 			}
-			Object localObject = null;
-			if (bool1) {
-				localObject = parseMouseEvent(l, str);
+			EventParams ep = null;
+			if ( mouseEvent ) {
+				ep = parseMouseEvent(time, data);
 			} else {
-				localObject = parseKeyEvent(l, str);
+				ep = parseKeyEvent(time, data);
 			}
-			this.events.add(new EventEntry(l, (EventParams) localObject));
+			events.add(new EventEntry(time, ep));
 		}
-	}
-
-	public AWTEvent getEvent(long paramLong, EventParams paramEventParams) {
-		if ((paramEventParams instanceof MouseParams)) {
-			return getMouseEvent(paramLong, (MouseParams) paramEventParams);
+	} //
+	
+	public AWTEvent getEvent(long time, EventParams ep) {
+		if ( ep instanceof MouseParams ) {
+			return getMouseEvent(time, (MouseParams)ep);
+		} else if ( ep instanceof KeyParams ) {
+			return getKeyEvent(time, (KeyParams)ep);
+		} else {
+			return null;
 		}
-		if ((paramEventParams instanceof KeyParams)) {
-			return getKeyEvent(paramLong, (KeyParams) paramEventParams);
+	} //
+	
+	public MouseEvent getMouseEvent(long time, MouseParams mp) {
+		if ( mp.id != MouseEvent.MOUSE_WHEEL ) {
+			return new MouseEvent(display, mp.id, time, mp.modifiers,
+					mp.x, mp.y, mp.clickCount, false, mp.button);
+		} else {
+			return new MouseWheelEvent(display, mp.id, time, mp.modifiers,
+					mp.x, mp.y, mp.clickCount, false, mp.scrollType,
+					mp.scrollAmount, mp.wheelRotation);
 		}
+	} //
+	
+	public KeyEvent getKeyEvent(long time, KeyParams kp) {
+		return new KeyEvent(display, kp.id, time, kp.modifiers, kp.keyCode, kp.keyChar);
+	} //
+	
+	public MouseParams parseMouseEvent(long time, String data) {
+		data = data.substring(1,data.length()-1);
+		String[] toks = data.split(",");
+		MouseParams mp = new MouseParams();
+		mp.id = Integer.parseInt(getValue(toks[0]));
+		mp.x = Integer.parseInt(getValue(toks[1]));
+		mp.y = Integer.parseInt(getValue(toks[2]));
+		mp.button = Integer.parseInt(getValue(toks[3]));
+		mp.clickCount = Integer.parseInt(getValue(toks[4]));
+		mp.modifiers = Integer.parseInt(getValue(toks[5]));
+		
+		if ( mp.id == MouseEvent.MOUSE_WHEEL ) {
+			mp.scrollType = Integer.parseInt(getValue(toks[6]));
+			mp.scrollAmount = Integer.parseInt(getValue(toks[7]));
+			mp.wheelRotation = Integer.parseInt(getValue(toks[8]));
+		}
+		return mp;
+	} //
+	
+	public KeyParams parseKeyEvent(long time, String data) {
+		data = data.substring(1,data.length()-1);
+		String[] toks = data.split(",");
+		KeyParams kp = new KeyParams();
+		kp.id = Integer.parseInt(getValue(toks[0]));
+		kp.keyCode = Integer.parseInt(getValue(toks[1]));
+		kp.keyChar = getValue(toks[2]).charAt(0);
+		kp.modifiers = Integer.parseInt(getValue(toks[3]));
 		return null;
-	}
-
-	public MouseEvent getMouseEvent(long paramLong, MouseParams paramMouseParams) {
-		if (paramMouseParams.id != 507) {
-			return new MouseEvent(this.display, paramMouseParams.id, paramLong, paramMouseParams.modifiers, paramMouseParams.x, paramMouseParams.y, paramMouseParams.clickCount, false, paramMouseParams.button);
+	} //
+	
+	private String getValue(String token) {
+		return token.substring(token.indexOf("=")+1);
+	} //
+	
+	public class EventEntry {
+		long time;
+		EventParams event;
+		public EventEntry(long time, EventParams ep) {
+			this.time = time;
+			this.event = ep;
 		}
-		return new MouseWheelEvent(this.display, paramMouseParams.id, paramLong, paramMouseParams.modifiers, paramMouseParams.x, paramMouseParams.y, paramMouseParams.clickCount, false, paramMouseParams.scrollType, paramMouseParams.scrollAmount, paramMouseParams.wheelRotation);
-	}
-
-	public KeyEvent getKeyEvent(long paramLong, KeyParams paramKeyParams) {
-		return new KeyEvent(this.display, paramKeyParams.id, paramLong, paramKeyParams.modifiers, paramKeyParams.keyCode, paramKeyParams.keyChar);
-	}
-
-	public MouseParams parseMouseEvent(long paramLong, String paramString) {
-		paramString = paramString.substring(1, paramString.length() - 1);
-		String[] arrayOfString = paramString.split(",");
-		MouseParams localMouseParams = new MouseParams();
-		localMouseParams.id = Integer.parseInt(getValue(arrayOfString[0]));
-		localMouseParams.x = Integer.parseInt(getValue(arrayOfString[1]));
-		localMouseParams.y = Integer.parseInt(getValue(arrayOfString[2]));
-		localMouseParams.button = Integer.parseInt(getValue(arrayOfString[3]));
-		localMouseParams.clickCount = Integer.parseInt(getValue(arrayOfString[4]));
-		localMouseParams.modifiers = Integer.parseInt(getValue(arrayOfString[5]));
-		if (localMouseParams.id == 507) {
-			localMouseParams.scrollType = Integer.parseInt(getValue(arrayOfString[6]));
-			localMouseParams.scrollAmount = Integer.parseInt(getValue(arrayOfString[7]));
-			localMouseParams.wheelRotation = Integer.parseInt(getValue(arrayOfString[8]));
-		}
-		return localMouseParams;
-	}
-
-	public KeyParams parseKeyEvent(long paramLong, String paramString) {
-		paramString = paramString.substring(1, paramString.length() - 1);
-		String[] arrayOfString = paramString.split(",");
-		KeyParams localKeyParams = new KeyParams();
-		localKeyParams.id = Integer.parseInt(getValue(arrayOfString[0]));
-		localKeyParams.keyCode = Integer.parseInt(getValue(arrayOfString[1]));
-		localKeyParams.keyChar = getValue(arrayOfString[2]).charAt(0);
-		localKeyParams.modifiers = Integer.parseInt(getValue(arrayOfString[3]));
-		return null;
-	}
-
-	private String getValue(String paramString) {
-		return paramString.substring(paramString.indexOf("=") + 1);
-	}
-
-	static {
-		s_mouseEvents.add("ITEM-DRAGGED");
-		s_mouseEvents.add("ITEM-MOVED");
-		s_mouseEvents.add("ITEM-WHEEL-MOVED");
-		s_mouseEvents.add("ITEM-CLICKED");
-		s_mouseEvents.add("ITEM-PRESSED");
-		s_mouseEvents.add("ITEM-RELEASED");
-		s_mouseEvents.add("ITEM-ENTERED");
-		s_mouseEvents.add("ITEM-EXITED");
-		s_mouseEvents.add("MOUSE-ENTERED");
-		s_mouseEvents.add("MOUSE-EXITED");
-		s_mouseEvents.add("MOUSE-PRESSED");
-		s_mouseEvents.add("MOUSE-RELEASED");
-		s_mouseEvents.add("MOUSE-CLICKED");
-		s_mouseEvents.add("MOUSE-DRAGGED");
-		s_mouseEvents.add("MOUSE-MOVED");
-		s_mouseEvents.add("MOUSE-WHEEL-MOVED");
-		s_keyEvents.add("KEY-PRESSED");
-		s_keyEvents.add("KEY-RELEASED");
-		s_keyEvents.add("KEY-TYPED");
-		s_keyEvents.add("ITEM-KEY-PRESSED");
-		s_keyEvents.add("ITEM-KEY-RELEASED");
-		s_keyEvents.add("ITEM-KEY-TYPED");
-	}
-
-	public class KeyParams
-			extends PrefuseEventPlayback.EventParams {
-		int keyCode;
-		char keyChar;
-
-		public KeyParams() {
-			super();
-		}
-	}
-
-	public class MouseParams
-			extends PrefuseEventPlayback.EventParams {
+	} //
+	
+	public class EventParams {
+		int id;
+		int modifiers;
+	} //
+	
+	public class MouseParams extends EventParams {
 		int x;
 		int y;
 		int button;
 		int clickCount;
+		//-------------
 		int scrollType;
 		int scrollAmount;
 		int wheelRotation;
-
-		public MouseParams() {
-			super();
-		}
-	}
-
-	public class EventParams {
-		int id;
-		int modifiers;
-
-		public EventParams() {
-		}
-	}
-
-	public class EventEntry {
-		long time;
-		PrefuseEventPlayback.EventParams event;
-
-		public EventEntry(long paramLong, PrefuseEventPlayback.EventParams paramEventParams) {
-			this.time = paramLong;
-			this.event = paramEventParams;
-		}
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/event/PrefuseEventPlayback.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
- */
+	} //
+	
+	public class KeyParams extends EventParams {
+		int keyCode;
+		char keyChar;
+	} //
+	
+} // end of class PrefuseEventPlayback

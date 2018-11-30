@@ -1,63 +1,62 @@
 package edu.berkeley.guir.prefusex.controls;
 
+import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
+
 import edu.berkeley.guir.prefuse.Display;
 import edu.berkeley.guir.prefuse.action.assignment.Layout;
 import edu.berkeley.guir.prefuse.activity.Activity;
 import edu.berkeley.guir.prefuse.event.ControlAdapter;
 
-import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
-
-public class AnchorUpdateControl
-		extends ControlAdapter {
-	private Layout[] m_layouts;
-	private Activity m_activity;
-	private Point2D m_tmp = new Point2D.Float();
-
-	public AnchorUpdateControl(Layout paramLayout) {
-		this(paramLayout, null);
-	}
-
-	public AnchorUpdateControl(Layout paramLayout, Activity paramActivity) {
-		this(new Layout[]{paramLayout}, paramActivity);
-	}
-
-	public AnchorUpdateControl(Layout[] paramArrayOfLayout, Activity paramActivity) {
-		this.m_layouts = ((Layout[]) paramArrayOfLayout.clone());
-		this.m_activity = paramActivity;
-	}
-
-	public void mouseExited(MouseEvent paramMouseEvent) {
-		for (int i = 0; i < this.m_layouts.length; i++) {
-			this.m_layouts[i].setLayoutAnchor(null);
-		}
-		if (this.m_activity != null) {
-			this.m_activity.runNow();
-		}
-	}
-
-	public void mouseMoved(MouseEvent paramMouseEvent) {
-		moveEvent(paramMouseEvent);
-	}
-
-	public void mouseDragged(MouseEvent paramMouseEvent) {
-		moveEvent(paramMouseEvent);
-	}
-
-	public void moveEvent(MouseEvent paramMouseEvent) {
-		Display localDisplay = (Display) paramMouseEvent.getSource();
-		localDisplay.getAbsoluteCoordinate(paramMouseEvent.getPoint(), this.m_tmp);
-		for (int i = 0; i < this.m_layouts.length; i++) {
-			this.m_layouts[i].setLayoutAnchor(this.m_tmp);
-		}
-		if (this.m_activity != null) {
-			this.m_activity.runNow();
-		}
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefusex/controls/AnchorUpdateControl.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Follows the mouse cursor, updating the anchor parameter for any number
+ * of layout instances to match the current cursor position. Will also
+ * run a given activity in response to cursor updates.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class AnchorUpdateControl extends ControlAdapter {
+    
+    private Layout[] m_layouts;
+    private Activity m_activity;
+    private Point2D  m_tmp = new Point2D.Float();
+    
+    public AnchorUpdateControl(Layout layout) {
+        this(layout,null);
+    } //
+    
+    public AnchorUpdateControl(Layout layout, Activity update) {
+        this(new Layout[] {layout}, update);
+    } //
+    
+    public AnchorUpdateControl(Layout[] layout, Activity update) {
+        m_layouts = (Layout[])layout.clone();
+        m_activity = update;
+    } //
+    
+    public void mouseExited(MouseEvent e) {
+        for ( int i=0; i<m_layouts.length; i++ ) 
+            m_layouts[i].setLayoutAnchor(null);
+        if ( m_activity != null )
+            m_activity.runNow();
+    } //
+    
+    public void mouseMoved(MouseEvent e) {
+        moveEvent(e);
+    } //
+    
+    public void mouseDragged(MouseEvent e) {
+        moveEvent(e);
+    } //
+    
+    public void moveEvent(MouseEvent e) {
+        Display d = (Display)e.getSource();
+        d.getAbsoluteCoordinate(e.getPoint(), m_tmp);
+        for ( int i=0; i<m_layouts.length; i++ ) 
+            m_layouts[i].setLayoutAnchor(m_tmp);
+        if ( m_activity != null )
+            m_activity.runNow();
+    } //
+        
+} // end of class AnchorUpdateControl

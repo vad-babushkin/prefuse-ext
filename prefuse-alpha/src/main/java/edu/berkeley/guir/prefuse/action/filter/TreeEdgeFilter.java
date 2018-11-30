@@ -1,52 +1,66 @@
 package edu.berkeley.guir.prefuse.action.filter;
 
+import java.util.Iterator;
+
 import edu.berkeley.guir.prefuse.EdgeItem;
 import edu.berkeley.guir.prefuse.ItemRegistry;
 import edu.berkeley.guir.prefuse.NodeItem;
 import edu.berkeley.guir.prefuse.graph.Edge;
 import edu.berkeley.guir.prefuse.graph.TreeNode;
 
-import java.util.Iterator;
-
-public class TreeEdgeFilter
-		extends Filter {
-	private boolean m_edgesVisible;
-
-	public TreeEdgeFilter() {
-		this(true);
-	}
-
-	public TreeEdgeFilter(boolean paramBoolean) {
-		super("edge", true);
-		this.m_edgesVisible = paramBoolean;
-	}
-
-	public void run(ItemRegistry paramItemRegistry, double paramDouble) {
-		Iterator localIterator1 = paramItemRegistry.getNodeItems();
-		while (localIterator1.hasNext()) {
-			NodeItem localNodeItem = (NodeItem) localIterator1.next();
-			TreeNode localTreeNode1 = (TreeNode) paramItemRegistry.getEntity(localNodeItem);
-			if (localTreeNode1.getChildCount() > 0) {
-				Iterator localIterator2 = localTreeNode1.getChildEdges();
-				while (localIterator2.hasNext()) {
-					Edge localEdge = (Edge) localIterator2.next();
-					TreeNode localTreeNode2 = (TreeNode) localEdge.getAdjacentNode(localTreeNode1);
-					if (paramItemRegistry.isVisible(localTreeNode2)) {
-						EdgeItem localEdgeItem = paramItemRegistry.getEdgeItem(localEdge, true);
-						localNodeItem.addChild(localEdgeItem);
-						if (!this.m_edgesVisible) {
-							localEdgeItem.setVisible(false);
-						}
-					}
-				}
-			}
-		}
-		super.run(paramItemRegistry, paramDouble);
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/action/filter/TreeEdgeFilter.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * The TreeEdgeFilter determines which edges to visualize based on the nodes
+ *  selected for visualization and the underlying tree structure. By default,
+ *  garbage collection on edge items is performed.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class TreeEdgeFilter extends Filter {
+    
+    private boolean m_edgesVisible;
+    
+    /**
+     * Filters tree edges, connecting filtered graph nodes into a
+     * tree structure. Filtered edges are visible by default.
+     */
+    public TreeEdgeFilter() {
+        this(true);
+    } //
+    
+    /**
+     * Filters tree edges, connecting filtered graph nodes into a
+     * tree structure. DefaultEdge visibility can be controlled.
+     * @param edgesVisible determines whether or not the filtered
+     *  edges are visible in the display.
+     */
+    public TreeEdgeFilter(boolean edgesVisible) {
+        super(ItemRegistry.DEFAULT_EDGE_CLASS, true);
+        m_edgesVisible = edgesVisible;
+    } //
+    
+	public void run(ItemRegistry registry, double frac) {
+		Iterator nodeIter = registry.getNodeItems();
+		while ( nodeIter.hasNext() ) {
+			NodeItem nitem  = (NodeItem)nodeIter.next();
+			TreeNode node   = (TreeNode)registry.getEntity(nitem);
+            
+            if ( node.getChildCount() > 0 ) {
+                Iterator iter = node.getChildEdges();
+                while ( iter.hasNext() ) {
+                    Edge e = (Edge)iter.next();
+                    TreeNode c = (TreeNode)e.getAdjacentNode(node);
+                    if ( registry.isVisible(c) ) {
+                        EdgeItem eitem = registry.getEdgeItem(e,true);
+                        nitem.addChild(eitem);
+                        if ( !m_edgesVisible ) eitem.setVisible(false);
+                    }
+                }
+            }
+		}
+        
+        // optionally perform garbage collection
+        super.run(registry, frac);
+	} //
+
+} // end of class TreeEdgeFilter

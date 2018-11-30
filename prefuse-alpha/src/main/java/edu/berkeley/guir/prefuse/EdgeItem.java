@@ -4,82 +4,125 @@ import edu.berkeley.guir.prefuse.graph.Edge;
 import edu.berkeley.guir.prefuse.graph.Entity;
 import edu.berkeley.guir.prefuse.graph.Node;
 
-public class EdgeItem
-		extends VisualItem
-		implements Edge {
+/**
+ * Visual representation of an edge in a graph.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
+ */
+public class EdgeItem extends VisualItem implements Edge {
+
 	protected NodeItem m_node1;
 	protected NodeItem m_node2;
 
-	public void init(ItemRegistry paramItemRegistry, String paramString, Entity paramEntity) {
-		if ((paramEntity != null) && (!(paramEntity instanceof Edge))) {
+	/**
+	 * Initialize this EdgeItem, binding it to the
+     *  given ItemRegistry and Entity.
+	 * @param registry the ItemRegistry monitoring this VisualItem
+	 * @param entity the Entity represented by this VisualItem
+	 */
+	public void init(ItemRegistry registry, String itemClass, Entity entity) {
+		if ( entity != null && !(entity instanceof Edge) ) {
 			throw new IllegalArgumentException("EdgeItem can only represent an Entity of type Edge.");
 		}
-		super.init(paramItemRegistry, paramString, paramEntity);
-		Edge localEdge = (Edge) paramEntity;
-		Node localNode1 = localEdge.getFirstNode();
-		Node localNode2 = localEdge.getSecondNode();
-		NodeItem localNodeItem1 = getItem(localNode1);
-		setFirstNode(localNodeItem1);
-		NodeItem localNodeItem2 = getItem(localNode2);
-		setSecondNode(localNodeItem2);
-	}
+		super.init(registry, itemClass, entity);
+		
+		Edge edge = (Edge)entity;
+		Node n1 = edge.getFirstNode();
+		Node n2 = edge.getSecondNode();
+		
+		NodeItem item1 = getItem(n1);
+		setFirstNode(item1);
+		NodeItem item2 = getItem(n2);
+		setSecondNode(item2);
+	} //
+	
+	protected NodeItem getItem(Node n) {
+		return m_registry.getNodeItem(n);
+	} //
+    
+    private void nodeItemCheck(Node n) {
+        if ( !(n instanceof NodeItem) )
+            throw new IllegalArgumentException(
+                "Node must be an instance of NodeItem");
+    } //
 
-	protected NodeItem getItem(Node paramNode) {
-		return this.m_registry.getNodeItem(paramNode);
-	}
-
-	private void nodeItemCheck(Node paramNode) {
-		if (!(paramNode instanceof NodeItem)) {
-			throw new IllegalArgumentException("Node must be an instance of NodeItem");
-		}
-	}
-
+    /**
+     * Indicates whether or not this edge is a directed edge.
+     * @return true if this edge is directed, false otherwise
+     */
 	public boolean isDirected() {
-		return ((Edge) this.m_entity).isDirected();
-	}
-
-	public boolean isTreeEdge() {
-		NodeItem localNodeItem1 = this.m_node1;
-		NodeItem localNodeItem2 = this.m_node2;
-		return (localNodeItem1.getParent() == localNodeItem2) || (localNodeItem2.getParent() == localNodeItem1);
-	}
-
-	public Node getAdjacentNode(Node paramNode) {
-		nodeItemCheck(paramNode);
-		if (this.m_node1 == paramNode) {
-			return this.m_node2;
-		}
-		if (this.m_node2 == paramNode) {
-			return this.m_node1;
-		}
-		throw new IllegalArgumentException("The given node is not incident on this Edge.");
-	}
-
+        return ((Edge)m_entity).isDirected();
+	} //
+    
+    /**
+     * Indicates whether or not this edge is a tree edge.
+     * @return true if this edge is a tree edge, false otherwise
+     */
+    public boolean isTreeEdge() {
+        NodeItem n1 = (NodeItem)m_node1;
+        NodeItem n2 = (NodeItem)m_node2;
+        return (n1.getParent() == n2 || n2.getParent()== n1);
+    } //
+	
+    /**
+     * Given a node item incident on this edge, returns the other node item
+     * incident on this edge.
+     * @param n a NodeItem incident on this edge
+     * @return the other NodeItem incident on this edge
+     * @throws IllegalArgumentException if the provided NodeItem is either
+     *  not a NodeItem or is not incident on this edge.
+     */
+    public Node getAdjacentNode(Node n) {
+        nodeItemCheck(n);
+        if ( m_node1 == n )
+            return m_node2;
+        else if ( m_node2 == n )
+            return m_node1;
+        else
+            throw new IllegalArgumentException(
+               "The given node is not incident on this Edge.");
+    } //
+    
+	/**
+	 * Return the VisualItem representing the first (source) node in the edge.
+	 * @return the first (source) VisualItem
+	 */
 	public Node getFirstNode() {
-		return this.m_node1;
-	}
-
-	public void setFirstNode(Node paramNode) {
-		nodeItemCheck(paramNode);
-		this.m_node1 = ((NodeItem) paramNode);
-	}
-
+		return m_node1;
+	} //
+	
+	/**
+	 * Set the VisualItem representing the first (source) node in the edge.
+	 * @param item the first (source) VisualItem
+	 */
+	public void setFirstNode(Node item) {
+        nodeItemCheck(item);
+        m_node1 = (NodeItem)item;
+	} //
+	
+	/**
+	 * Return the VisualItem representing the second (target) node in the edge.
+	 * @return the second (target) VisualItem
+	 */
 	public Node getSecondNode() {
-		return this.m_node2;
-	}
+		return m_node2;
+	} //
+	
+	/**
+	 * Set the NodeItem representing the second (target) node in the edge.
+	 * @param item the second (target) NodeItem
+	 */
+	public void setSecondNode(Node item) {
+        nodeItemCheck(item);
+		m_node2 = (NodeItem)item;
+	} //
 
-	public void setSecondNode(Node paramNode) {
-		nodeItemCheck(paramNode);
-		this.m_node2 = ((NodeItem) paramNode);
-	}
+    /**
+     * @see edu.berkeley.guir.prefuse.graph.Edge#isIncident(edu.berkeley.guir.prefuse.graph.Node)
+     */
+    public boolean isIncident(Node n) {
+        return (n == m_node1 || n == m_node2);
+    } //
 
-	public boolean isIncident(Node paramNode) {
-		return (paramNode == this.m_node1) || (paramNode == this.m_node2);
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/EdgeItem.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
- */
+} // end of class EdgeItem

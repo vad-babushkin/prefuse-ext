@@ -1,77 +1,80 @@
 package edu.berkeley.guir.prefuse.event;
 
-import edu.berkeley.guir.prefuse.activity.Activity;
-
 import java.util.EventListener;
 
-public class ActivityEventMulticaster
-		extends EventMulticaster
-		implements ActivityListener {
-	public static ActivityListener add(ActivityListener paramActivityListener1, ActivityListener paramActivityListener2) {
-		return (ActivityListener) addInternal(paramActivityListener1, paramActivityListener2);
-	}
+import edu.berkeley.guir.prefuse.activity.Activity;
 
-	public static ActivityListener remove(ActivityListener paramActivityListener1, ActivityListener paramActivityListener2) {
-		return (ActivityListener) removeInternal(paramActivityListener1, paramActivityListener2);
-	}
-
-	public void activityScheduled(Activity paramActivity) {
-		((ActivityListener) this.a).activityScheduled(paramActivity);
-		((ActivityListener) this.b).activityScheduled(paramActivity);
-	}
-
-	public void activityStarted(Activity paramActivity) {
-		((ActivityListener) this.a).activityStarted(paramActivity);
-		((ActivityListener) this.b).activityStarted(paramActivity);
-	}
-
-	public void activityStepped(Activity paramActivity) {
-		((ActivityListener) this.a).activityStepped(paramActivity);
-		((ActivityListener) this.b).activityStepped(paramActivity);
-	}
-
-	public void activityFinished(Activity paramActivity) {
-		((ActivityListener) this.a).activityFinished(paramActivity);
-		((ActivityListener) this.b).activityFinished(paramActivity);
-	}
-
-	public void activityCancelled(Activity paramActivity) {
-		((ActivityListener) this.a).activityCancelled(paramActivity);
-		((ActivityListener) this.b).activityCancelled(paramActivity);
-	}
-
-	protected static EventListener addInternal(EventListener paramEventListener1, EventListener paramEventListener2) {
-		if (paramEventListener1 == null) {
-			return paramEventListener2;
-		}
-		if (paramEventListener2 == null) {
-			return paramEventListener1;
-		}
-		return new ActivityEventMulticaster(paramEventListener1, paramEventListener2);
-	}
-
-	protected EventListener remove(EventListener paramEventListener) {
-		if (paramEventListener == this.a) {
-			return this.b;
-		}
-		if (paramEventListener == this.b) {
-			return this.a;
-		}
-		EventListener localEventListener1 = removeInternal(this.a, paramEventListener);
-		EventListener localEventListener2 = removeInternal(this.b, paramEventListener);
-		if ((localEventListener1 == this.a) && (localEventListener2 == this.b)) {
-			return this;
-		}
-		return addInternal(localEventListener1, localEventListener2);
-	}
-
-	protected ActivityEventMulticaster(EventListener paramEventListener1, EventListener paramEventListener2) {
-		super(paramEventListener1, paramEventListener2);
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/event/ActivityEventMulticaster.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * Multicaster for ActivityListener calls.
+ * 
+ * Feb 16, 2004 - jheer - Created class
+ *
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class ActivityEventMulticaster extends EventMulticaster
+    implements ActivityListener
+{
+    public static ActivityListener add(ActivityListener a, ActivityListener b) {
+        return (ActivityListener) addInternal(a, b);
+    } //
+
+    public static ActivityListener remove(
+            ActivityListener l,
+            ActivityListener oldl) {
+        return (ActivityListener) removeInternal(l, oldl);
+    } //
+    
+    public void activityScheduled(Activity ac) {
+        ((ActivityListener) a).activityScheduled(ac);
+        ((ActivityListener) b).activityScheduled(ac);
+    } //
+
+    public void activityStarted(Activity ac) {
+        ((ActivityListener) a).activityStarted(ac);
+        ((ActivityListener) b).activityStarted(ac);
+    } //
+
+    public void activityStepped(Activity ac) {
+        ((ActivityListener) a).activityStepped(ac);
+        ((ActivityListener) b).activityStepped(ac);
+    } //
+
+    public void activityFinished(Activity ac) {
+        ((ActivityListener) a).activityFinished(ac);
+        ((ActivityListener) b).activityFinished(ac);
+    } //
+
+    public void activityCancelled(Activity ac) {
+        ((ActivityListener) a).activityCancelled(ac);
+        ((ActivityListener) b).activityCancelled(ac);
+    } //
+
+    protected static EventListener addInternal(
+            EventListener a, EventListener b)
+    {
+        if (a == null)
+            return b;
+        if (b == null)
+            return a;
+        return new ActivityEventMulticaster(a, b);
+    } //
+    
+	protected EventListener remove(EventListener oldl) {
+		if (oldl == a)
+			return b;
+		if (oldl == b)
+			return a;
+		EventListener a2 = removeInternal(a, oldl);
+		EventListener b2 = removeInternal(b, oldl);
+		if (a2 == a && b2 == b) {
+			return this; // it's not here
+		}
+		return addInternal(a2, b2);
+	} //
+    
+    protected ActivityEventMulticaster(EventListener a, EventListener b) {
+        super(a,b);
+    } //
+
+} // end of class ActivityEventMulticaster

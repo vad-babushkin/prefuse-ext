@@ -1,86 +1,108 @@
 package edu.berkeley.guir.prefuse.collections;
 
-import edu.berkeley.guir.prefuse.ItemRegistry;
-
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class CompositeItemIterator
-		implements Iterator {
-	private Iterator[] m_iter;
-	private Object[] m_item;
+import edu.berkeley.guir.prefuse.ItemRegistry.ItemEntry;
+
+/**
+ * Iterates over graph items, in order.
+ * 
+ * @author jheer
+ * @author alann
+ */
+public class CompositeItemIterator implements Iterator {
+	
+	private Iterator m_iter[];
+	private Object m_item[];
 	private Comparator m_comp;
 	private boolean m_reverse;
 	private int m_emptyCount;
 
-	public CompositeItemIterator(List paramList, Comparator paramComparator, boolean paramBoolean1, boolean paramBoolean2) {
-		int i = paramList.size();
-		this.m_emptyCount = 0;
-		this.m_iter = new Iterator[i];
-		this.m_item = new Object[i];
-		for (int j = 0; j < i; j++) {
-			List localList = ((ItemRegistry.ItemEntry) paramList.get(j)).getItemList();
-			if (paramBoolean1) {
-				this.m_iter[j] = new VisibleItemIterator(localList, paramBoolean2);
-			} else if (paramBoolean2) {
-				this.m_iter[j] = new ReverseListIterator(localList);
+	/**
+	 * Constructor. Creates a new iterator over a merged list of objects.
+	 * Ordering is determined by the provided Comparator instance and the
+	 * reverse flag.
+	 * @param itemLists the list of lists to iterate over
+	 * @param c the Comparator used to order the objects
+	 * @param reverse indicates whether or not to iterate in <i>reverse</i> order.
+	 */
+	public CompositeItemIterator(List itemLists, Comparator c, 
+            boolean visibleOnly, boolean reverse)
+	{
+		int size = itemLists.size();
+		m_emptyCount = 0;
+		m_iter = new Iterator[size];
+		m_item = new Object[size];
+		for ( int i = 0; i < size; i++ ) {
+			List itemList = ((ItemEntry)itemLists.get(i)).getItemList();
+            // get the right kind of iterator
+            if ( visibleOnly )
+                m_iter[i] = new VisibleItemIterator(itemList, reverse);
+            else if ( reverse )
+                m_iter[i] = new ReverseListIterator(itemList);
+            else 
+                m_iter[i] = itemList.iterator();
+			// initialize item pool
+            if ( m_iter[i].hasNext() ) {
+				m_item[i] = m_iter[i].next();
 			} else {
-				this.m_iter[j] = localList.iterator();
-			}
-			if (this.m_iter[j].hasNext()) {
-				this.m_item[j] = this.m_iter[j].next();
-			} else {
-				this.m_emptyCount += 1;
+				m_emptyCount++;
 			}
 		}
-		this.m_reverse = paramBoolean2;
-		this.m_comp = paramComparator;
-	}
-
+		m_reverse = reverse;
+		m_comp    = c;
+	} //
+  
+	/**
+	 * @see java.util.Iterator#hasNext()
+	 */
 	public boolean hasNext() {
-		return this.m_emptyCount < this.m_item.length;
-	}
+		return ( m_emptyCount < m_item.length );    	
+	} //
 
+	/**
+	 * @see java.util.Iterator#next()
+	 */
 	public Object next() {
-		if (!hasNext()) {
-			throw new NoSuchElementException();
-		}
-		int i = -1;
-		for (int j = 0; j < this.m_item.length; j++) {
-			if (this.m_item[j] != null) {
-				if (i == -1) {
-					i = j;
+		if ( !hasNext() ) { throw new NoSuchElementException();	}
+		
+		// select next item to return
+		int cur = -1;
+		for ( int i = 0; i < m_item.length; i++ ) {
+			if ( m_item[i] != null ) {
+				if ( cur == -1 ) {
+					cur = i;
 				} else {
-					int k = this.m_comp.compare(this.m_item[i], this.m_item[j]);
-					if (this.m_reverse) {
-						k *= -1;
-					}
-					i = k < 0 ? i : j;
+					int c = m_comp.compare(m_item[cur], m_item[i]);
+					if ( m_reverse ) { c *= -1;	}
+					cur = ( c < 0 ? cur : i );
 				}
 			}
 		}
-		Object localObject = null;
+		Object nextItem = null;
 		try {
-			localObject = this.m_item[i];
-		} catch (Exception localException) {
+			nextItem = m_item[cur];
+		} catch ( Exception e ) {
 			System.out.println("");
 		}
-		this.m_item[i] = (this.m_iter[i].hasNext() ? this.m_iter[i].next() : null);
-		if (this.m_item[i] == null) {
-			this.m_emptyCount += 1;
-		}
-		return localObject;
-	}
+		
+		// dequeue object to take it's place
+		m_item[cur] = (m_iter[cur].hasNext() ? m_iter[cur].next() : null);
+		if ( m_item[cur] == null )
+			m_emptyCount++;
+		
+		// return 
+    	return nextItem;
+	} //
 
-	public void remove() {
-		throw new UnsupportedOperationException();
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/collections/CompositeItemIterator.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
- */
+	/**
+	 * We don't support removals.
+   	 */
+ 	public void remove() {
+    	throw new UnsupportedOperationException();
+	} //
+  
+} // end of class CompositeItemIterator

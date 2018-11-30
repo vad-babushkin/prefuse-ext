@@ -1,58 +1,63 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
 package edu.berkeley.guir.prefusex.layout;
+
+import java.awt.geom.Rectangle2D;
+import java.util.Iterator;
 
 import edu.berkeley.guir.prefuse.ItemRegistry;
 import edu.berkeley.guir.prefuse.NodeItem;
 import edu.berkeley.guir.prefuse.VisualItem;
 import edu.berkeley.guir.prefuse.action.assignment.Layout;
 
-import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
-
+/**
+ * Implements a 2-D scatterplot layout.
+ * TODO: this class is incomplete, still need to add support for setting axis scales.
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org</a>
+ */
 public class ScatterplotLayout extends Layout {
-	protected String xAttribute;
-	protected String yAttribute;
 
-	public ScatterplotLayout(String var1, String var2) {
-		this.xAttribute = var1;
-		this.yAttribute = var2;
-	}
+    protected String xAttribute;
+    protected String yAttribute;
+    
+    public ScatterplotLayout(String xAttr, String yAttr) {
+        this.xAttribute = xAttr;
+        this.yAttribute = yAttr;
+    } //
+    
+    protected double getXCoord(VisualItem item) {
+        return getCoord(item, xAttribute);
+    } //
+    
+    protected double getYCoord(VisualItem item) {
+        return getCoord(item, yAttribute);
+    } //
+    
+    protected double getCoord(VisualItem item, String attr) {
+        String value = item.getAttribute(attr);
+        try {
+            return Double.parseDouble(value);
+        } catch ( Exception e ) {
+            System.err.println("Attribute \""+attr+"\" is not a valid numerical value.");
+            return Double.NaN;
+        }
+    } //
+    
+    /**
+     * @see edu.berkeley.guir.prefuse.action.Action#run(edu.berkeley.guir.prefuse.ItemRegistry, double)
+     */
+    public void run(ItemRegistry registry, double frac) {
+        Rectangle2D b = this.getLayoutBounds(registry);
+        double bx = b.getMinX(), by = b.getMinY();
+        
+        Iterator iter = registry.getNodeItems();
+        while ( iter.hasNext() ) {
+            NodeItem n = (NodeItem)iter.next();
+            double x = getXCoord(n);
+            double y = getYCoord(n);
+            // TODO add scaling factors which corresponds to scatterplot axis values
+            this.setLocation(n,null,x,y);
+        }
+    } //
 
-	protected double getXCoord(VisualItem var1) {
-		return this.getCoord(var1, this.xAttribute);
-	}
-
-	protected double getYCoord(VisualItem var1) {
-		return this.getCoord(var1, this.yAttribute);
-	}
-
-	protected double getCoord(VisualItem var1, String var2) {
-		String var3 = var1.getAttribute(var2);
-
-		try {
-			return Double.parseDouble(var3);
-		} catch (Exception var5) {
-			System.err.println("Attribute \"" + var2 + "\" is not a valid numerical value.");
-			return 0.0D / 0.0;
-		}
-	}
-
-	public void run(ItemRegistry var1, double var2) {
-		Rectangle2D var4 = this.getLayoutBounds(var1);
-		double var5 = var4.getMinX();
-		double var7 = var4.getMinY();
-		Iterator var9 = var1.getNodeItems();
-
-		while (var9.hasNext()) {
-			NodeItem var10 = (NodeItem) var9.next();
-			double var11 = this.getXCoord(var10);
-			double var13 = this.getYCoord(var10);
-			this.setLocation(var10, (VisualItem) null, var11, var13);
-		}
-
-	}
-}
+} // end of class ScatterplotLayout

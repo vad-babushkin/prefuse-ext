@@ -1,78 +1,95 @@
 package edu.berkeley.guir.prefuse.util.display;
 
-import edu.berkeley.guir.prefuse.Display;
-import edu.berkeley.guir.prefuse.util.io.IOLib;
-import edu.berkeley.guir.prefuse.util.io.SimpleFileFilter;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.HashSet;
 
-public class ExportDisplayAction
-		extends AbstractAction {
-	private Display display;
-	private JFileChooser chooser;
-	private ScaleSelector scaler;
+import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
-	public ExportDisplayAction(Display paramDisplay) {
-		this.display = paramDisplay;
-		this.scaler = new ScaleSelector();
-		this.chooser = new JFileChooser();
-		this.chooser.setDialogType(1);
-		this.chooser.setDialogTitle("Export Prefuse Display...");
-		this.chooser.setAcceptAllFileFilterUsed(false);
-		HashSet localHashSet = new HashSet();
-		String[] arrayOfString = ImageIO.getWriterFormatNames();
-		for (int i = 0; i < arrayOfString.length; i++) {
-			String str = arrayOfString[i].toLowerCase();
-			if ((str.length() == 3) && (!localHashSet.contains(str))) {
-				localHashSet.add(str);
-				this.chooser.setFileFilter(new SimpleFileFilter(str, str.toUpperCase() + " Image (*." + str + ")"));
-			}
-		}
-		localHashSet.clear();
-		localHashSet = null;
-		this.chooser.setAccessory(this.scaler);
-	}
+import edu.berkeley.guir.prefuse.Display;
+import edu.berkeley.guir.prefuse.util.io.IOLib;
+import edu.berkeley.guir.prefuse.util.io.SimpleFileFilter;
 
-	public void actionPerformed(ActionEvent paramActionEvent) {
-		File localFile = null;
-		this.scaler.setImage(this.display.getOffscreenBuffer());
-		int i = this.chooser.showSaveDialog(this.display);
-		if (i == 0) {
-			localFile = this.chooser.getSelectedFile();
-		} else {
-			return;
-		}
-		String str1 = ((SimpleFileFilter) this.chooser.getFileFilter()).getExtension();
-		String str2 = IOLib.getExtension(localFile);
-		if (!str1.equals(str2)) {
-			localFile = new File(localFile.toString() + "." + str1);
-		}
-		double d = this.scaler.getScale();
-		boolean bool = false;
-		try {
-			BufferedOutputStream localBufferedOutputStream = new BufferedOutputStream(new FileOutputStream(localFile));
-			System.out.print("Saving image " + localFile.getName() + ", " + str1 + " format...");
-			bool = this.display.saveImage(localBufferedOutputStream, str1, d);
-			localBufferedOutputStream.flush();
-			localBufferedOutputStream.close();
-			System.out.println("\tDONE");
-		} catch (Exception localException) {
-			bool = false;
-		}
-		if (!bool) {
-			JOptionPane.showMessageDialog(this.display, "Error Saving Image!", "Image Save Error", 0);
-		}
-	}
-}
-
-
-/* Location:              /home/vad/work/JAVA/2018.11.30/prefuse-apps.jar!/edu/berkeley/guir/prefuse/util/display/ExportDisplayAction.class
- * Java compiler version: 2 (46.0)
- * JD-Core Version:       0.7.1
+/**
+ * SaveImageAction
+ * 
+ * @version 1.0
+ * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
  */
+public class ExportDisplayAction extends AbstractAction {
+
+    private Display display;
+    private JFileChooser chooser;
+    private ScaleSelector scaler;
+    
+    public ExportDisplayAction(Display display) {
+        this.display = display;
+        scaler  = new ScaleSelector();
+        chooser = new JFileChooser();
+        chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+        chooser.setDialogTitle("Export Prefuse Display...");
+        chooser.setAcceptAllFileFilterUsed(false);
+        
+        HashSet seen = new HashSet();
+        String[] fmts = ImageIO.getWriterFormatNames();
+        for ( int i=0; i<fmts.length; i++ ) {
+            String s = fmts[i].toLowerCase();
+            if ( s.length() == 3 && !seen.contains(s) ) {
+                seen.add(s);
+                chooser.setFileFilter(new SimpleFileFilter(s, 
+                        s.toUpperCase()+" Image (*."+s+")"));
+            }
+        }
+        seen.clear(); seen = null;
+        chooser.setAccessory(scaler);
+    } //
+    
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
+    public void actionPerformed(ActionEvent evt) {
+        // open image save dialog
+        File f = null;
+        scaler.setImage(display.getOffscreenBuffer());
+        int returnVal = chooser.showSaveDialog(display);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+           f = chooser.getSelectedFile();
+        } else {
+            return;
+        }
+        String format = ((SimpleFileFilter)chooser.getFileFilter()).getExtension();
+        String ext = IOLib.getExtension(f);        
+        if ( !format.equals(ext) ) {
+            f = new File(f.toString()+"."+format);
+        }
+        
+        double scale = scaler.getScale();
+        
+        // save image
+        boolean success = false;
+        try {
+            OutputStream out = new BufferedOutputStream(new FileOutputStream(f));
+            System.out.print("Saving image "+f.getName()+", "+format+" format...");
+            success = display.saveImage(out, format, scale);
+            out.flush();
+            out.close();
+            System.out.println("\tDONE");
+        } catch ( Exception e ) {
+            success = false;
+        }
+        // show result dialog on failure
+        if ( !success ) {
+            JOptionPane.showMessageDialog(display,
+                    "Error Saving Image!",
+                    "Image Save Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    } //
+    
+} // end of class SaveImageAction
