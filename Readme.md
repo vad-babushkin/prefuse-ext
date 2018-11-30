@@ -98,3 +98,5 @@ been published, possibly for patent law reasons.
 Reverse engeneering was produced with the help of several java decompilers.
  
 *Reverse engineering code is dirty and non stable, but working Hyperbolic tree demo*
+
+![Hyperbolic tree demo](data/hyperbolic-tree.png)
