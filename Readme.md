@@ -1,5 +1,11 @@
+# About Prefuse-ext
 
-# Prefuse
+This project is a aims a collection of examples revealing the rich possibilities of the library Prefuse.
+All changes are released under the same original license.
+
+In my opinion, the library can still be useful in the Java Client Application Platform (RCP).
+
+# About Prefuse
 
 Prefuse is a set of software tools for creating rich interactive data 
 visualizations in the Java programming language. 
@@ -18,9 +24,6 @@ It was developed until 2007 by its original author, [Jeffrey Heer](http://homes.
 
 Prefuse is licensed under the terms of a [BSD license](prefuse-core/license-prefuse.txt) and can be freely used for 
 both commercial and non-commercial purposes. The original website is at [prefuse.org](http://prefuse.org/).
-
-This project at [vad-babushkin/Prefuse](https://github.com/vad-babushkin/Prefuse) is a fork which aims at providing easy maven access 
-for several projects which depend on Prefuse. All changes are released under the same original license.
 
 # Modules
 
