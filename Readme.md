@@ -83,3 +83,13 @@ Demos from:
 - [dopl/prefuse-example](https://github.com/dopl/prefuse-example)
 - [fajran/ubuntu-pkg-vis-prefuse](https://github.com/fajran/ubuntu-pkg-vis-prefuse)
 - [projektlp/opticalNetworkVisualize](https://github.com/projektlp/opticalNetworkVisualize)
+
+## prefuse-alpha
+
+Reverse engineering application prefuse-app (Demo alpha version prefuse)
+
+Of interest is only the implementation of the Hyperbolic tree. The source text of the Hyperbolic Tree has never 
+been published, possibly for patent law reasons.
+
+Reverse engeneering was produced with the help of several java decompilers. 
+*The code is still dirty, but partially working.*
