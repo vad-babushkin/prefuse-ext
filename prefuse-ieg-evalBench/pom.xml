@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.albedo.prefuse</groupId>
-        <artifactId>Prefuse</artifactId>
+        <groupId>prefuse-ext</groupId>
+	    <artifactId>parent</artifactId>
         <version>1.0</version>
     </parent>
 
@@ -17,12 +17,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.albedo.prefuse</groupId>
+            <groupId>prefuse-ext</groupId>
             <artifactId>prefuse-core-ieg</artifactId>
             <version>${prefuse-core-ieg.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.albedo.prefuse</groupId>
+            <groupId>prefuse-ext</groupId>
             <artifactId>prefuse-ieg</artifactId>
             <version>${prefuse-ieg.version}</version>
         </dependency>

@@ -5,8 +5,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.albedo.prefuse</groupId>
-		<artifactId>Prefuse</artifactId>
+		<groupId>prefuse-ext</groupId>
+		<artifactId>parent</artifactId>
 		<version>1.0</version>
 	</parent>
 
@@ -18,12 +18,12 @@
 	<dependencies>
 		<!-- core -->
 		<dependency>
-			<groupId>com.albedo.prefuse</groupId>
+			<groupId>prefuse-ext</groupId>
 			<artifactId>prefuse-core</artifactId>
 			<version>${prefuse-core.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.albedo.prefuse</groupId>
+			<groupId>prefuse-ext</groupId>
 			<artifactId>prefuse-profusians</artifactId>
 			<version>20080629</version>
 		</dependency>
