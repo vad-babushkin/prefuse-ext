@@ -283,6 +283,7 @@
 	    <module>prefuse-ieg-evalBench</module>
 	    <module>prefuse-caffe-layout-visualization</module>
 	    <module>prefuse-profusians</module>
+	    <module>prefuse-alpha</module>
     </modules>
 	
 </project>
