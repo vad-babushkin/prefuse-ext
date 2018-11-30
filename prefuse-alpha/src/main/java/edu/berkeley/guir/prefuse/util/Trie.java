@@ -21,7 +21,7 @@ import edu.berkeley.guir.prefuse.graph.TreeNode;
  *
  * @version 1.0
  * @author <a href="http://jheer.org">Jeffrey Heer</a> prefuse(AT)jheer.org
- * @see PrefixSearchFocusSet
+ * @see KeywordSearchFocusSet
  */
 public class Trie {
 

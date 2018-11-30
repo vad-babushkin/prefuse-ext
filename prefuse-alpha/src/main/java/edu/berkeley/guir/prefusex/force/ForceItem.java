@@ -24,13 +24,4 @@ public class ForceItem {
     public float[] plocation; // stores the previous location
     public float[][] k; // temp variables for Runge-Kutta integration
     public float[][] l; // temp variables for Runge-Kutta integration
-    
-    public static final boolean isValid(ForceItem item) {
-        return
-          !( Float.isNaN(item.location[0])  || Float.isNaN(item.location[1])  || 
-             Float.isNaN(item.plocation[0]) || Float.isNaN(item.plocation[1]) ||
-             Float.isNaN(item.velocity[0])  || Float.isNaN(item.velocity[1])  ||
-             Float.isNaN(item.force[0])     || Float.isNaN(item.force[1]) );
-    } //
-    
 } // end of class ForceItem

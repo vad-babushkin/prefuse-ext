@@ -137,7 +137,7 @@ public class FisheyeTreeFilter extends Filter {
 			boolean recurse = false;
 			recurse = ( fitem==null ||  fitem.getDirty()>0 || fitem.getDOI()<0 );
 				
-			fitem = registry.getNodeItem(fnode, true, true);
+			fitem = registry.getNodeItem(fnode, true);
 			if ( recurse ) {
 				setDOI(fitem, 0, 0);
 				if ( (int)fitem.getDOI() > m_minDOI ) {					
@@ -193,7 +193,7 @@ public class FisheyeTreeFilter extends Filter {
 		while ( childIter.hasNext() ) {
 			TreeNode cnode = (TreeNode)childIter.next();
 			if ( cnode == skip ) { continue; }
-			NodeItem citem = m_registry.getNodeItem(cnode, true, true);				
+			NodeItem citem = m_registry.getNodeItem(cnode, true);				
 			
 			setDOI(citem, (int)item.getDOI()-1, Math.abs(lidx-i));		
 			if ( (int)citem.getDOI() > m_minDOI ) {
@@ -211,7 +211,7 @@ public class FisheyeTreeFilter extends Filter {
 		boolean recurse = false;
 		recurse = ( pitem==null || pitem.getDirty()>0 || pitem.getDOI()<0 );
 		
-		pitem = m_registry.getNodeItem(pnode, true, true);
+		pitem = m_registry.getNodeItem(pnode, true);
 		if ( recurse ) {
 			setDOI(pitem, 0, 0);
 			if ( (int)pitem.getDOI() > m_minDOI ) {

@@ -104,23 +104,23 @@ public class ItemRegistry {
 		public Map     itemMap;
 	} // end of inner class ItemEntry
 	
-    protected Graph           m_backingGraph;
-    protected Graph           m_filteredGraph;
+    private Graph           m_backingGraph;
+    private Graph           m_filteredGraph;
     
-    protected List            m_displays;
-    protected FocusManager    m_fmanager;
-    protected ItemFactory     m_ifactory;
-    protected RendererFactory m_rfactory;
+    private List            m_displays;
+    private FocusManager    m_fmanager;
+	private ItemFactory     m_ifactory;
+	private RendererFactory m_rfactory;
 	
-    protected List m_entryList; // list of ItemEntry instances
-    protected Map  m_entryMap;  // maps from item class names to ItemEntry instances
-    protected Map  m_entityMap; // maps from items back to their entities
-    protected int  m_size;      // the number of items in this registry
+	private List m_entryList; // list of ItemEntry instances
+	private Map  m_entryMap;  // maps from item class names to ItemEntry instances
+	private Map  m_entityMap; // maps from items back to their entities
+	private int  m_size;      // the number of items in this registry
     
-    protected Comparator m_comparator;
+	private Comparator m_comparator;
   
-    protected ItemRegistryListener m_registryListener;
-    protected FocusListener        m_focusListener;
+  	private ItemRegistryListener m_registryListener;
+  	private FocusListener        m_focusListener;
 	
 	/**
 	 * Constructor. Creates an empty ItemRegistry and corresponding ItemFactory.
@@ -347,15 +347,6 @@ public class ItemRegistry {
 		m_comparator = comparator;
 	} //
 
-	/**
-	 * Returns this registry's backing item factory. The ItemFactory is
-	 * responsible for creating and pooling VisualItem instances.
-	 * @return the ItemFactory
-	 */
-	public synchronized ItemFactory getItemFactory() {
-	    return m_ifactory;
-	} //
-	
     /**
      * Returns the total number of VisualItems in the given item class.
      * @param itemClass the item class to look up the size for
@@ -682,27 +673,24 @@ public class ItemRegistry {
      * @param entity the Entity that this VisualItem is visualizing
      * @param create indicates whether or not the VisualItem should be created
      *  if it doesn't already exist.
-     * @param clear indicates if the VisualItem should have any connections cleared.
-     * For example, a NodeItem would have any and all neighbors and connecting edges removed.
      * @return the requested VisualItem, or null if the VisualItem wasn't found
      *  and the create parameter is false.
      */
-	public synchronized VisualItem getItem(String itemClass, Entity entity, boolean create, boolean clear) {
+	public synchronized VisualItem getItem(String itemClass, Entity entity, boolean create) {
 		ItemEntry entry = (ItemEntry)m_entryMap.get(itemClass);
 		if ( entry != null ) {
 			VisualItem item = (VisualItem)entry.itemMap.get(entity);
-			if ( create && item == null ) {
+			if ( !create ) {
+				return item;
+			} else if ( item == null ) {
 				item = m_ifactory.getItem(itemClass);
 				item.init(this, itemClass, entity);
 				addItem(entry, entity, item);
 			}
-            if ( clear && item instanceof NodeItem ) {
+            if ( item instanceof NodeItem )
                 ((NodeItem)item).removeAllNeighbors();
-            }
-            if ( create ) {
-            	item.setDirty(0);
-            	item.setVisible(true);
-            }
+            item.setDirty(0);
+            item.setVisible(true);
 			return item;
 		} else {
 			throw new IllegalArgumentException("The input string must be a"
@@ -716,7 +704,7 @@ public class ItemRegistry {
 	 * @return NodeItem the NodeItem associated with the node, if any.
 	 */
 	public synchronized NodeItem getNodeItem(Node node) {
-		return (NodeItem)getItem(DEFAULT_NODE_CLASS, node, false, false);			
+		return (NodeItem)getItem(DEFAULT_NODE_CLASS, node, false);			
 	} //
 	
 	/**
@@ -728,20 +716,7 @@ public class ItemRegistry {
 	 * @return NodeItem the NodeItem associated with the node, if any
 	 */
 	public synchronized NodeItem getNodeItem(Node node, boolean create) {
-		return (NodeItem)getItem(DEFAULT_NODE_CLASS, node, create, false);		
-	} //
-	
-	/**
-	 * Returns the visualized NodeItem associated with the given Node, if any.
-	 * If create is true, creates the desired NodeItem and adds it to the
-	 * registry, and removes any previous bindings associated with the Node.
-	 * @param node the Node to look up
-	 * @param create if true, a new NodeItem will be allocated if necessary
-	 * @param clear if true, any connecting items will be cleared (e.g., all neighbors removed)
-	 * @return NodeItem the NodeItem associated with the node, if any
-	 */
-	public synchronized NodeItem getNodeItem(Node node, boolean create, boolean clear) {
-		return (NodeItem)getItem(DEFAULT_NODE_CLASS, node, create, clear);		
+		return (NodeItem)getItem(DEFAULT_NODE_CLASS, node, create);		
 	} //
 
 	/**
@@ -750,7 +725,7 @@ public class ItemRegistry {
 	 * @return EdgeItem the EdgeItem associated with the edge, if any
 	 */
 	public synchronized EdgeItem getEdgeItem(Edge edge) {
-		return (EdgeItem)getItem(DEFAULT_EDGE_CLASS, edge, false, false);
+		return (EdgeItem)getItem(DEFAULT_EDGE_CLASS, edge, false);
 	} //
 	
 	/**
@@ -762,7 +737,7 @@ public class ItemRegistry {
 	 * @return EdgeItem the EdgeItem associated with the edge, if any
 	 */
 	public synchronized EdgeItem getEdgeItem(Edge edge, boolean create) {
-		return (EdgeItem)getItem(DEFAULT_EDGE_CLASS, edge, create, false);		
+		return (EdgeItem)getItem(DEFAULT_EDGE_CLASS, edge, create);		
 	} //
 	
 	/**
@@ -772,7 +747,7 @@ public class ItemRegistry {
 	 * @return the AggregateItem associated with the entity, if any
 	 */
 	public synchronized AggregateItem getAggregateItem(Entity entity) {
-		return (AggregateItem)getItem(DEFAULT_AGGR_CLASS, entity, false, false);
+		return (AggregateItem)getItem(DEFAULT_AGGR_CLASS, entity, false);
 	} //
 	
 	/**
@@ -786,22 +761,7 @@ public class ItemRegistry {
 	 * @return AggregateItem the AggregateItem associated with the entity, if any
 	 */
 	public synchronized AggregateItem getAggregateItem(Entity entity, boolean create) {
-		return (AggregateItem)getItem(DEFAULT_AGGR_CLASS, entity, create, false);
-	} //
-	
-	/**
-	 * Returns the visualized AggregateItem associated with the given Entity, if
-	 * any. If create is true, creates the desired AggregateItem and adds it to
-	 * the registry, and removes any previous bindings associated with the
-	 * Entity.
-	 * @param entity the Entity to look up
-	 * @param create if true, a new AggregateItem will be allocated if 
-	 *  necessary
-	 * @param clear if true, any connecting items will be cleared (e.g., all neighbors removed)
-	 * @return AggregateItem the AggregateItem associated with the entity, if any
-	 */
-	public synchronized AggregateItem getAggregateItem(Entity entity, boolean create, boolean clear) {
-		return (AggregateItem)getItem(DEFAULT_AGGR_CLASS, entity, create, clear);
+		return (AggregateItem)getItem(DEFAULT_AGGR_CLASS, entity, create);
 	} //
 
 	/**
@@ -827,7 +787,7 @@ public class ItemRegistry {
 	 * @param entity the graph Entity to add
 	 * @param item the VisualItem corresponding to the entity
 	 */
-	protected synchronized void addMapping(ItemEntry entry, Entity entity, VisualItem item) {
+	private synchronized void addMapping(ItemEntry entry, Entity entity, VisualItem item) {
 		entry.itemMap.put(entity, item);
 		if ( m_entityMap.containsKey(item) ) {
 			Object o = m_entityMap.get(item);
@@ -858,7 +818,7 @@ public class ItemRegistry {
 		}
 	} //
 	
-	protected synchronized void removeMappings(ItemEntry entry, VisualItem item) {
+	private synchronized void removeMappings(ItemEntry entry, VisualItem item) {
 		if ( m_entityMap.containsKey(item) ) {
 			Object o = m_entityMap.get(item);
 			m_entityMap.remove(item);
@@ -879,7 +839,7 @@ public class ItemRegistry {
 	 * @param entity the graph Entity to add
 	 * @param item the VisualItem corresponding to the entity
 	 */
-	protected synchronized void addItem(ItemEntry entry, Entity entity, VisualItem item) {
+	private synchronized void addItem(ItemEntry entry, Entity entity, VisualItem item) {
 		addItem(entry, item);
 		addMapping(entry, entity, item);
 	} //
@@ -889,12 +849,10 @@ public class ItemRegistry {
 	 * mappings.
 	 * @param item the item to add the the visualization queue
 	 */
-	protected void addItem(ItemEntry entry, VisualItem item) {
-	    synchronized ( this ) {
-			entry.itemList.add(item);
-			entry.modified = true;
-	        m_size++;
-	    }
+	private synchronized void addItem(ItemEntry entry, VisualItem item) {
+		entry.itemList.add(item);
+		entry.modified = true;
+        m_size++;
 		if ( m_registryListener != null )
     		m_registryListener.registryItemAdded(item);
 	} //
@@ -907,17 +865,13 @@ public class ItemRegistry {
      *  rendering queue. This option is available to avoid errors that
      *  arise when removing items coming from a currently active Iterator.
 	 */
-	protected void removeItem(ItemEntry entry, VisualItem item, boolean lr) {
-		synchronized ( this ) {
-		    removeMappings(entry, item);
-			if (lr) entry.itemList.remove(item);
-	        m_size--;
-		}
+	private synchronized void removeItem(ItemEntry entry, VisualItem item, boolean lr) {
+		removeMappings(entry, item);
+		if (lr) entry.itemList.remove(item);
+        m_size--;
 		if ( m_registryListener != null )
 			m_registryListener.registryItemRemoved(item);
-		synchronized ( this ) {
-		    m_ifactory.reclaim(item);
-		}
+		m_ifactory.reclaim(item);
 	} //
 
 	/**

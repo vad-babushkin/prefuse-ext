@@ -182,7 +182,6 @@ public class DefaultGraph extends AbstractGraph {
 		n1.removeNeighbor(n2);
 		if ( !m_directed )
 			n2.removeNeighbor(n1);
-		m_edges.remove(e);
 		fireEdgeRemoved(e);
         return true;
 	} //
@@ -247,7 +246,6 @@ public class DefaultGraph extends AbstractGraph {
                 p2.removeEdge(idx);
                 p2.addEdge(idx, next);
             }
-            m_edges.remove(prev);
             fireEdgeReplaced(prev, next);
             return true;
         }

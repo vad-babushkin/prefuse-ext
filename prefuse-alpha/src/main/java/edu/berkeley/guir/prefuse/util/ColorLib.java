@@ -43,7 +43,7 @@ public class ColorLib {
         Integer key = new Integer(rgba);
         Color c = null;
         if ( (c=(Color)colorMap.get(key)) == null ) {
-            c = new Color(rgba,true);
+            c = new Color(rgba);
             colorMap.put(key,c);
             misses++;
         }

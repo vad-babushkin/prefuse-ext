@@ -11,7 +11,7 @@
 	</parent>
 
 	<artifactId>prefuse-alpha</artifactId>
-	<version>20050401</version>
+	<version>20050114</version>
 	<packaging>jar</packaging>
 
 	<name>prefuse-alpha</name>

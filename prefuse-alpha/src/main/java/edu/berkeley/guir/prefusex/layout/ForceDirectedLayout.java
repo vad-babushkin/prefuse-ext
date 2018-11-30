@@ -32,7 +32,6 @@ public class ForceDirectedLayout extends Layout {
     private boolean m_runonce;
     private int m_iterations = 100;
     private boolean m_enforceBounds;
-    private transient NodeItem referrer;
     
     public ForceDirectedLayout(boolean enforceBounds) {
         this(enforceBounds, false);
@@ -59,31 +58,12 @@ public class ForceDirectedLayout extends Layout {
         m_fsim = fsim;
     } //
     
-    public long getMaxTimeStep() {
-        return m_maxstep;
-    } //
-    
-    public void setMaxTimeStep(long maxstep) {
-        this.m_maxstep = maxstep;
-    } //
-    
     public ForceSimulator getForceSimulator() {
         return m_fsim;
     } //
     
     public void setForceSimulator(ForceSimulator fsim) {
         m_fsim = fsim;
-    } //
-    
-    public int getRunOnceIterations() {
-        return m_iterations;
-    } //
-    
-    public void setRunOnceIterations(int iter) {
-        if ( iter < 1 )
-            throw new IllegalArgumentException(
-                    "Iterations must be a positive number!");
-        m_iterations = iter;
     } //
     
     /**
@@ -101,19 +81,9 @@ public class ForceDirectedLayout extends Layout {
                 nitem.setLocation(anchor);
             }
             m_fsim.clear();
-            long timestep = 1000L;
             initSimulator(registry, m_fsim);
-            for ( int i = 0; i < m_iterations; i++ ) {
-                // use an annealing schedule to set time step
-                timestep *= (1.0 - i/(double)m_iterations);
-                long step = timestep+50;
-                // run simulator
-                m_fsim.runSimulator(step);
-                // debugging output
-                if (i % 10 == 0 ) {
-                    System.out.println("iter: "+i);
-                }
-            }
+            for ( int i = 0; i < m_iterations; i++ )
+                m_fsim.runSimulator(50);
             updateNodePositions();
         } else {
             // get timestep
@@ -148,33 +118,23 @@ public class ForceDirectedLayout extends Layout {
         Iterator iter = registry.getNodeItems();
         while ( iter.hasNext() ) {
             NodeItem  nitem = (NodeItem)iter.next();
-            ForceItem fitem = (ForceItem)nitem.getVizAttribute("forceItem");
-            
             if ( nitem.isFixed() ) {
-                // clear any force computations
-                fitem.force[0] = 0.0f;
-                fitem.force[1] = 0.0f;
-                fitem.velocity[0] = 0.0f;
-                fitem.velocity[1] = 0.0f;
-                
                 if ( Double.isNaN(nitem.getX()) )
-                    setLocation(nitem,referrer,0.0,0.0);
+                    setLocation(nitem,null,0.0,0.0);
                 continue;
             }
             
+            ForceItem fitem = (ForceItem)nitem.getVizAttribute("forceItem");
             double x = fitem.location[0];
             double y = fitem.location[1];
             
             if ( m_enforceBounds && bounds != null) {
-                Rectangle2D b = nitem.getBounds();
-                double hw = b.getWidth()/2;
-                double hh = b.getHeight()/2;
-                if ( x+hw > x2 ) x = x2-hw;
-                if ( x-hw < x1 ) x = x1+hw;
-                if ( y+hh > y2 ) y = y2-hh;
-                if ( y-hh < y1 ) y = y1+hh;
+                if ( x > x2 ) x = x2;
+                if ( x < x1 ) x = x1;
+                if ( y > y2 ) y = y2;
+                if ( y < y1 ) y = y1;
             }
-            setLocation(nitem,referrer,x,y);
+            setLocation(nitem,null,x,y);
         }
     } //
     
@@ -197,24 +157,19 @@ public class ForceDirectedLayout extends Layout {
      * Loads the simulator with all relevant force items and springs.
      */
     protected void initSimulator(ItemRegistry registry, ForceSimulator fsim) {
-       float startX = (referrer == null ? 0f : (float)referrer.getX());
-       float startY = (referrer == null ? 0f : (float)referrer.getY());
-       startX = Float.isNaN(startX) ? 0f : startX;
-       startY = Float.isNaN(startY) ? 0f : startY;
-       
        Iterator iter = registry.getNodeItems();
        while ( iter.hasNext() ) {
            NodeItem nitem = (NodeItem)iter.next();
            ForceItem fitem = (ForceItem)nitem.getVizAttribute("forceItem");
            if ( fitem == null ) {
                fitem = new ForceItem();
+               fitem.mass = getMassValue(nitem);
                nitem.setVizAttribute("forceItem", fitem);
            }
-           fitem.mass = getMassValue(nitem);
            double x = nitem.getEndLocation().getX();
            double y = nitem.getEndLocation().getY();
-           fitem.location[0] = (Double.isNaN(x) ? startX : (float)x);
-           fitem.location[1] = (Double.isNaN(y) ? startY : (float)y);
+           fitem.location[0] = (Double.isNaN(x) ? 0f : (float)x);
+           fitem.location[1] = (Double.isNaN(y) ? 0f : (float)y);
            fsim.addItem(fitem);
        }
        iter = registry.getEdgeItems();
@@ -242,16 +197,4 @@ public class ForceDirectedLayout extends Layout {
         return -1.f;
     } //
     
-    /**
-     * @return Returns the referrer.
-     */
-    public NodeItem getReferrer() {
-        return referrer;
-    } //
-    /**
-     * @param referrer The referrer to set.
-     */
-    public void setReferrer(NodeItem referrer) {
-        this.referrer = referrer;
-    } //
 } // end of class ForceDirectedLayout

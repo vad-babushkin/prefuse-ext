@@ -6,7 +6,6 @@ import java.util.Iterator;
 import edu.berkeley.guir.prefuse.VisualItem;
 import edu.berkeley.guir.prefuse.ItemRegistry;
 import edu.berkeley.guir.prefuse.action.AbstractAction;
-import edu.berkeley.guir.prefuse.util.FontLib;
 
 /**
  * Simple <code>FontFunction</code> that blindly returns a null 
@@ -19,16 +18,6 @@ import edu.berkeley.guir.prefuse.util.FontLib;
  */
 public class FontFunction extends AbstractAction {
 
-    protected Font defaultFont = FontLib.getFont("SansSerif",Font.PLAIN,10);
-    
-    public FontFunction() {
-        // do nothing
-    } //
-    
-    public FontFunction(Font defaultFont) {
-        this.defaultFont = defaultFont;
-    } //
-    
 	public void run(ItemRegistry registry, double frac) {
 		Iterator itemIter = registry.getItems();
 		while ( itemIter.hasNext() ) {
@@ -38,18 +27,8 @@ public class FontFunction extends AbstractAction {
 		}
 	} //
 	
-	public void setDefaultFont(Font f) {
-	    defaultFont = f;
-	} //
-	
-	/**
-	 * Returns the Font to use for a given VisualItem. Subclasses should
-	 * override this method to perform customized font assignment.
-	 * @param item the VisualItem for which to get the Font
-	 * @return the Font for the given item
-	 */
 	public Font getFont(VisualItem item) {
-		return defaultFont;
+		return null;
 	} //
 
 } // end of class FontFunction

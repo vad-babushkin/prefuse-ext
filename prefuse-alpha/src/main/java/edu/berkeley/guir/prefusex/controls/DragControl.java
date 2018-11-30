@@ -28,7 +28,7 @@ public class DragControl extends ControlAdapter {
     protected Point2D down = new Point2D.Double();
     protected Point2D tmp = new Point2D.Double();
     protected boolean dragged;
-    private boolean fixOnMouseOver;
+    private boolean wasFixed, fixOnMouseOver;
     protected boolean repaint = true;
     
     /**
@@ -86,6 +86,7 @@ public class DragControl extends ControlAdapter {
         Display d = (Display)e.getSource();
         d.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         activeItem = item;
+        wasFixed = item.isFixed();
         if ( fixOnMouseOver )
             item.setFixed(true);
     } //
@@ -94,7 +95,7 @@ public class DragControl extends ControlAdapter {
         if (!(item instanceof NodeItem)) return;
         if ( activeItem == item ) {
             activeItem = null;
-            item.setFixed(item.wasFixed());
+            item.setFixed(wasFixed);
         }
         Display d = (Display)e.getSource();
         d.setCursor(Cursor.getDefaultCursor());
@@ -103,8 +104,7 @@ public class DragControl extends ControlAdapter {
     public void itemPressed(VisualItem item, MouseEvent e) {
         if (!(item instanceof NodeItem)) return;
         if (!SwingUtilities.isLeftMouseButton(e)) return;
-        if ( !fixOnMouseOver )
-            item.setFixed(true);
+        item.setFixed(true);
         dragged = false;
         Display d = (Display)e.getComponent();
         down = d.getAbsoluteCoordinate(e.getPoint(), down);
@@ -115,7 +115,7 @@ public class DragControl extends ControlAdapter {
         if (!SwingUtilities.isLeftMouseButton(e)) return;
         if ( dragged ) {
             activeItem = null;
-            item.setFixed(item.wasFixed());
+            item.setFixed(wasFixed);
             dragged = false;
         }
     } //

@@ -90,10 +90,11 @@ Demos from:
 
 ## prefuse-alpha
 
-Reverse engineering application prefuse-app (Demo alpha version prefuse)
+Source codes of version 20050114 are taken and added reverse engineering application prefuse-app (20180114)
 
 Of interest is only the implementation of the Hyperbolic tree. The source text of the Hyperbolic Tree has never 
 been published, possibly for patent law reasons.
 
-Reverse engeneering was produced with the help of several java decompilers. 
-*The code is still dirty, but partially working.*
+Reverse engeneering was produced with the help of several java decompilers.
+ 
+*Reverse engineering code is dirty and non stable, but working Hyperbolic tree demo*

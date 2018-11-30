@@ -68,12 +68,12 @@ public class ActivityMap {
     } //
     
     /**
-     * Runs the Activity corresponding to the given key with the
+     * Schedules the Activity corresponding to the given key with the
      * ActivityManager.
-     * @param key the key corresponding to the Activity to run
+     * @param key the key corresponding to the Activity to schedule
      * @return the scheduled Activity, or null if not found
      */
-    public Activity run(Object key) {
+    public Activity schedule(Object key) {
         Activity a = get(key);
         if ( a != null )
             ActivityManager.schedule(a);
@@ -81,13 +81,13 @@ public class ActivityMap {
     } //
 
     /**
-     * Runs the Activity corresponding to the given key with the
+     * Schedules the Activity corresponding to the given key with the
      * ActivityManager to begin at the specified time.
-     * @param key the key corresponding to the Activity to run
+     * @param key the key corresponding to the Activity to schedule
      * @param time the start time at which to begin the Activity
      * @return the scheduled Activity, or null if not found
      */
-    public Activity runAt(Object key, long time) {
+    public Activity scheduleAt(Object key, long time) {
         Activity a = get(key);
         if ( a != null )
             ActivityManager.scheduleAt(a,time);
@@ -97,10 +97,10 @@ public class ActivityMap {
     /**
      * Schedules the Activity corresponding to the given key to be run
      * immediately by the ActivityManager.
-     * @param key the key corresponding to the Activity to run
+     * @param key the key corresponding to the Activity to schedule
      * @return the scheduled Activity, or null if not found
      */
-    public Activity runNow(Object key) {
+    public Activity scheduleNow(Object key) {
         Activity a = get(key);
         if ( a != null )
             ActivityManager.scheduleNow(a);
@@ -118,7 +118,7 @@ public class ActivityMap {
      * @return the second, newly scheduled Activity, or null if either of the
      * keys are not found
      */
-    public Activity runAfter(Object beforeKey, Object afterKey) {
+    public Activity scheduleAfter(Object beforeKey, Object afterKey) {
         Activity before = get(beforeKey);
         Activity after  = get(afterKey);
         if ( before != null && after != null )

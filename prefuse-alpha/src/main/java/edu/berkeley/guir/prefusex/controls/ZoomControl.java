@@ -51,10 +51,6 @@ public class ZoomControl extends ControlAdapter {
     public void mousePressed(MouseEvent e) {
         if ( SwingUtilities.isRightMouseButton(e) ) {
             Display display = (Display)e.getComponent();
-            if (display.isTranformInProgress()) {
-                yLast = -1;
-                return;
-            }
             display.setCursor(
                 Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
             display.getAbsoluteCoordinate(e.getPoint(), down);
@@ -65,11 +61,6 @@ public class ZoomControl extends ControlAdapter {
     public void mouseDragged(MouseEvent e) {
         if ( SwingUtilities.isRightMouseButton(e) ) {
             Display display = (Display)e.getComponent();
-            if (display.isTranformInProgress() || yLast == -1) {
-                yLast = -1;
-                return;
-            }
-            
             double scale = display.getScale();
             
             int x = e.getX(), y = e.getY();

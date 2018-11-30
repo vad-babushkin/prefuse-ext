@@ -132,15 +132,15 @@ public class DistortionDemo extends JFrame {
             String cmd = e.getActionCommand();
             if ( BIFOCAL == cmd ) {
                 ((ActionSwitch)actionMap.get("switch")).setSwitchValue(0);
-                activityMap.runNow("distortion");
+                activityMap.scheduleNow("distortion");
             } else if ( FISHEYE == cmd ) {
                 ((ActionSwitch)actionMap.get("switch")).setSwitchValue(1);
-                activityMap.runNow("distortion");
+                activityMap.scheduleNow("distortion");
             } else if ( SIZES == cmd ) {
                 boolean s = ((JCheckBox)e.getSource()).isSelected();
                 ((Distortion)actionMap.get("distort1")).setSizeDistorted(s);
                 ((Distortion)actionMap.get("distort2")).setSizeDistorted(s);
-                activityMap.runNow("distortion");
+                activityMap.scheduleNow("distortion");
             }
         } //
     } // end of inner class SwitchPanel

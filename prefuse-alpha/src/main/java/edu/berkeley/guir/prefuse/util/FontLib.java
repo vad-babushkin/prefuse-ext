@@ -16,11 +16,6 @@ public class FontLib {
     private static int misses = 0;
     private static int lookups = 0;
     
-    public static Font getFont(String name, int style, double size) {
-        int isize = (int)Math.floor(size);
-        return getFont(name, style, isize);
-    } //
-    
     public static Font getFont(String name, int style, int size) {
         Integer key = new Integer((name.hashCode()<<8)+(size<<2)+style);
         Font f = null;

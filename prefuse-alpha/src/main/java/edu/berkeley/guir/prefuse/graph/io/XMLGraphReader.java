@@ -101,10 +101,6 @@ public class XMLGraphReader extends AbstractGraphReader	implements GraphReader {
 		
 		private boolean inNode, inEdge;
 		
-		public boolean isDirected() {
-			return m_directed;
-		} //
-		
 		public void startDocument() {
 			m_nodeMap.clear();
 		} //

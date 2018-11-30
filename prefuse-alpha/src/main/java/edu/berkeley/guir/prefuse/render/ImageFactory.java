@@ -30,7 +30,7 @@ import edu.berkeley.guir.prefuse.graph.Entity;
  */
 public class ImageFactory {
 	
-	private int m_imageCacheSize = 3000;
+	private int m_imageCacheSize = 500;
 	private int m_maxImageWidth  = 100;
 	private int m_maxImageHeight = 100;
     private boolean m_asynch = true;
@@ -105,7 +105,7 @@ public class ImageFactory {
 				return null;
 			}
 			image = Toolkit.getDefaultToolkit().createImage(imageURL);
-			
+
 			// if set for synchronous mode, block for image to load.
             if ( !m_asynch ) {
                 waitForImage(image);
@@ -127,17 +127,14 @@ public class ImageFactory {
         }
 		return (Image) imageCache.get(imageLocation);
 	} //
-	
+    
     /**
      * Adds an image associated with a locaiton string to this factory's cache.
      * The image will be scaled as dictated by this factory's setting.
-     * 
-     * @param location
-     *            the location string uniquely identifying the image
-     * @param image
-     *            the actual image
-     * @return the final image added to the cache. This may be a scaled version
-     *         of the original input image.
+     * @param location the location string uniquely identifying the image
+     * @param image the actual image
+     * @return the final image added to the cache. This may be a scaled
+     *  version of the original input image.
      */
     public Image addImage(String location, Image image) {
         if ( m_maxImageWidth > -1 || m_maxImageHeight > -1 ) {

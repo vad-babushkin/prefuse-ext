@@ -1,10 +1,9 @@
 package edu.berkeley.guir.prefuse.render;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import edu.berkeley.guir.prefuse.ItemRegistry;
+import edu.berkeley.guir.prefuse.AggregateItem;
+import edu.berkeley.guir.prefuse.EdgeItem;
 import edu.berkeley.guir.prefuse.VisualItem;
+import edu.berkeley.guir.prefuse.NodeItem;
 
 /**
  * Default factory from which to retrieve VisualItem renderers. Assumes only one
@@ -15,7 +14,9 @@ import edu.berkeley.guir.prefuse.VisualItem;
  */
 public class DefaultRendererFactory implements RendererFactory {
 
-    private Map itemClassMap;
+	private Renderer m_nodeRenderer;
+	private Renderer m_edgeRenderer;
+	private Renderer m_aggrRenderer;
 
 	/**
 	 * Default constructor. Assumes default renderers for each VisualItem type.
@@ -56,35 +57,24 @@ public class DefaultRendererFactory implements RendererFactory {
 								  Renderer edgeRenderer, 
 								  Renderer aggrRenderer)
 	{
-	    itemClassMap = new HashMap();
-	    if ( nodeRenderer != null ) {
-	        itemClassMap.put(ItemRegistry.DEFAULT_NODE_CLASS, nodeRenderer);
-	    }
-	    if ( edgeRenderer != null ) {
-	        itemClassMap.put(ItemRegistry.DEFAULT_EDGE_CLASS, edgeRenderer);
-	    }
-	    if ( aggrRenderer != null ) {
-	        itemClassMap.put(ItemRegistry.DEFAULT_AGGR_CLASS, aggrRenderer);
-	    }
+		m_nodeRenderer = nodeRenderer;
+		m_edgeRenderer = edgeRenderer;
+		m_aggrRenderer = aggrRenderer;
 	} //
 
 	/**
 	 * @see edu.berkeley.guir.prefuse.render.RendererFactory#getRenderer(edu.berkeley.guir.prefuse.VisualItem)
 	 */
 	public Renderer getRenderer(VisualItem item) {
-	    return (Renderer)itemClassMap.get(item.getItemClass());
-	} //
-	
-	public Renderer getRenderer(String itemClass) {
-	    return (Renderer)itemClassMap.get(itemClass);
-	} //
-	
-	public void addRenderer(String itemClass, Renderer renderer) {
-	    itemClassMap.put(itemClass, renderer);
-	} //
-	
-	public Renderer removeRenderer(String itemClass) {
-	    return (Renderer)itemClassMap.remove(itemClass);
+        if ( item instanceof AggregateItem ) {
+            return m_aggrRenderer;
+        } else if ( item instanceof NodeItem ) {
+			return m_nodeRenderer;
+		} else if ( item instanceof EdgeItem ) {			
+			return m_edgeRenderer;
+		} else {
+			return null;
+		}
 	} //
 	
 	/**
@@ -92,7 +82,7 @@ public class DefaultRendererFactory implements RendererFactory {
 	 * @return the Renderer for AggregateItems
 	 */
 	public Renderer getAggregateRenderer() {
-		return (Renderer)itemClassMap.get(ItemRegistry.DEFAULT_AGGR_CLASS);
+		return m_aggrRenderer;
 	} //
 
 	/**
@@ -100,7 +90,7 @@ public class DefaultRendererFactory implements RendererFactory {
 	 * @return the Renderer for EdgeItems
 	 */
 	public Renderer getEdgeRenderer() {
-	    return (Renderer)itemClassMap.get(ItemRegistry.DEFAULT_EDGE_CLASS);
+		return m_edgeRenderer;
 	} //
 
 	/**
@@ -108,7 +98,7 @@ public class DefaultRendererFactory implements RendererFactory {
 	 * @return the Renderer for NodeItems
 	 */
 	public Renderer getNodeRenderer() {
-	    return (Renderer)itemClassMap.get(ItemRegistry.DEFAULT_NODE_CLASS);
+		return m_nodeRenderer;
 	} //
 
 	/**
@@ -116,7 +106,7 @@ public class DefaultRendererFactory implements RendererFactory {
 	 * @param renderer the new Renderer for AggregateItems
 	 */
 	public void setAggregateRenderer(Renderer renderer) {
-	    itemClassMap.put(ItemRegistry.DEFAULT_AGGR_CLASS, renderer);
+		m_aggrRenderer = renderer;
 	} //
 
 	/**
@@ -124,7 +114,7 @@ public class DefaultRendererFactory implements RendererFactory {
 	 * @param renderer the new Renderer for EdgeItems
 	 */
 	public void setEdgeRenderer(Renderer renderer) {
-	    itemClassMap.put(ItemRegistry.DEFAULT_EDGE_CLASS, renderer);
+		m_edgeRenderer = renderer;
 	} //
 
 	/**
@@ -132,7 +122,7 @@ public class DefaultRendererFactory implements RendererFactory {
 	 * @param renderer the new Renderer for NodeItems
 	 */
 	public void setNodeRenderer(Renderer renderer) {
-	    itemClassMap.put(ItemRegistry.DEFAULT_NODE_CLASS, renderer);
+		m_nodeRenderer = renderer;
 	} //
 
 } // end of class DefaultRendererFactory

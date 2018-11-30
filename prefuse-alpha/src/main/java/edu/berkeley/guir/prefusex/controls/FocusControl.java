@@ -157,12 +157,10 @@ public class FocusControl extends ControlAdapter {
             if ( ccount == 0 ) {
         		curFocus = item.getEntity();
         		ItemRegistry registry = item.getItemRegistry();
-        		synchronized ( registry ) {
-	        		FocusManager fm = registry.getFocusManager();
-	        		FocusSet fs = fm.getFocusSet(focusSetKey);
-	        		fs.set(item.getEntity());
-	        		registry.touch(item.getItemClass());
-        		}
+        		FocusManager fm = registry.getFocusManager();
+        		FocusSet fs = fm.getFocusSet(focusSetKey);
+        		fs.set(item.getEntity());
+        		registry.touch(item.getItemClass());
         		runActivity();
             }
         }
@@ -175,14 +173,10 @@ public class FocusControl extends ControlAdapter {
             if ( ccount == 0 ) {
             	curFocus = null;
                 ItemRegistry registry = item.getItemRegistry();
-                if ( registry != null ) {
-                    synchronized ( registry ) {
-	                    FocusManager fm = registry.getFocusManager();
-	                    FocusSet fs = fm.getFocusSet(focusSetKey);
-	                    fs.remove(item.getEntity());
-	                    registry.touch(item.getItemClass());
-                    }
-                }
+                FocusManager fm = registry.getFocusManager();
+                FocusSet fs = fm.getFocusSet(focusSetKey);
+                fs.remove(item.getEntity());
+                registry.touch(item.getItemClass());
                 runActivity();
             }
         }
@@ -195,22 +189,12 @@ public class FocusControl extends ControlAdapter {
         {
         	Entity focus = item.getEntity();
         	if ( focus != curFocus ) {
+        		curFocus = focus;
 	            ItemRegistry registry = item.getItemRegistry();
-	            synchronized ( registry ) {
-		            FocusManager fm = registry.getFocusManager();
-		            FocusSet fs = fm.getFocusSet(focusSetKey);
-		            
-		            boolean ctrl = e.isControlDown();
-		            if ( !ctrl ) {
-		                curFocus = focus;
-		                fs.set(focus);
-		            } else if ( fs.contains(focus) ) {
-		                fs.remove(focus);
-		            } else {
-		                fs.add(focus);
-		            }
-		            registry.touch(item.getItemClass());
-	            }
+	            FocusManager fm = registry.getFocusManager();
+	            FocusSet fs = fm.getFocusSet(focusSetKey);
+	            fs.set(item.getEntity());
+	            registry.touch(item.getItemClass());
 	            runActivity();
         	}
         }

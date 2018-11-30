@@ -50,7 +50,6 @@ public class FisheyeGraphFilter extends Filter {
 
 	private int m_minDOI;
     private boolean m_edgesVisible = true;
-    private boolean m_edgesInteractive = true;
     private List m_queue = new LinkedList();
     
     // ========================================================================
@@ -115,7 +114,7 @@ public class FisheyeGraphFilter extends Filter {
             recurse = ( fitem==null || fitem.getDirty()>0 || fitem.getDOI()<0 );
             
             if (fitem==null || fitem.getDirty() > 0)
-                fitem = registry.getNodeItem(fnode, true, true);
+                fitem = registry.getNodeItem(fnode, true);
             
             fgraph.addNode(fitem);
             
@@ -139,7 +138,7 @@ public class FisheyeGraphFilter extends Filter {
                         
                         recurse = ( nni==null ||  nni.getDirty()>0 || nni.getDOI()<doi );
                         if ( nni == null || nni.getDirty() > 0)
-                            nni = registry.getNodeItem(nn, true, true);
+                            nni = registry.getNodeItem(nn, true);
                         fgraph.addNode(nni);
                         
                         if ( recurse ) {
@@ -166,7 +165,6 @@ public class FisheyeGraphFilter extends Filter {
                     EdgeItem eitem = registry.getEdgeItem(edge, true);
                     fgraph.addEdge(eitem);
                     if ( !m_edgesVisible ) eitem.setVisible(false);
-                    if ( !m_edgesInteractive ) eitem.setInteractive(false);
                 }
             }
         }
@@ -194,12 +192,4 @@ public class FisheyeGraphFilter extends Filter {
 		m_minDOI = minDOI;
 	} //
 	
-    public boolean isEdgesInteractive() {
-        return m_edgesInteractive;
-    } //
-    
-    public void setEdgesInteractive(boolean interactive) {
-        m_edgesInteractive = interactive;
-    } //
-    
 } // end of class FisheyeGraphFilter

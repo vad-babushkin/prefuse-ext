@@ -87,26 +87,26 @@ public class WindowedTreeFilter extends Filter {
         Iterator fiter = registry.getDefaultFocusSet().iterator();
         NodeItem focus = null;
         if ( fiter.hasNext() ) {
-            focus = registry.getNodeItem((Node)fiter.next(), true, true);
+            focus = registry.getNodeItem((Node)fiter.next(), true);
         }
         
         // determine root node for filtered tree
         if ( m_root != null ) {
             // someone has set a root for us to use
             Node r = (m_root instanceof NodeItem ? m_root : 
-                registry.getNodeItem(m_root,true,true));
+                registry.getNodeItem(m_root,true));
             froot = (NodeItem)r;
         } else if ( focus != null && m_useFocusAsRoot ) {
             // use the current focus as the root
             froot = focus;
         } else if ( isTree ) {
             // the backing graph is a tree, so use its root
-            froot = registry.getNodeItem(((Tree)graph).getRoot(),true,true);
+            froot = registry.getNodeItem(((Tree)graph).getRoot(),true);
         } else {
             // no root is specified so let's just use the first thing we find
             Iterator iter = graph.getNodes();
             if ( iter.hasNext() )
-                froot = registry.getNodeItem((Node)iter.next(),true,true);
+                froot = registry.getNodeItem((Node)iter.next(),true);
         }
         
         if (froot == null) {
@@ -134,7 +134,7 @@ public class WindowedTreeFilter extends Filter {
                     
                     boolean recurse = (nni==null || nni.getDirty()>0);
                     if ( recurse )
-                        nni = registry.getNodeItem(nn, true, true);
+                        nni = registry.getNodeItem(nn, true);
                     
                     EdgeItem nne = registry.getEdgeItem(ne,true);
                     

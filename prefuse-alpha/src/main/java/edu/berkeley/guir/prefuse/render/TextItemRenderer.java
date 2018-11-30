@@ -42,7 +42,7 @@ public class TextItemRenderer extends ShapeRenderer {
 	protected StringAbbreviator m_abbrev = StringAbbreviator.getInstance();
 	
 	protected RectangularShape m_textBox  = new Rectangle2D.Float();
-	protected Font m_font = FontLib.getFont("SansSerif", Font.PLAIN, 10);
+	protected Font m_font = new Font("SansSerif", Font.PLAIN, 10);
     
 	protected Point2D     m_tmpPoint = new Point2D.Float();
 
@@ -53,8 +53,7 @@ public class TextItemRenderer extends ShapeRenderer {
      * Sets the default font used by this Renderer. If calling getFont() on
      * a VisualItem returns a non-null value, the returned Font will be used
      * instead of this default one.
-     * @param f the default font to use. Note that this will ONLY be used when
-     * if a VisualItem's getFont() method returns null.
+     * @param f the default font to use.
      */
 	public void setFont(Font f) {
 		m_font = f;
@@ -156,7 +155,7 @@ public class TextItemRenderer extends ShapeRenderer {
         double size = item.getSize();
         if ( size != 1 )
             m_font = FontLib.getFont(m_font.getName(), m_font.getStyle(),
-                    size*m_font.getSize());
+                    (int)Math.round(size*m_font.getSize()));
         
 		FontMetrics fm = DEFAULT_GRAPHICS.getFontMetrics(m_font);
 		double h = fm.getHeight() + size*2*m_vertBorder;

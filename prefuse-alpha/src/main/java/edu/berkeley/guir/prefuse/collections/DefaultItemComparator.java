@@ -15,25 +15,6 @@ import edu.berkeley.guir.prefuse.NodeItem;
  */
 public class DefaultItemComparator implements Comparator {
 
-    protected int score(VisualItem item) {
-        int score = 0;
-        if ( item instanceof AggregateItem ) {
-            score += (1<<5);
-        } else if ( item instanceof NodeItem ) {
-            score += (1<<4);
-        } else if ( item instanceof EdgeItem ) {
-            score += (1<<3);
-        }
-        if ( item.isFocus() ) {
-            score += (1<<2);
-        }
-        if ( item.isHighlighted() ) {
-            score += (1<<1);
-        }
-        
-        return score;
-    } //
-    
 	/**
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
@@ -44,18 +25,50 @@ public class DefaultItemComparator implements Comparator {
 		
 		VisualItem item1 = (VisualItem)o1;
 		VisualItem item2 = (VisualItem)o2;
-        int score1 = score(item1);
-        int score2 = score(item2);
+        
+		boolean f1 = item1.isFocus();
+		boolean f2 = item2.isFocus();
 		
-		if ( item1 instanceof AggregateItem && item2 instanceof AggregateItem ) {
-            int s1 = ((AggregateItem)item1).getAggregateSize();
-            int s2 = ((AggregateItem)item2).getAggregateSize();
-            if ( s1 < s2 )
-                score1 += 1;
-            else if ( s2 < s1 )
-                score2 += 1;
+        if ( f1 && !f2 )
+            return 1;
+        else if ( !f1 && f2 )
+            return -1;
+        
+        boolean h1 = item1.isHighlighted();
+        boolean h2 = item2.isHighlighted();
+        
+        boolean n1 = item1 instanceof NodeItem;
+        boolean n2 = item2 instanceof NodeItem;
+        
+        if ( n1 && !n2 )
+            return 1;
+        else if ( !n1 && n2 )
+            return -1;
+        else if ( n1 && n2 ) {
+            if ( h1 && !h2 )
+                return 1;
+            else if ( !h1 && h2 )
+                return -1;
+            else {
+                boolean a1 = item1 instanceof AggregateItem;
+                boolean a2 = item2 instanceof AggregateItem;
+                return (a1 && !a2 ? -1 : (!a1 && a2 ? 1 : 0));
+            }
         }
-        return (score1<score2 ? -1 : (score1==score2 ? 0 : 1));
+        
+        boolean e1 = item1 instanceof EdgeItem;
+        boolean e2 = item2 instanceof EdgeItem;
+        
+        if ( e1 && !e2 )
+            return 1;
+        else if ( !e1 && e2 )
+            return -1;
+        else if ( h1 && !h2 )
+                return 1;
+        else if ( !h1 && h2 )
+            return -1;
+        else
+            return 0;
 	} //
 
 } // end of class DefaultItemComparator

@@ -3,7 +3,6 @@ package edu.berkeley.guir.prefusex.force;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Random;
 
 /**
  * A quad-tree based implementation of the Barnes-Hut algorithm for
@@ -47,8 +46,6 @@ public class NBodyForce extends AbstractForce {
     private float xMin, xMax, yMin, yMax;
 	private QuadTreeNodeFactory factory = new QuadTreeNodeFactory();
 	private QuadTreeNode root;
-	
-	private Random rand = new Random(12345678L); // deterministic randomness
 
     /**
      * Construct a new empty NBodyForce simulation.
@@ -145,11 +142,7 @@ public class NBodyForce extends AbstractForce {
 	 */
 	public void insert(ForceItem item) {
 		// insert item into the quadtrees
-	    try {
-	        insert(item, root, xMin, yMin, xMax, yMax);
-	    } catch ( StackOverflowError e ) {
-	        e.printStackTrace();
-	    }
+		insert(item, root, xMin, yMin, xMax, yMax);
 	} //
 
 	private void insert(ForceItem p, QuadTreeNode n, 
@@ -227,11 +220,7 @@ public class NBodyForce extends AbstractForce {
      * @param item the ForceItem for which to compute the force
      */
 	public void getForce(ForceItem item) {
-	    try {
-	        forceHelper(item,root,xMin,yMin,xMax,yMax);
-	    } catch ( StackOverflowError e ) {
-	        e.printStackTrace();
-	    }
+		forceHelper(item,root,xMin,yMin,xMax,yMax);
 	} //
 	
 	private void forceHelper(ForceItem item, QuadTreeNode n, 
@@ -243,8 +232,8 @@ public class NBodyForce extends AbstractForce {
         boolean same = false;
         if ( r == 0.0 ) {
             // if items are in the exact same place, add some noise
-            dx = (rand.nextFloat()-0.5f) / 50.0f;
-            dy = (rand.nextFloat()-0.5f) / 50.0f;
+            dx = ((float)Math.random()-0.5f) / 50.0f;
+            dy = ((float)Math.random()-0.5f) / 50.0f;
             r  = (float)Math.sqrt(dx*dx+dy*dy);
             same = true;
         }

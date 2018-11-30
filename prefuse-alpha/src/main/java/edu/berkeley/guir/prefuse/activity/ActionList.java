@@ -146,11 +146,7 @@ public class ActionList extends Activity implements Action {
             Iterator iter = m_actions.iterator();
             while ( iter.hasNext() ) {
                 Action a = (Action)iter.next();
-                try {
-                    if ( a.isEnabled() ) a.run(m_registry, frac);
-                } catch ( Exception e ) {
-                    e.printStackTrace();
-                }
+                if ( a.isEnabled() ) a.run(m_registry, frac);
             }
         }
     } //

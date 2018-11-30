@@ -106,7 +106,7 @@ public class HyperbolicTree extends JFrame {
 			this.pack();
 			this.setVisible(true);
 			registry.getDefaultFocusSet().set(tree.getRoot());
-			actmap.runNow("filter");
+			actmap.scheduleNow("filter");
 		} catch (Exception var13) {
 			var13.printStackTrace();
 		}
@@ -135,12 +135,12 @@ public class HyperbolicTree extends JFrame {
 		public void mouseDragged(MouseEvent e) {
 			this.drag = true;
 			HyperbolicTree.translation.setEndPoint(e.getX(), e.getY());
-			HyperbolicTree.actmap.runNow("translate");
+			HyperbolicTree.actmap.scheduleNow("translate");
 		}
 
 		public void mouseReleased(MouseEvent e) {
 			if (this.drag) {
-				HyperbolicTree.actmap.runNow("endTranslate");
+				HyperbolicTree.actmap.scheduleNow("endTranslate");
 				this.drag = false;
 			}
 
@@ -169,8 +169,8 @@ public class HyperbolicTree extends JFrame {
 				if (node != null) {
 					HyperbolicTree.translation.setStartPoint(e.getX(), e.getY());
 					HyperbolicTree.translation.setEndPoint(e.getX(), e.getY());
-					HyperbolicTree.actmap.runNow("animate");
-					HyperbolicTree.actmap.runAfter("animate", "endTranslate");
+					HyperbolicTree.actmap.scheduleNow("animate");
+					HyperbolicTree.actmap.scheduleAfter("animate", "endTranslate");
 				}
 			}
 
