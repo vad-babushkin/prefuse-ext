@@ -22,3 +22,5 @@ prefuse-caffe-layout-visualization/logs/*
 logs/*
 
 treefuse.treeml
+
+FileLocation.txt

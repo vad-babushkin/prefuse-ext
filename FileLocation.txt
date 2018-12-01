@@ -1,1 +1,0 @@
-/home/vad/work/JAVA/opticalNetworkVisualize/data/ZoneNodeLocation.txt
