@@ -285,6 +285,7 @@
 	    <module>prefuse-profusians</module>
 	    <module>prefuse-alpha</module>
         <module>prefuse-alpha-apps</module>
+        <module>prefuse-RSFTree</module>
     </modules>
 	
 </project>

@@ -75,6 +75,18 @@ Common Java classes to extend the InfoVis library prefuse [ieg-vienna/ieg-prefus
 
 [thingumajig/prefuse-caffe-layout-visualization](https://github.com/thingumajig/prefuse-caffe-layout-visualization)
 
+## prefuse-prefuse-RSFTree
+
+![docuburst](data/docuburst.png)
+
+[DocuBurst: Visualizing Document Content using Language Structure](http://faculty.uoit.ca/collins/research/docuburst/index.html)
+
+DocuBurst is the first visualization of document content which takes advantage of the human-created structure in lexical databases. We use an accepted design paradigm to generate visualizations which improve the usability and utility of WordNet as the backbone for document content visualization. A radial, space-filling layout of hyponymy (IS-A relation) is presented with interactive techniques of zoom, filter, and details-on-demand for the task of document visualization. The techniques can be generalized to multiple documents.
+
+Collins, Christopher; Carpendale, Sheelagh; and Penn, Gerald. DocuBurst: Visualizing Document Content using Language Structure. Computer Graphics Forum (Proceedings of Eurographics/IEEE-VGTC Symposium on Visualization (EuroVis '09)), 28(3): pp. 1039-1046, June, 2009.
+
+
+
 ## prefuse-ext-demos
 
 Demos from:
