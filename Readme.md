@@ -114,7 +114,13 @@ Demos from:
 - [etc-groups.sourceforge.net](http://etc-groups.sourceforge.net)
 
 - [VoCAL](http://code.google.com/p/vocal/)
+
 VoCAL: Protégé OWL plugin for visualizing DL concept expressions
+
+- [YAMVIA](http://code.google.com/p/ivipi/)
+
+YAMVIA is - as the name is giving you a hint - another approach struggling with the perfidies that visualization of large Movie-Databases come along with. YAMVIA is performed by students of the University of Tampere, Finland in the course Information Visualization Project Work. The YAMVIA project was previously ran under the name "GMD - Global Movie Database", but as the project emerged we recognized that we have to choose a more appropriate name in order to the challenges that occured. 
+
 
 ## prefuse-alpha
 
