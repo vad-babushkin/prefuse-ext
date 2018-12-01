@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  An excerpt of an egocentric social network  -->
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+<graph edgedefault="undirected">
+ 
+<!-- data schema -->
+<key id="name" for="node" attr.name="name" attr.type="string"/>
+<key id="gender" for="node" attr.name="gender" attr.type="string"/>
+<key id="age" for="node" attr.name="age" attr.type="int"/>
+<key id="weight" for="node" attr.name="weight" attr.type="int"/>
+  
+<!-- nodes -->  
+<node id="1">
+ <data key="name">Björn</data>
+ <data key="gender">M</data>
+ <data key="age">27</data>
+ <data key="weight">87</data>
+</node>
+<node id="2">
+ <data key="name">Robert</data>
+ <data key="gender">M</data>
+ <data key="age">25</data>
+  <data key="weight">77</data>
+</node>
+<node id="3">
+ <data key="name">Philipp</data>
+ <data key="gender">M</data>
+ <data key="age">25</data>
+  <data key="weight">70</data>
+</node>
+<node id="4">
+ <data key="name">Cora</data>
+ <data key="gender">F</data>
+ <data key="age">23</data>
+  <data key="weight">59</data>
+</node>
+<node id="5">
+ <data key="name">Armin</data>
+ <data key="gender">M</data>
+ <data key="age">24</data>
+  <data key="weight">77</data>
+</node>
+<node id="6">
+ <data key="name">Sarah</data>
+ <data key="gender">F</data>
+ <data key="age">25</data>
+  <data key="weight">48</data>
+</node>
+<node id="7">
+ <data key="name">Ariane</data>
+ <data key="gender">F</data>
+ <data key="age">19</data>
+  <data key="weight">62</data>
+</node>
+<node id="8">
+ <data key="name">Jenny</data>
+ <data key="gender">F</data>
+ <data key="age">23</data>
+  <data key="weight">59</data>
+</node>
+<node id="9">
+ <data key="name">Johannes</data>
+ <data key="gender">M</data>
+ <data key="age">24</data>
+  <data key="weight">60</data>
+</node>
+<node id="10">
+ <data key="name">Robert</data>
+ <data key="gender">M</data>
+ <data key="age">25</data>
+  <data key="weight">72</data>
+</node>
+<node id="11">
+ <data key="name">Tanja</data>
+ <data key="gender">F</data>
+ <data key="age">25</data>
+  <data key="weight">59</data>
+</node>
+<node id="12">
+ <data key="name">Jacqueline</data>
+ <data key="gender">F</data>
+ <data key="age">25</data>
+  <data key="weight">77</data>
+</node>
+<node id="13">
+ <data key="name">Sebastian</data>
+ <data key="gender">M</data>
+ <data key="age">26</data>
+  <data key="weight">105</data>
+</node>
+<node id="14">
+ <data key="name">Nico</data>
+ <data key="gender">M</data>
+ <data key="age">24</data>
+  <data key="weight">111</data>
+</node>
+<node id="15">
+ <data key="name">Markus</data>
+ <data key="gender">M</data>
+ <data key="age">24</data>
+  <data key="weight">70</data>
+</node>
+<node id="16">
+ <data key="name">Alex</data>
+ <data key="gender">F</data>
+ <data key="age">23</data>
+  <data key="weight">59</data>
+</node>
+<node id="17">
+ <data key="name">Markus</data>
+ <data key="gender">M</data>
+ <data key="age">28</data>
+  <data key="weight">77</data>
+</node>
+<node id="18">
+ <data key="name">Benjamin</data>
+ <data key="gender">M</data>
+ <data key="age">26</data>
+  <data key="weight">90</data>
+</node>
+<node id="19">
+ <data key="name">Fabian</data>
+ <data key="gender">M</data>
+ <data key="age">27</data>
+  <data key="weight">80</data>
+</node>
+<node id="20">
+ <data key="name">Nico</data>
+ <data key="gender">M</data>
+ <data key="age">27</data>
+  <data key="weight">77</data>
+</node>
+<node id="21">
+ <data key="name">Christian</data>
+ <data key="gender">M</data>
+ <data key="age">28</data>
+  <data key="weight">92</data>
+</node>
+<!-- friends of friends -->
+<node id="22">
+ <data key="name">Christian</data>
+ <data key="gender">M</data>
+ <data key="age">28</data>
+  <data key="weight">91</data>
+</node>
+<node id="23">
+ <data key="name">Dennis</data>
+ <data key="gender">M</data>
+ <data key="age">27</data>
+  <data key="weight">70</data>
+</node>
+<node id="24">
+ <data key="name">Gabi</data>
+ <data key="gender">F</data>
+ <data key="age">27</data>
+  <data key="weight">62</data>
+</node>
+<node id="25">
+ <data key="name">Nils</data>
+ <data key="gender">M</data>
+ <data key="age">24</data>
+  <data key="weight">69</data>
+</node>
+<node id="26">
+ <data key="name">Tom</data>
+ <data key="gender">M</data>
+ <data key="age">29</data>
+  <data key="weight">85</data>
+</node>
+<node id="27">
+ <data key="name">Manuel</data>
+ <data key="gender">M</data>
+ <data key="age">28</data>
+  <data key="weight">109</data>
+</node>
+<node id="28">
+ <data key="name">Maria</data>
+ <data key="gender">F</data>
+ <data key="age">25</data>
+  <data key="weight">61</data>
+</node>
+<node id="29">
+ <data key="name">Robert</data>
+ <data key="gender">M</data>
+ <data key="age">12</data>
+  <data key="weight">43</data>
+</node>
+<node id="30">
+ <data key="name">Patrick</data>
+ <data key="gender">M</data>
+ <data key="age">13</data>
+  <data key="weight">38</data>
+</node>
+
+<!-- edges -->
+<edge source="1" target="2"></edge>
+<edge source="1" target="3"></edge>
+<edge source="1" target="4"></edge>
+<edge source="1" target="5"></edge>
+<edge source="1" target="6"></edge>
+<edge source="1" target="7"></edge>
+<edge source="1" target="8"></edge>
+<edge source="1" target="9"></edge>
+<edge source="1" target="10"></edge>
+<edge source="1" target="11"></edge>
+<edge source="1" target="12"></edge>
+<edge source="1" target="13"></edge>
+<edge source="1" target="14"></edge>
+<edge source="1" target="15"></edge>
+<edge source="1" target="16"></edge>
+<edge source="1" target="17"></edge>
+<edge source="1" target="18"></edge>
+<edge source="1" target="19"></edge>
+<!--<edge source="1" target="20"></edge>-->
+<edge source="1" target="21"></edge>
+<!-- ed's friends -->
+<edge source="2" target="5"></edge>
+<edge source="2" target="8"></edge>
+<edge source="2" target="10"></edge>
+<!-- christiaan's friends -->
+<edge source="3" target="5"></edge>
+<edge source="3" target="8"></edge>
+<edge source="3" target="10"></edge>
+<edge source="3" target="17"></edge>
+<!-- emily's friends -->
+<edge source="4" target="22"></edge>
+<edge source="4" target="23"></edge>
+<edge source="4" target="24"></edge>
+<edge source="4" target="25"></edge>
+<edge source="4" target="26"></edge>
+<edge source="4" target="27"></edge>
+<!-- adam's friends -->
+<edge source="5" target="8"></edge>
+<edge source="5" target="10"></edge>
+<!-- cynthia's friends -->
+<edge source="6" target="14"></edge>
+<!-- joylette's friends -->
+<edge source="7" target="8"></edge>
+<edge source="7" target="10"></edge>
+<edge source="7" target="28"></edge>
+<!-- amanda's friends -->
+<edge source="8" target="10"></edge>
+<edge source="8" target="14"></edge>
+<edge source="8" target="15"></edge>
+<edge source="8" target="29"></edge>
+<edge source="8" target="17"></edge>
+<edge source="8" target="18"></edge>
+<edge source="8" target="30"></edge>
+<edge source="8" target="21"></edge>
+<!-- nathaniel's friends -->
+<!-- bryan's friends -->
+<edge source="10" target="17"></edge>
+<edge source="10" target="30"></edge>
+<!-- tamara's friends -->
+<edge source="11" target="12"></edge>
+<!-- ashley's friends -->
+<!-- ryan's friends -->
+<edge source="13" target="19"></edge>
+<!-- alan's friends -->
+<edge source="14" target="15"></edge>
+<edge source="14" target="18"></edge>
+<edge source="14" target="21"></edge>
+<!-- chris's friends -->
+<edge source="15" target="16"></edge>
+<edge source="15" target="18"></edge>
+<edge source="15" target="21"></edge>
+
+</graph>
+</graphml>

@@ -92,16 +92,29 @@ Collins, Christopher; Carpendale, Sheelagh; and Penn, Gerald. DocuBurst: Visuali
 Demos from:
 
 - [markhm/prefuse_demos](https://github.com/markhm/prefuse_demos)
+
 - [qazxiaye/prefuseDemo_NetTopology](https://github.com/qazxiaye/prefuseDemo_NetTopology)
+
 - [roguh/prefusetreevis](https://github.com/roguh/prefusetreevis)
+
 - [tangwing/MovieGraph](https://github.com/tangwing/MovieGraph)
+
 - [luizvarela/grafos_java](https://github.com/luizvarela/grafos_java)
+
 - [dopl/prefuse-example](https://github.com/dopl/prefuse-example)
+
 - [fajran/ubuntu-pkg-vis-prefuse](https://github.com/fajran/ubuntu-pkg-vis-prefuse)
+
 - [projektlp/opticalNetworkVisualize](https://github.com/projektlp/opticalNetworkVisualize)
+
 - [prefuse assistance pool (PAP)](http://goosebumps4all.net/34all/bb/forumdisplay.php?fid=18)
+
 - [dudka.cz/sgvis](http://dudka.cz/sgvis)
+
 - [etc-groups.sourceforge.net](http://etc-groups.sourceforge.net)
+
+- [VoCAL](http://code.google.com/p/vocal/)
+VoCAL: Protégé OWL plugin for visualizing DL concept expressions
 
 ## prefuse-alpha
 
