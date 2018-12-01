@@ -28,6 +28,13 @@
 			<version>20080629</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/edu.stanford.ejalbert/BrowserLauncher2 -->
+		<dependency>
+			<groupId>edu.stanford.ejalbert</groupId>
+			<artifactId>BrowserLauncher2</artifactId>
+			<version>1.3</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

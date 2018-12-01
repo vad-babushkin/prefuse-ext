@@ -100,6 +100,7 @@ Demos from:
 - [fajran/ubuntu-pkg-vis-prefuse](https://github.com/fajran/ubuntu-pkg-vis-prefuse)
 - [projektlp/opticalNetworkVisualize](https://github.com/projektlp/opticalNetworkVisualize)
 - [prefuse assistance pool (PAP)](http://goosebumps4all.net/34all/bb/forumdisplay.php?fid=18)
+- [dudka.cz/sgvis](http://dudka.cz/sgvis)
 
 ## prefuse-alpha
 
