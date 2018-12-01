@@ -75,7 +75,7 @@ Common Java classes to extend the InfoVis library prefuse [ieg-vienna/ieg-prefus
 
 [thingumajig/prefuse-caffe-layout-visualization](https://github.com/thingumajig/prefuse-caffe-layout-visualization)
 
-## prefuse-prefuse-RSFTree
+## prefuse-RSFTree
 
 ![docuburst](data/docuburst.png)
 
