@@ -1,0 +1,7 @@
+0.2 :
+    added mode SQL ( faster in certain cases, or loading for sure )
+    added gml2sql.pl : conversion de un GraphML en un SQL
+0.1 :
+    initial version ( mode GraphML )
+    filters on countries, types, activity 
+    search engine

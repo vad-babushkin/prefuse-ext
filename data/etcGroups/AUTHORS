@@ -1,0 +1,10 @@
+/etc/groups version 0.2
+copyright Yves Degoyon and Memory Project Group
+( Dominique Cardon, Pierre Georges, Dimitri Moraitis, Jaume Nualart, Alex Hache, Alejandra Perez NuÑez, ... )
+
+made with prefuse (http://prefuse.org/)
+
+inspired by radial graph view by jeffrey heer ( http://jheer.org ).
+
+based on the gnutellavision ( http://www.sims.berkeley.edu/%7Erachna/gtv/ ) 
+project by ping yee, danyel fisher, rachna dhamija, and marti hearst

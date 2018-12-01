@@ -1,0 +1,41 @@
+
+This consists mainly a pre-compiled java applet,
+to recompile it, use './build.sh' 
+but this is not necessary.
+
+Untar this in a web accessible folder,
+change the hostname to your hostname with :
+'./set-host.sh <myhost>'
+eventually, change the applet's parameters in fapplet.html
+( in SQL mode, you'll need to create a database
+with tables nodes and edges,
+and change the database password, host , user )
+
+then the example will be available at :
+http://<myserver>/etc/groups.html
+
+-- optional : thumbnails extraction
+
+In order to make thumbnail extraction work,
+you will need to install :
+
+* perl
+
+the following perl module  :
+* Data::UUID
+  you can install it with :
+  perl -MCPAN -e 'install Data::UUID'
+
+* khtml2png2
+  ( http://sourceforge.net/projects/khtml2png/ )
+
+* Image Magick
+  ( http://www.imagemagick.org )
+
+Then install Xvfb (http://www.xfree86.org/4.4.0/Xvfb.1.html),
+then change this parameter in tnconf.pm :
+$display = "localhost:99.0";
+
+To run thumbnail extraction, start Xvfb and then './run-tn.sh'.
+
+Enjoy !

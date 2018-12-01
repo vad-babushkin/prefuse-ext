@@ -1,0 +1,24 @@
+/etc/groups version 0.2
+copyright Yves Degoyon and Memory Project Group
+( Dominique Cardon, Pierre Georges, Dimitri Moraitis, Jaume Nualart, Alex Hache, Alejandra Perez Nuñez, ... )
+
+/etc/groups is a web application made with prefuse for the visualisation of big sets of data, 
+mainly aimed at visualising groups and networks and the relations between them. 
+It has been developped in the context of the memory project, 
+a project to analyze social movements who participated to social forums
+( but we do not endorse  the quality/accuracy of this data 
+here used as an example ).
+
+It offers features of data filtering and a graphical search engine, 
+that makes it useful for using it as a yellow page (graphical) directory. 
+it comes in form of a java applet that use GraphML files as input format.
+
+The data can be extracted from various databases
+and is entered in the visualisation tools
+using Graph ML, a dialect of XML.
+
+Some various scripts are provided to make
+the extraction of data from different data sources
+(CSV, MySQL, ZopeDB ). 
+
+see INSTALL for installing instructions.
