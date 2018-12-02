@@ -70,7 +70,7 @@ import prefuse.visual.sort.TreeDepthItemSorter;
  */
 public class RadialGraphView extends Display {
 
-	public static final String DATA_FILE = "/socialnet.xml";
+	public static final String DATA_FILE = "data/socialnet.xml";
 
 	private static final String tree = "tree";
 	private static final String treeNodes = "tree.nodes";

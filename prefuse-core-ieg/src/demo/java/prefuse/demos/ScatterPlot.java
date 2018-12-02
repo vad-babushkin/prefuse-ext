@@ -114,7 +114,7 @@ public class ScatterPlot extends Display {
 	// ------------------------------------------------------------------------
 
 	public static void main(String[] argv) {
-		String data = "/fisher.iris.txt";
+		String data = "data/fisher.iris.txt";
 		String xfield = "SepalLength";
 		String yfield = "PetalLength";
 		String sfield = "Species";

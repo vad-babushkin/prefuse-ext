@@ -57,8 +57,8 @@ import prefuse.visual.VisualTable;
  */
 public class ZipDecode extends Display implements Constants {
 
-	public static final String ZIPCODES = "/zipcode.txt";
-	public static final String STATES = "/state.txt";
+	public static final String ZIPCODES = "data/zipcode.txt";
+	public static final String STATES = "data/state.txt";
 
 	// data groups
 	private static final String DATA = "data";

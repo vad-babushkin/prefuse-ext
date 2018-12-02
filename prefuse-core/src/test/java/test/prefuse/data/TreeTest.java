@@ -19,7 +19,7 @@ import prefuse.util.ui.JPrefuseTable;
 
 public class TreeTest extends TestCase {
 
-	public static final String TREE_CHI = "/chi-ontology.xml.gz";
+	public static final String TREE_CHI = "data/chi-ontology.xml.gz";
 
 	public void testTreeReader() {
 		// load tree
