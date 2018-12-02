@@ -5,7 +5,7 @@ This project is a aims a collection of examples revealing the rich possibilities
 Many examples are only useful as code, since they depend on long-obsolete libraries. Many examples no longer exist on 
 the Internet.
 
-Although the library is no longer being developed 2 2006, the library may still be useful in the Java VM GUI Application.
+Although the library is no longer being developed from 2006, the library may still be useful in the Java VM GUI Applications.
 
 All changes are released under the same original license.
 
