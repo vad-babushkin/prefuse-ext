@@ -1,4 +1,4 @@
-package prefuse.demos.vocal;
+package vocal;
 
 import prefuse.action.assignment.ColorAction;
 import prefuse.visual.VisualItem;

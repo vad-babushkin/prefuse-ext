@@ -1,4 +1,4 @@
-package prefuse.demos.vocal;
+package vocal;
 
 public interface VocalConstants {
 	

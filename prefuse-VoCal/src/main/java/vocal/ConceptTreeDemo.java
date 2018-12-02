@@ -1,4 +1,4 @@
-package prefuse.demos.vocal;
+package vocal;
 
 import prefuse.data.io.DataIOException;
 import prefuse.data.io.TreeMLWriter;

@@ -1,4 +1,4 @@
-package prefuse.demos.vocal;
+package vocal;
 
 import java.awt.Color;
 
