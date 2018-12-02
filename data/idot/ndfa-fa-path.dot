@@ -1,0 +1,41 @@
+digraph "ndfa-fa-path" {
+	graph [ranksep=.2];
+	node [shape=circle,fontname=Helvetica,fontsize=14];
+	node [width=0.4,fixedsize=true];
+	edge [fontname=Helvetica,fontsize=14];
+
+-1 [width=0.2,shape=point color=red];
+-1 -> 0 [ color=red];
+0 [label=q0 color=red];
+1 [label=q1 color=red];
+2 [label=q2];
+3 [label=q3];
+4 [label=q4];
+5 [label=q5];
+6 [label=q6 peripheries=2];
+7 [label=q7];
+8 [label=q8];
+9 [label=q9 color=red];
+10 [label=q10 color=red];
+11 [label=q11 peripheries=2 color=red];
+12 [label=q12 color=red];
+
+2 -> 3 [label=" a" ];
+4 -> 5 [label=" a" ];
+11 -> 12 [label=" b"  color=red];
+12 -> 11 [label=" b"  color=red];
+9 -> 10 [label=" a"  color=red];
+10 -> 9 [label=" a"  color=red];
+1 -> 2 [label=" a" ];
+3 -> 6 [label=" L" ];
+8 -> 6 [label=" b" ];
+0 -> 1 [label=" a"  color=red];
+9 -> 11 [label=" L"  color=red];
+3 -> 4 [label=" a" ];
+9 -> 6 [label=" L" ];
+3 -> 11 [label=" L" ];
+7 -> 8 [label=" b" ];
+1 -> 9 [label=" a"  color=red];
+5 -> 3 [label=" a" ];
+6 -> 7 [label=" b" ];
+}

@@ -1,0 +1,15 @@
+digraph "/home/mvinni/o/jspin411/tmp_t/sem3" {
+	graph [size="16,12",ranksep=.25];
+	node [shape=box,fontname=Helvetica,fontsize=14];
+	node [width=1.6,height=1.2,fixedsize=true];
+0 [label="6. s>0\n12. s>0\n18. s>0\n 1"];
+1 [label="6. s>0\n12. s>0\n19. s = s+1\n 0"];
+2 [label="6. s>0\n13. s = s+1\n18. s>0\n 0"];
+3 [label="7. s = s+1\n12. s>0\n18. s>0\n 0"];
+0 -> 1;
+1 -> 0;
+0 -> 2;
+2 -> 0;
+0 -> 3;
+3 -> 0;
+}

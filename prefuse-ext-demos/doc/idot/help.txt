@@ -1,0 +1,28 @@
+        iDot - Incremental Dot Viewer
+
+iDot enables incremental display of directed graphs written 
+in the dot language of Graphviz (http://graphviz.org). The jar 
+file for the prefuse graphics library and minimal executables 
+for dot are included in the distribution.
+
+iDot was developed for use with the SpinSpider software tool
+for automatically generating state diagrams from Promela
+programs in Spin, and the VN software tool for generating
+computations in nondeterministic finite automata.
+See: http://stwww.weizmann.ac.il/g-cs/benari/home/software.html.
+
+When a dot file is opened, the first node will be displayed.
+The following operations can be performed with the mouse:
+  * Double-click on a node to display the nodes directly
+    accessible from that node.
+  * Drag and drop a node or an edge to rearrange the layout.
+  * Left-press on the canvas to pan the graph.
+  * Right-press on the canvas to zoom the graph.
+    The mouse wheel can also be used.
+
+Toolbar commands:
+  * Show all / Show Open - toggles between showing the entire
+      graph and showing nodes that have been "opened" incrementally.
+  * Redo - restore the initial layout.
+  * Edit - edit the dot file; the changes can be saved and applied.
+  * Export - export the current image in a variety of formats.
