@@ -1,9 +1,13 @@
 # About Prefuse-ext
 
 This project is a aims a collection of examples revealing the rich possibilities of the library Prefuse.
-All changes are released under the same original license.
 
-In my opinion, the library can still be useful in the Java Client Application Platform (RCP).
+Many examples are only useful as code, since they depend on long-obsolete libraries. Many examples no longer exist on 
+the Internet.
+
+Although the library is no longer being developed 2 2006, the library may still be useful in the Java VM GUI Application.
+
+All changes are released under the same original license.
 
 # About Prefuse
 
