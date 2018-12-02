@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>prefuse-ext</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <artifactId>prefuse-VoCal</artifactId>
+    <version>1.0</version>
+    <packaging>jar</packaging>
+    <name>prefuse-VoCal</name>
+
+    <dependencies>
+        <!-- core -->
+        <dependency>
+            <groupId>prefuse-ext</groupId>
+            <artifactId>prefuse-core</artifactId>
+            <version>${prefuse-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>prefuse-ext</groupId>
+            <artifactId>prefuse-profusians</artifactId>
+            <version>20080629</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/edu.stanford.smi.protege/protege-owl -->
+        <dependency>
+            <groupId>edu.stanford.smi.protege</groupId>
+            <artifactId>protege-owl</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+
+    </dependencies>
+
+
+</project>

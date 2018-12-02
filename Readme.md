@@ -86,6 +86,11 @@ DocuBurst is the first visualization of document content which takes advantage o
 Collins, Christopher; Carpendale, Sheelagh; and Penn, Gerald. DocuBurst: Visualizing Document Content using Language Structure. Computer Graphics Forum (Proceedings of Eurographics/IEEE-VGTC Symposium on Visualization (EuroVis '09)), 28(3): pp. 1039-1046, June, 2009.
 
 
+## prefuse-VoCal
+
+- [VoCAL](http://code.google.com/p/vocal/)
+
+VoCAL: Protégé OWL plugin for visualizing DL concept expressions
 
 ## prefuse-ext-demos
 
@@ -112,10 +117,6 @@ Demos from:
 - [dudka.cz/sgvis](http://dudka.cz/sgvis)
 
 - [etc-groups.sourceforge.net](http://etc-groups.sourceforge.net)
-
-- [VoCAL](http://code.google.com/p/vocal/)
-
-VoCAL: Protégé OWL plugin for visualizing DL concept expressions
 
 - [YAMVIA](http://code.google.com/p/ivipi/)
 
