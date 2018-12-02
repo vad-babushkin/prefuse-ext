@@ -48,9 +48,9 @@ import edu.berkeley.guir.prefusex.layout.RadialTreeLayout;
  */
 public class RadialGraphDemo extends JFrame {
 
-	public static final String GRAPH_GUIR       = "etc/guir.xml";
-	public static final String GRAPH_FRIENDSTER = "etc/friendster.xml";
-	public static final String GRAPH_TERROR     = "etc/terror.xml";
+	public static final String GRAPH_GUIR       = "data/alpha/guir.xml";
+	public static final String GRAPH_FRIENDSTER = "data/alpha/friendster.xml";
+	public static final String GRAPH_TERROR     = "data/alpha/terror.xml";
 	public static final String nameField = "label";
     
     public static void main(String[] argv) {

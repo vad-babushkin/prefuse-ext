@@ -45,7 +45,7 @@ import edu.berkeley.guir.prefusex.layout.BalloonTreeLayout;
  */
 public class BalloonGraphDemo extends JFrame {
 
-	public static final String TREE_CHI = "../prefuse/etc/chitest.hdir";
+	public static final String TREE_CHI = "data/alpha/chitest.hdir";
     
 	public static void main(String argv[]) {
 	    String datafile = TREE_CHI;

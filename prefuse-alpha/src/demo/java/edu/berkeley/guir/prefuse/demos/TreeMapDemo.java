@@ -39,7 +39,7 @@ import edu.berkeley.guir.prefusex.layout.SquarifiedTreeMapLayout;
  */
 public class TreeMapDemo extends JFrame {
 
-    public static final String TREE_CHI = "etc/chitest.hdir";
+    public static final String TREE_CHI = "data/alpha/chitest.hdir";
     
     private ItemRegistry registry;
     
