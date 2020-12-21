@@ -1,45 +1,45 @@
-# About Prefuse-ext
+= About Prefuse-ext
 
 This project is a aims a collection of examples revealing the rich possibilities of the library Prefuse.
 
-Many examples are only useful as code, since they depend on long-obsolete libraries. Many examples no longer exist on 
+Many examples are only useful as code, since they depend on long-obsolete libraries.Many examples no longer exist on
 the Internet.
 
 Although the library is no longer being developed from 2006, the library may still be useful in the Java VM GUI Applications.
 
 All changes are released under the same original license.
 
-# About Prefuse
+== About Prefuse
 
-Prefuse is a set of software tools for creating rich interactive data 
-visualizations in the Java programming language. 
-Prefuse supports a rich set of features for data modeling, visualization, 
-and interaction. It provides optimized data structures for tables, graphs, 
-and trees, a host of layout and visual encoding techniques, and support 
-for animation, dynamic queries, integrated search, and database connectivity. 
+Prefuse is a set of software tools for creating rich interactive data
+visualizations in the Java programming language.
+Prefuse supports a rich set of features for data modeling, visualization,
+and interaction.It provides optimized data structures for tables, graphs,
+and trees, a host of layout and visual encoding techniques, and support
+for animation, dynamic queries, integrated search, and database connectivity.
 
-Prefuse is written in Java, using the Java 2D graphics library, and is 
+Prefuse is written in Java, using the Java 2D graphics library, and is
 easily integrated into Java Swing applications or web applets.
 
-Prefuse is a creation of the [UC Berkeley Visualization Lab] (http://vis.berkeley.edu/). 
-For more information see (license-prefuse.txt) and (http://prefuse.org/). 
+Prefuse is a creation of the [UC Berkeley Visualization Lab] (http://vis.berkeley.edu/).
+For more information see (license-prefuse.txt) and (http://prefuse.org/).
 
-It was developed until 2007 by its original author, [Jeffrey Heer](http://homes.cs.washington.edu/~jheer/). 
+It was developed until 2007 by its original author, [Jeffrey Heer](http://homes.cs.washington.edu/~jheer/).
 
-Prefuse is licensed under the terms of a [BSD license](prefuse-core/license-prefuse.txt) and can be freely used for 
-both commercial and non-commercial purposes. The original website is at [prefuse.org](http://prefuse.org/).
+Prefuse is licensed under the terms of a [BSD license](prefuse-core/license-prefuse.txt) and can be freely used for
+both commercial and non-commercial purposes.The original website is at [prefuse.org](http://prefuse.org/).
 
-# Modules
+== Modules
 
-## prefuse-core
+=== prefuse-core
 
 Copy of original project [prefuse/Prefuse](https://github.com/prefuse/Prefuse) with refactoring
 
-## prefuse-core-ie
+=== prefuse-core-ie
 
 Fork [ieg-vienna/Prefuse](https://github.com/ieg-vienna/Prefuse) with refactoring
 
-## profusians
+=== profusians
 
 [Profusians](http://goosebumps4all.net/profusians) is an open source "add on" library for the wonderful prefuse 
 visualization toolkit. It aims to
@@ -48,7 +48,7 @@ visualization toolkit. It aims to
 - inspire other prefuse developer to share their insights about prefuse in form of open source
 - help to shape/establish the SOS license 
 
-##### social open source license (SOS)
+==== social open source license (SOS)
 
 Initially planned as a "new" type of license, we boil it down to the following agreement for the time being 
 The profusians library can be used
@@ -59,29 +59,29 @@ The profusians library can be used
 So basically this software is licensed under GPLv3 and we will find ways for people to use it under a different license 
 if requested, just [contact](http://goosebumps4all.net/profusians/wiki/Contact) us.
 
-## prefuse-pleyades
+=== prefuse-pleyades
 
 Java classes to extend prefuse. Pleyades platform.
 
-## prefuse-ieg
+=== prefuse-ieg
 
 Common Java classes to extend the InfoVis library prefuse [ieg-vienna/ieg-prefuse](http://github.com/ieg-vienna/ieg-prefuse)
 
-## prefuse-ieg-timeBench
+=== prefuse-ieg-timeBench
 
 [ieg-vienna/TimeBench](http://github.com/ieg-vienna/TimeBench)
 
-## prefuse-ieg-evalBench
+=== prefuse-ieg-evalBench
 
 [ieg-vienna/EvalBench](http://github.com/ieg-vienna/EvalBench)
 
-## prefuse-caffe-layout-visualization
+=== prefuse-caffe-layout-visualization
 
 [thingumajig/prefuse-caffe-layout-visualization](https://github.com/thingumajig/prefuse-caffe-layout-visualization)
 
-## prefuse-RSFTree
+=== prefuse-RSFTree
 
-![docuburst](data/docuburst.png)
+image:data/docuburst.png[docuburst]
 
 [DocuBurst: Visualizing Document Content using Language Structure](http://faculty.uoit.ca/collins/research/docuburst/index.html)
 
@@ -90,13 +90,13 @@ DocuBurst is the first visualization of document content which takes advantage o
 Collins, Christopher; Carpendale, Sheelagh; and Penn, Gerald. DocuBurst: Visualizing Document Content using Language Structure. Computer Graphics Forum (Proceedings of Eurographics/IEEE-VGTC Symposium on Visualization (EuroVis '09)), 28(3): pp. 1039-1046, June, 2009.
 
 
-## prefuse-VoCal
+=== prefuse-VoCal
 
 - [VoCAL](http://code.google.com/p/vocal/)
 
 VoCAL: Protégé OWL plugin for visualizing DL concept expressions
 
-## prefuse-ext-demos
+=== prefuse-ext-demos
 
 Demos from:
 
@@ -129,7 +129,7 @@ Demos from:
 YAMVIA is - as the name is giving you a hint - another approach struggling with the perfidies that visualization of large Movie-Databases come along with. YAMVIA is performed by students of the University of Tampere, Finland in the course Information Visualization Project Work. The YAMVIA project was previously ran under the name "GMD - Global Movie Database", but as the project emerged we recognized that we have to choose a more appropriate name in order to the challenges that occured. 
 
 
-## prefuse-alpha
+=== prefuse-alpha
 
 Source codes of version 20050114 are taken and added reverse engineering application prefuse-app (20180114)
 
@@ -140,4 +140,4 @@ Reverse engeneering was produced with the help of several java decompilers.
  
 *Reverse engineering code is dirty and non stable, but working Hyperbolic tree demo*
 
-![Hyperbolic tree demo](data/hyperbolic-tree.png)
+image:data/hyperbolic-tree.png[Hyperbolic tree demo]
